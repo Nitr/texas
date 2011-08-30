@@ -1,8 +1,10 @@
 $(document).ready(function() {
+  var user_id = 0;
   $.ws.defaults.onmessage = $.pp.onmessage;
 
   $.pp.reg("LOGIN", function(obj) {
     console.log(obj.notify, obj.id);
+    user_id = obj.id;
     $.unblockUI();
   });
 
@@ -19,5 +21,10 @@ $(document).ready(function() {
 
   $("#cmd_logout").click(function() {
     $.ws.send($.pp.write({cmd: "LOGOUT"}));
+  });
+
+  $("#cmd_player_query").click(function() {
+    console.log(user_id);
+    $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: user_id}));
   });
 });

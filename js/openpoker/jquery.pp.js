@@ -5,6 +5,7 @@
 
 
   $.pp = {
+    // {{{ protocol function
     read: function(bin) {
       var obj = notifys["NOTIFY_" + bin[0]];
       var data = obj.read(bin);
@@ -34,9 +35,11 @@
 
       fun(obj);
     },
+    // }}}
 
-    cmd_login: generate_cmd("LOGIN", [1, "user", "pass"]),
+    cmd_login:  generate_cmd("LOGIN", [1, "user", "pass"]),
     cmd_logout: generate_cmd("LOGOUT", [2]),
+    cmd_logout: generate_cmd("PLAYER_QUERY", [15, "id"]),
 
     notify_login: generate_notify("LOGIN", [31, 
       {type: "integer", prop: "id"}]),
@@ -49,10 +52,11 @@
   };
 
   function generate_cmd(cmd, status) {
+    // {{{
     var obj = {
       cmd: cmd,
       write: function(data) {
-        var buf = new ArrayBuffer(255); //{{{
+        var buf = new ArrayBuffer(255);
         var dv = new DataView(buf);
         var offset = 0;
         
@@ -77,20 +81,22 @@
               });
               break;
             case "number":
-              dv.setUint8(val);
-              offset += 1;
+              dv.setUint32(offset, val);
+              offset += 4;
               break;
           }
         });
 
-        return new Uint8Array(dv.buffer, 0, offset); // }}}
+        return new Uint8Array(dv.buffer, 0, offset);
       }
     }
 
     commands[cmd] = obj;
+    // }}}
   }
 
   function generate_notify(notify, status) {
+    // {{{
     var obj = {
       notify: notify,
       read: function(bin) {
@@ -131,6 +137,7 @@
     };
 
     notifys["NOTIFY_" + status[0]] = obj;
+    // }}}
   }
 })($)
 // vim: fdm=marker
