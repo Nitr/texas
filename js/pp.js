@@ -1,11 +1,8 @@
 $(document).ready(function() {
-  var user_id = 0;
   $.ws.defaults.onmessage = $.pp.onmessage;
 
   $.pp.reg("LOGIN", function(obj) {
-    console.log(obj.notify, obj.id);
-    user_id = obj.id;
-    $.unblockUI();
+    $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: obj.id}));
   });
 
   $.pp.reg("ERROR", function(obj) {
@@ -23,8 +20,11 @@ $(document).ready(function() {
     $.ws.send($.pp.write({cmd: "LOGOUT"}));
   });
 
-  $("#cmd_player_query").click(function() {
-    console.log(user_id);
-    $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: user_id}));
+  $.pp.reg("PLAYER_INFO", function(obj) {
+    $("#lab_nick").text(obj.nick);
+    $("#lab_location").text(obj.location);
+    $("#lab_inplay").text(obj.inplay);
+    $.unblockUI();
   });
+
 });
