@@ -15,7 +15,26 @@ $(document).ready(function() {
       {notify: "PLAYER_INFO", id: 1, inplay: 20, nick: "cc", location: "cc"}, 
       ["notify", "id", "inplay", "nick", "location"]);
   });
+
+  test("GAME_QUERY", function() {
+    equal_cmd(gen_game_query([1, 0, 0, 0, 0, 0, 0]),
+      [13, 1, 1, 0, 0, 0, 0, 0, 0]);
+    equal_cmd(gen_game_query([2, 1, 8, 1, 9, 3, 2]),
+      [13, 1, 2, 1, 8, 1, 9, 3, 2]);
+  });
 });
+
+function gen_game_query(arr) {
+  var o = {cmd: 'GAME_QUERY', game_type: 1};
+  o.waiting = arr.pop();
+  o.waiting_op = arr.pop();
+  o.joined = arr.pop();
+  o.joined_op = arr.pop();
+  o.seats = arr.pop();
+  o.seats_op = arr.pop(); 
+  o.limit_type = arr.pop(); 
+  return o;
+}
 
 function equal_notify(bin, result, keys) {
   var data = $.pp.read(bin);

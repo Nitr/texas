@@ -8,6 +8,10 @@
     // {{{ protocol function
     read: function(bin) {
       var obj = notifys["NOTIFY_" + bin[0]];
+
+      if ((obj == null) && (obj == undefined))
+        return null;
+
       var data = obj.read(bin);
       return data;
     },
@@ -25,21 +29,25 @@
     onmessage: function(evt) {
       var bin = $.base64.decode(evt.data);
       var obj = $.pp.read(bin)
-      var fun = events[obj.notify];
 
-      if ((fun == null) || (fun == undefined)) {
+      if (obj == null) {
         console.log('undefined message event');
         console.log(evt);
         return;
       }
 
+      var fun = events[obj.notify];
       fun(obj);
     },
     // }}}
 
+    // 对于cmd中含有id的属性,使用Uint32处理,其余使用Uint8处理
     cmd_login:  generate_cmd("LOGIN", [1, "user", "pass"]),
     cmd_logout: generate_cmd("LOGOUT", [2]),
     cmd_logout: generate_cmd("PLAYER_QUERY", [15, "id"]),
+    cmd_logout: generate_cmd("GAME_QUERY", 
+      [13, "game_type", "limit_type", "seats_op", "seats",
+           "joined_op", "joined", "waiting_op", "waiting"]),
 
     notify_login: generate_notify("LOGIN", [31, 
       {type: "integer", prop: "id"}]),
@@ -48,6 +56,17 @@
       {type: "integer", prop: "inplay"}, 
       {type: "string", prop: "nick"}, 
       {type: "string", prop: "location"}]),
+    notify_login: generate_notify("GAME_INFO", [18, 
+      {type: "integer", prop: "id"}, 
+      {type: "string", prop: "table_name"}, 
+      {type: "byte", prop: "game_type"}, 
+      {type: "byte", prop: "limit_type"}, 
+      {type: "integer", prop: "height"}, 
+      {type: "integer", prop: "low"}, 
+      {type: "integer", prop: "seats"}, 
+      {type: "integer", prop: "required"},
+      {type: "integer", prop: "joined"}, 
+      {type: "integer", prop: "waiting"}]),
     notify_error: generate_notify("ERROR", [255])
   };
 
@@ -81,8 +100,13 @@
               });
               break;
             case "number":
-              dv.setUint32(offset, val);
-              offset += 4;
+              if (prop.indexOf("id") >= 0) {
+                dv.setUint32(offset, val);
+                offset += 4;
+              } else {
+                dv.setUint8(offset, val);
+                offset += 1;
+              }
               break;
           }
         });
@@ -128,6 +152,10 @@
             case "integer":
               obj[val.prop] = dv.getUint32(offset);
               offset += 4;
+              break;
+            case "byte":
+              obj[val.prop] = dv.getUint8(offset);
+              offset += 1;
               break;
           }
         });
