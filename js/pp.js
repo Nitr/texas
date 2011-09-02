@@ -34,6 +34,7 @@ $(document).ready(function() {
     $("#lab_nick").text(obj.nick);
     $("#lab_location").text(obj.location);
     $("#lab_inplay").text(obj.inplay);
+    $("#img_photo").attr("src", "" + obj.photo);
     $.unblockUI();
   });
 

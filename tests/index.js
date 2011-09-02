@@ -11,8 +11,8 @@ $(document).ready(function() {
     equal_notify([255, 1, 1], {notify: "ERROR"}, ["notify"]);
 
     equal_notify(
-      [19, 0, 0, 0, 1, 0, 0, 0, 20, 2, 99, 99, 2, 99, 99], 
-      {notify: "PLAYER_INFO", id: 1, inplay: 20, nick: "cc", location: "cc"}, 
+      [19, 0, 0, 0, 1, 0, 0, 0, 20, 8, 100,71,86,122,100,65,61,61, 0, 0, 0, 0, 8, 100,71,86,122,100,65,61,61], 
+      {notify: "PLAYER_INFO", id: 1, inplay: 20, nick: "test", location: "test", photo: "base64,"}, 
       ["notify", "id", "inplay", "nick", "location"]);
   });
 
@@ -53,6 +53,7 @@ function equal_notify(bin, result, keys) {
   for(var i = 0; i < keys.length; i++) {
     if (data[keys[i]] != result[keys[i]]) {
       ok(false);
+      console.log([data, result]);
       return;
     }
   }

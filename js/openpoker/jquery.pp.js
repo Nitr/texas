@@ -69,6 +69,7 @@
       {type: "integer", prop: "id"}, 
       {type: "integer", prop: "inplay"}, 
       {type: "string", prop: "nick", base64: true},
+      {type: "image", prop: "photo"},
       {type: "string", prop: "location", base64: true}]),
     notify_login: generate_notify("GAME_INFO", [18, 
       {type: "integer", prop: "id"}, 
@@ -172,18 +173,28 @@
           }
 
           switch(val.type) {
-            case "string":
-              obj[val.prop] = "";
-              var len = dv.getUint8(offset);
-              offset += 1;
-              while(len > 0) {
-                obj[val.prop] += String.fromCharCode(dv.getUint8(offset));
-                offset += 1;
-                len--;
+            case "image":
+              var result = read_wstring(dv, offset);
+              offset = result[0];
+              obj[val.prop] = result[1];
+
+              if (val.type == "image") {
+                obj[val.prop] = "data:image/png;base64," + obj[val.prop];
               }
 
-              if (val.base64 == true)
+              break;
+            case "string":
+              var result = read_string(dv, offset);
+              offset = result[0];
+              obj[val.prop] = result[1];
+
+              if (val.base64 == true) {
                 obj[val.prop] = $.base64Decode(obj[val.prop]);
+              }
+              
+              if (val.type == "image") {
+                obj[val.prop] = "base64," + obj[val.prop];
+              }
 
               break;
             case "integer":
@@ -210,6 +221,32 @@
         return obj;
       }
     };
+
+    function read_string(dv, offset) {
+      var str = "";
+      var len = dv.getUint8(offset);
+      offset += 1;
+      while(len > 0) {
+        str += String.fromCharCode(dv.getUint8(offset));
+        offset += 1;
+        len--;
+      }
+
+      return [offset, str];
+    }
+
+    function read_wstring(dv, offset) {
+      var str = "";
+      var len = dv.getUint32(offset);
+      offset += 4;
+      while(len > 0) {
+        str += String.fromCharCode(dv.getUint8(offset));
+        offset += 1;
+        len--;
+      }
+
+      return [offset, str];
+    }
 
     notifys["NOTIFY_" + status[0]] = obj;
     // }}}
