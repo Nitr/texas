@@ -43,7 +43,7 @@
 
     // 对于cmd中含有id的属性,使用Uint32处理,其余使用Uint8处理
     cmd_login:  generate_cmd("LOGIN", 
-      [1, {type: "string", prop: "user"}, 
+      [1, {type: "string", prop: "usr"}, 
           {type: "string", prop: "pass"}]),
     cmd_logout: generate_cmd("LOGOUT", [2]),
     cmd_logout: generate_cmd("PLAYER_QUERY", 
@@ -68,8 +68,8 @@
     notify_login: generate_notify("PLAYER_INFO", [19, 
       {type: "integer", prop: "id"}, 
       {type: "integer", prop: "inplay"}, 
-      {type: "string", prop: "nick"}, 
-      {type: "string", prop: "location"}]),
+      {type: "string", prop: "usr"}, 
+      {type: "string", prop: "location", base64: true}]),
     notify_login: generate_notify("GAME_INFO", [18, 
       {type: "integer", prop: "id"}, 
       {type: "string", prop: "table_name"}, 
@@ -181,6 +181,7 @@
                 offset += 1;
                 len--;
               }
+
               break;
             case "integer":
               obj[val.prop] = dv.getUint32(offset);

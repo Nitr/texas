@@ -16,7 +16,7 @@ $(document).ready(function() {
   });
 
   $("#cmd_login").click(function() {
-    var cmd = {cmd: "LOGIN", user: 'jack', pass: 'pass'};
+    var cmd = {cmd: "LOGIN", usr: '1000', pass: 'pass'};
     $.ws.send($.pp.write(cmd));
     $.blockUI({message: '<h3>REQUEST PROTOCOL</h3>'});
   });
@@ -31,7 +31,7 @@ $(document).ready(function() {
   });
 
   $.pp.reg("PLAYER_INFO", function(obj) {
-    $("#lab_nick").text(obj.nick);
+    $("#lab_usr").text(obj.usr);
     $("#lab_location").text(obj.location);
     $("#lab_inplay").text(obj.inplay);
     $.unblockUI();
