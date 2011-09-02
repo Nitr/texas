@@ -22,6 +22,18 @@ $(document).ready(function() {
     equal_cmd(gen_game_query([2, 1, 8, 1, 9, 3, 2]),
       [13, 1, 2, 1, 8, 1, 9, 3, 2]);
   });
+
+  test("PING PONG", function() {
+    equal_notify([254, 0,0,5,34,0,14,189,117,0,8,10,178, 0,0,5,34,0,14,189,117,0,8,10,178], 
+                 {notify: "PONG", orign_send: 1314966005527, send: 1314966005527}, 
+                 ["notify", "orign_send", "send"]);
+    equal_cmd({cmd: "PING", send: 3000002000001}, 
+              [253, 0, 0, 0, 3, 0, 0, 0, 2, 0, 0, 0, 1]);
+    equal_cmd({cmd: "PING", send: 1314966005527026}, 
+              [253, 0,0,5,34,0,14,189,117,0,8,10,178]);
+    equal($.pp.write({cmd: "PING"}).byteLength, 13);
+  });
+
 });
 
 function gen_game_query(arr) {

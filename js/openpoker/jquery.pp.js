@@ -42,13 +42,27 @@
     // }}}
 
     // 对于cmd中含有id的属性,使用Uint32处理,其余使用Uint8处理
-    cmd_login:  generate_cmd("LOGIN", [1, "user", "pass"]),
+    cmd_login:  generate_cmd("LOGIN", 
+      [1, {type: "string", prop: "user"}, 
+          {type: "string", prop: "pass"}]),
     cmd_logout: generate_cmd("LOGOUT", [2]),
-    cmd_logout: generate_cmd("PLAYER_QUERY", [15, "id"]),
+    cmd_logout: generate_cmd("PLAYER_QUERY", 
+      [15, {type: "integer", prop: "id"}]),
     cmd_logout: generate_cmd("GAME_QUERY", 
-      [13, "game_type", "limit_type", "seats_op", "seats",
-           "joined_op", "joined", "waiting_op", "waiting"]),
+      [13, {type: "byte", prop: "game_type"},
+           {type: "byte", prop: "limit_type"}, 
+           {type: "byte", prop: "seats_op"}, 
+           {type: "byte", prop: "seats"},
+           {type: "byte", prop: "joined_op"}, 
+           {type: "byte", prop: "joined"}, 
+           {type: "byte", prop: "waiting_op"}, 
+           {type: "byte", prop: "waiting"}]),
+    cmd_login:  generate_cmd("PING", 
+      [253, {type: "timestamp", prop: "send"}]),
 
+    notify_pong:  generate_notify("PONG", 
+      [254, {type: "timestamp", prop: "orign_send"},
+            {type: "timestamp", prop: "send"}]),
     notify_login: generate_notify("LOGIN", [31, 
       {type: "integer", prop: "id"}]),
     notify_login: generate_notify("PLAYER_INFO", [19, 
@@ -79,19 +93,18 @@
         var dv = new DataView(buf);
         var offset = 0;
         
-        $.each(status, function(index, prop) {
+        $.each(status, function(index, field) {
           if (index == 0) {
-            dv.setUint8(offset, prop); //set command 
+            dv.setUint8(offset, field); //set command 
             offset += 1;
             return;
           }
 
-          var val = data[prop];
-          if ((val == null) && (val == undefined))
-            throw 'PROTOCOL WRITE ERROR';
+          var val = data[field.prop];
 
-          switch(typeof val) {
+          switch(field.type) {
             case "string":
+              val = val == undefined ? "" : val;
               dv.setUint8(offset, val.length);
               offset += 1;
               $.each(val, function(i, c) {
@@ -99,14 +112,24 @@
                 offset += 1;
               });
               break;
-            case "number":
-              if (prop.indexOf("id") >= 0) {
-                dv.setUint32(offset, val);
+            case "integer":
+              val = val == undefined ? 0 : val;
+              dv.setUint32(offset, val);
+              offset += 4;
+              break;
+            case "byte":
+              val = val == undefined ? 0 : val;
+              dv.setUint8(offset, val);
+              offset += 1;
+              break;
+            case "timestamp":
+              // 将时间戳转换成微秒
+              val = val == undefined ? new Date().getTime() * 1000 : val;
+              var arr = mod(val, 1000000, []);
+              $.each(arr, function(i, v) {
+                dv.setUint32(offset, v);
                 offset += 4;
-              } else {
-                dv.setUint8(offset, val);
-                offset += 1;
-              }
+              });
               break;
           }
         });
@@ -117,6 +140,16 @@
 
     commands[cmd] = obj;
     // }}}
+  }
+
+  function mod(val, u, arr) {
+    if (val < u) {
+      arr.push(val);
+      return arr;
+    }
+    mod((val - (val % u)) / u, u, arr);
+    arr.push(val % u);
+    return arr;
   }
 
   function generate_notify(notify, status) {
@@ -156,6 +189,16 @@
             case "byte":
               obj[val.prop] = dv.getUint8(offset);
               offset += 1;
+              break;
+            case "timestamp":
+              var u = 1000000;
+              var mega_secs = dv.getUint32(offset) * u * u;
+              offset += 4;
+              var secs = dv.getUint32(offset) * u;
+              offset += 4;
+              var micro_secs = dv.getUint32(offset);
+              offset += 4;
+              obj[val.prop] = (mega_secs + secs + micro_secs - (micro_secs % 1000)) / 1000;
               break;
           }
         });

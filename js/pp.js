@@ -25,6 +25,10 @@ $(document).ready(function() {
     $.ws.send($.pp.write({cmd: "LOGOUT"}));
   });
 
+  $.pp.reg("PONG", function(obj) {
+    $("#lab_ping").text(obj.send - obj.orign_send);
+    $.unblockUI();
+  });
 
   $.pp.reg("PLAYER_INFO", function(obj) {
     $("#lab_nick").text(obj.nick);
@@ -36,6 +40,11 @@ $(document).ready(function() {
   $("#cmd_game_query").click(function() {
     $.blockUI({message: '<h3>REQUEST PROTOCOL - GAME_QUERY</h3>'});
     $.ws.send($.pp.write(gen_game_query([0, 0, 0, 0, 0, 0, 0])));
+  });
+
+  $("#cmd_ping").click(function() {
+    $.ws.send($.pp.write({cmd: "PING"}));
+    $.blockUI({message: '<h3>PING ...</h3>'});
   });
 });
 
