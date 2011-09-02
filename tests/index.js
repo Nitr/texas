@@ -3,7 +3,7 @@ $(document).ready(function() {
 
   test("LOGIN LOGOUT", function() {
     equal_cmd(
-      {cmd: 'LOGIN', user: 'jack', pass: 'pass'},
+      {cmd: 'LOGIN', usr: 'jack', pass: 'pass'},
       [1,4,106,97,99,107,4,112,97,115,115]);
     equal_cmd({cmd: 'LOGOUT'}, [2]);
 

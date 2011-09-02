@@ -68,7 +68,7 @@
     notify_login: generate_notify("PLAYER_INFO", [19, 
       {type: "integer", prop: "id"}, 
       {type: "integer", prop: "inplay"}, 
-      {type: "string", prop: "usr"}, 
+      {type: "string", prop: "nick", base64: true},
       {type: "string", prop: "location", base64: true}]),
     notify_login: generate_notify("GAME_INFO", [18, 
       {type: "integer", prop: "id"}, 
@@ -181,6 +181,9 @@
                 offset += 1;
                 len--;
               }
+
+              if (val.base64 == true)
+                obj[val.prop] = $.base64Decode(obj[val.prop]);
 
               break;
             case "integer":

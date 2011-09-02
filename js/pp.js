@@ -31,7 +31,7 @@ $(document).ready(function() {
   });
 
   $.pp.reg("PLAYER_INFO", function(obj) {
-    $("#lab_usr").text(obj.usr);
+    $("#lab_nick").text(obj.nick);
     $("#lab_location").text(obj.location);
     $("#lab_inplay").text(obj.inplay);
     $.unblockUI();
