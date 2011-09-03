@@ -1,8 +1,11 @@
 $(document).ready(function() {
   $.ws.defaults.onmessage = $.pp.onmessage;
   $("#games_table").setTemplateElement("games_temp");
+  $("#seats_table").setTemplateElement("seats_temp");
   var games = new Object();
   games.datas = [];
+  var seats = new Object();
+  seats.datas = [];
 
   // Notify Register Processer {{{ 
   $.pp.reg("LOGIN", function(obj) {
@@ -30,11 +33,16 @@ $(document).ready(function() {
   $.pp.reg("GAME_INFO", function(obj) {
     games.datas.push(obj);
     $("#games_table").processTemplate(games);
-    $(".cmd_join").bind("click", function() {
-      console.log($(this).attr("gid"));
+    $(".cmd_seats_state").bind("click", function() {
+      $.ws.send($.pp.write({cmd: "SEAT_QUERY", gid: $(this).attr("gid")}));
       // TODO 添加对gid的请求
     });
     $.unblockUI();
+  });
+
+  $.pp.reg("SEAT_STATE", function(obj) {
+    seats.datas.push(obj);
+    $("#seats_table").processTemplate(seats);
   });
   // }}}
 

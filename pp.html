@@ -13,6 +13,24 @@
 </head>
 <body>
   <!--Game Info Table Template-->
+  <textarea id="seats_temp" style="display:none">
+    <hr />
+    <table><tr>
+      <th>SN</th>
+      <th>State</th>
+      <th>PID</th>
+      <th>Inplay</th>
+    </tr>
+    {#foreach $T.datas as obj}
+    <tr>
+      <td>{$T.obj.seat}</td>
+      <td>{#if $T.obj.state == 0} empty {#else} {$T.obj.state} {#/if}</td>
+      <td>{$T.obj.pid}</td>
+      <td>{$T.obj.inplay}</td>
+    </tr>
+    {#/for}
+    </table>
+  </textarea>
   <textarea id="games_temp" style="display:none">
     <table>
       <tr>
@@ -34,7 +52,9 @@
         <td>{$T.record.waiting}</td>
         <td>{$T.record.required}</td>
         <td>{#if $T.record.limit_type == 1} No Limit {#else} {$T.record.limit_type} {#/if} ${$T.record.height} - ${$T.record.low}</td>
-        <td><button class="cmd_join" gid="{$T.record.id}">Join</button></td>
+        <td><button class="cmd_join" gid="{$T.record.id}">Join</button> | 
+            <button class="cmd_seats_state" gid="{$T.record.id}">Seats State</button>
+        </td>
       </tr>
       {#/for}
     </table>
@@ -54,5 +74,6 @@
   </p>
   <hr />
   <div id="games_table"></div>
+  <div id="seats_table"></div>
 </body>
 </html>

@@ -23,6 +23,11 @@ $(document).ready(function() {
       [13, 1, 2, 1, 8, 1, 9, 3, 2]);
   });
 
+  test("GAMES QUERY", function() {
+    equal_cmd({cmd: "SEAT_QUERY", gid: "1"},
+              [14, 0, 0, 0, 1]);
+  });
+
   test("PING PONG", function() {
     equal_notify([254, 0,0,5,34,0,14,189,117,0,8,10,178, 0,0,5,34,0,14,189,117,0,8,10,178], 
                  {notify: "PONG", orign_send: 1314966005527, send: 1314966005527}, 
