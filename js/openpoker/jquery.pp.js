@@ -76,8 +76,8 @@
       {type: "string", prop: "table_name"}, 
       {type: "byte", prop: "game_type"}, 
       {type: "byte", prop: "limit_type"}, 
-      {type: "integer", prop: "height"}, 
-      {type: "integer", prop: "low"}, 
+      {type: "decimal", prop: "low"}, 
+      {type: "decimal", prop: "height"}, 
       {type: "integer", prop: "seats"}, 
       {type: "integer", prop: "required"},
       {type: "integer", prop: "joined"}, 
@@ -199,6 +199,10 @@
               break;
             case "integer":
               obj[val.prop] = dv.getUint32(offset);
+              offset += 4;
+              break;
+            case "decimal":
+              obj[val.prop] = dv.getUint32(offset) / 10000;
               offset += 4;
               break;
             case "byte":

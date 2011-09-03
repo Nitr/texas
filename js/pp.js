@@ -40,7 +40,7 @@ $(document).ready(function() {
 
   $("#cmd_game_query").click(function() {
     $.blockUI({message: '<h3>REQUEST PROTOCOL - GAME_QUERY</h3>'});
-    $.ws.send($.pp.write(gen_game_query([0, 0, 0, 0, 0, 0, 0])));
+    $.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
   });
 
   $("#cmd_ping").click(function() {
