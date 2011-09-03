@@ -1,6 +1,10 @@
 $(document).ready(function() {
   $.ws.defaults.onmessage = $.pp.onmessage;
+  $("#games_table").setTemplateElement("games_temp");
+  var games = new Object();
+  games.datas = [];
 
+  // Notify Register Processer {{{ 
   $.pp.reg("LOGIN", function(obj) {
     $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: obj.id}));
   });
@@ -8,21 +12,6 @@ $(document).ready(function() {
   $.pp.reg("ERROR", function(obj) {
     console.log(obj);
     $.unblockUI();
-  });
-
-  $.pp.reg("GAME_INFO", function(obj) {
-    console.log(obj);
-    $.unblockUI();
-  });
-
-  $("#cmd_login").click(function() {
-    var cmd = {cmd: "LOGIN", usr: '1000', pass: 'pass'};
-    $.ws.send($.pp.write(cmd));
-    $.blockUI({message: '<h3>REQUEST PROTOCOL</h3>'});
-  });
-
-  $("#cmd_logout").click(function() {
-    $.ws.send($.pp.write({cmd: "LOGOUT"}));
   });
 
   $.pp.reg("PONG", function(obj) {
@@ -38,8 +27,31 @@ $(document).ready(function() {
     $.unblockUI();
   });
 
+  $.pp.reg("GAME_INFO", function(obj) {
+    games.datas.push(obj);
+    $("#games_table").processTemplate(games);
+    $(".cmd_join").bind("click", function() {
+      console.log($(this).attr("gid"));
+      // TODO 添加对gid的请求
+    });
+    $.unblockUI();
+  });
+  // }}}
+
+  $("#cmd_login").click(function() {
+    var cmd = {cmd: "LOGIN", usr: '1000', pass: 'pass'};
+    $.ws.send($.pp.write(cmd));
+    $.blockUI({message: '<h3>REQUEST PROTOCOL</h3>'});
+  });
+
+  $("#cmd_logout").click(function() {
+    $.ws.send($.pp.write({cmd: "LOGOUT"}));
+  });
+
+
   $("#cmd_game_query").click(function() {
     $.blockUI({message: '<h3>REQUEST PROTOCOL - GAME_QUERY</h3>'});
+    games.datas = [];
     $.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
   });
 
@@ -60,3 +72,5 @@ function gen_game_query(arr) {
   o.limit_type = arr.pop(); 
   return o;
 }
+
+// vim: fdm=marker

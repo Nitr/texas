@@ -5,26 +5,54 @@
 	<title>PROTOCOL TESTING</title>
   <script src="js/jquery.js" type="text/javascript"></script>  
   <script src="js/blockui/jquery.blockUI.js" type="text/javascript"></script>  
+  <script src="js/jtemplates/jquery.jtemplates.js" type="text/javascript"></script>  
   <script src="js/base64/jquery.base64.js" type="text/javascript"></script>  
   <script src="js/openpoker/jquery.pp.js" type="text/javascript"></script>  
   <script src="js/openpoker/jquery.ws.js" type="text/javascript"></script>  
   <script src="js/pp.js" type="text/javascript"></script>  
 </head>
 <body>
-  <header>
-    <button id="cmd_login" type="button">Login</button>
-    <button id="cmd_logout" type="button">Logout</button>
-    <button id="cmd_game_query" type="button">Query Game List</button>
-    <button id="cmd_ping" type="button">Ping CMD</button>
-    <hr />
-    <ul id="listUserInfo">
-      <li>Nick: <label id='lab_nick' /></li>
-      <li>In-Play: <label id='lab_inplay' /></li>
-      <li>Location: <label id='lab_location' /></li>
-      <li>Photo: <img id='img_photo'></img></li>
-      <li>Ping: <label id='lab_ping' /></li>
-    </ul>
-    <hr />
-  </header>
+  <!--Game Info Table Template-->
+  <textarea id="games_temp" style="display:none">
+    <table>
+      <tr>
+        <th>GID</th>
+        <th>Game Type</th>
+        <th>Seats</th>
+        <th>Joined</th>
+        <th>Waiting</th>
+        <th>Required</th>
+        <th>Limit</th>
+        <th>Commands</th>
+      </tr>
+      {#foreach $T.datas as record}
+      <tr>
+        <td>{$T.record.id}</td>
+        <td>{#if $T.record.game_type == 0} Texas hold 'em {#else} {$T.record.game_type} {#/if} </td>
+        <td>{$T.record.seats}</td>
+        <td>{$T.record.joined}</td>
+        <td>{$T.record.waiting}</td>
+        <td>{$T.record.required}</td>
+        <td>{#if $T.record.limit_type == 1} No Limit {#else} {$T.record.limit_type} {#/if} ${$T.record.height} - ${$T.record.low}</td>
+        <td><button class="cmd_join" gid="{$T.record.id}">Join</button></td>
+      </tr>
+      {#/for}
+    </table>
+  </textarea>
+  <!--Tempalte End-->
+  <button id="cmd_login" type="button">Login</button>
+  <button id="cmd_logout" type="button">Logout</button>
+  <button id="cmd_game_query" type="button">Query Game List</button>
+  <button id="cmd_ping" type="button">Ping CMD</button>
+  <hr />
+  <p>
+  Nick: <label id='lab_nick'></label>
+  In-Play: <label id='lab_inplay'></label>
+  Location: <label id='lab_location'></label>
+  Photo: <img id='img_photo'></img>
+  Ping: <label id='lab_ping'></label>
+  </p>
+  <hr />
+  <div id="games_table"></div>
 </body>
 </html>
