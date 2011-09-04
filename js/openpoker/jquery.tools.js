@@ -1,9 +1,10 @@
 (function($) {
   $.url = {
     get: function(name) {
-      return decodeURI(
-        (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
+      var val = decodeURI(
+        (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,undefined])[1]
       );
+      return val == "undefined" ? null : val;
     }
   }
 })(jQuery);

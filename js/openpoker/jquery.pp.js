@@ -1,5 +1,6 @@
 (function($) {
   var commands = new Object();
+  var commands_by_id = new Object();
   var notifys = new Object();
   var events = new Object();
 
@@ -28,7 +29,7 @@
 
     onmessage: function(evt) {
       var bin = $.base64.decode(evt.data);
-      var obj = $.pp.read(bin)
+      var obj = $.pp.read(bin);
 
       if (obj == null) {
         console.log('undefined message event');
@@ -40,8 +41,12 @@
       fun(obj);
     },
     // }}}
+    
+    err: function(command, code) {
+    	return commands_by_id[command].cmd;
+    },
 
-    // 对于cmd中含有id的属性,使用Uint32处理,其余使用Uint8处理
+    // 瀵逛簬cmd涓惈鏈塱d鐨勫睘鎬�浣跨敤Uint32澶勭悊,鍏朵綑浣跨敤Uint8澶勭悊
     cmd_login:  generate_cmd("LOGIN", 
       [1, {type: "string", prop: "usr"}, 
           {type: "string", prop: "pass"}]),
@@ -92,7 +97,9 @@
       {type: "integer", prop: "required"},
       {type: "integer", prop: "joined"}, 
       {type: "integer", prop: "waiting"}]),
-    notify_error: generate_notify("ERROR", [255]),
+    notify_error: generate_notify("ERROR", [255, 
+      {type: "byte", prop: "command"},
+      {type: "byte", prop: "code"}]),
     notify_seat_state: generate_notify("SEAT_STATE", [30,
       {type: "integer", prop: "gid"},
       {type: "byte",    prop: "seat"},
@@ -145,7 +152,7 @@
               offset += 1;
               break;
             case "timestamp":
-              // 将时间戳转换成微秒
+              // 灏嗘椂闂存埑杞崲鎴愬井绉�
               val = val == undefined ? new Date().getTime() * 1000 : val;
               var arr = mod(val, 1000000, []);
               $.each(arr, function(i, v) {
@@ -161,6 +168,7 @@
     }
 
     commands[cmd] = obj;
+    commands_by_id[status[0]] = obj;
     // }}}
   }
 
