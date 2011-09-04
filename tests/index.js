@@ -23,9 +23,11 @@ $(document).ready(function() {
       [13, 1, 2, 1, 8, 1, 9, 3, 2]);
   });
 
-  test("GAMES QUERY", function() {
+  test("GAMES_JOIN", function() {
     equal_cmd({cmd: "SEAT_QUERY", gid: "1"},
               [14, 0, 0, 0, 1]);
+    equal_cmd({cmd: "JOIN", gid: 5, seat: 1, buyin: 8},
+              [8, 0, 0, 0, 5, 1, 0, 1, 56, 128]);
   });
 
   test("PING PONG", function() {

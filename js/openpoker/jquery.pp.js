@@ -61,6 +61,14 @@
       [253, {type: "timestamp", prop: "send"}]),
     cmd_seat_query:  generate_cmd("SEAT_QUERY", 
       [14, {type: "integer", prop: "gid"}]),
+    cmd_join:  generate_cmd("JOIN", 
+      [8, {type: "integer", prop: "gid"},
+          {type: "byte", prop: "seat"},
+          {type: "decimal", prop: "buyin"}]),
+    cmd_watch:  generate_cmd("WATCH", 
+      [3, {type: "integer", prop: "gid"}]),
+    cmd_watch:  generate_cmd("LEAVE", 
+      [9, {type: "integer", prop: "gid"}]),
 
     notify_pong:  generate_notify("PONG", 
       [254, {type: "timestamp", prop: "orign_send"},
@@ -124,6 +132,11 @@
             case "integer":
               val = val == undefined ? 0 : val;
               dv.setUint32(offset, val);
+              offset += 4;
+              break;
+            case "decimal":
+              val = val == undefined ? 0 : val;
+              dv.setUint32(offset, val * 10000);
               offset += 4;
               break;
             case "byte":

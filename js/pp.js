@@ -2,9 +2,10 @@ $(document).ready(function() {
   $.ws.defaults.onmessage = $.pp.onmessage;
   $("#games_table").setTemplateElement("games_temp");
   $("#seats_table").setTemplateElement("seats_temp");
+  var cmd_login = {cmd: "LOGIN", usr: $.url.get("usr"), pass: "pass"};
   var games = new Object();
-  games.datas = [];
   var seats = new Object();
+  games.datas = [];
   seats.datas = [];
 
   // Notify Register Processer {{{ 
@@ -34,8 +35,9 @@ $(document).ready(function() {
     games.datas.push(obj);
     $("#games_table").processTemplate(games);
     $(".cmd_seats_state").bind("click", function() {
-      $.ws.send($.pp.write({cmd: "SEAT_QUERY", gid: $(this).attr("gid")}));
-      // TODO 添加对gid的请求
+      seats.datas = [];
+      seats.gid = $(this).attr("gid");
+      $.ws.send($.pp.write({cmd: "SEAT_QUERY", gid: seats.gid}));
     });
     $.unblockUI();
   });
@@ -43,12 +45,21 @@ $(document).ready(function() {
   $.pp.reg("SEAT_STATE", function(obj) {
     seats.datas.push(obj);
     $("#seats_table").processTemplate(seats);
+    $(".cmd_join").bind("click", function() {
+      var cmd = {cmd: "JOIN", gid: $(this).attr("gid"), seat: $(this).attr("seat"), buyin: 100};
+      $.ws.send($.pp.write(cmd));
+    });
+    $(".cmd_watch").bind("click", function() {
+      $.ws.send($.pp.write({cmd: "WATCH", gid: $(this).attr("gid")}));
+    });
+    $(".cmd_leave").bind("click", function() {
+      $.ws.send($.pp.write({cmd: "LEAVE", gid: $(this).attr("gid")}));
+    });
   });
   // }}}
 
   $("#cmd_login").click(function() {
-    var cmd = {cmd: "LOGIN", usr: '1000', pass: 'pass'};
-    $.ws.send($.pp.write(cmd));
+    $.ws.send($.pp.write(cmd_login));
     $.blockUI({message: '<h3>REQUEST PROTOCOL</h3>'});
   });
 
@@ -67,6 +78,9 @@ $(document).ready(function() {
     $.ws.send($.pp.write({cmd: "PING"}));
     $.blockUI({message: '<h3>PING ...</h3>'});
   });
+
+  // Auto Login
+  $("#cmd_login").click();
 });
 
 function gen_game_query(arr) {
