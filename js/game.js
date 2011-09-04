@@ -14,6 +14,9 @@ function autoSetting() {
 	var pwd = $.url.get("pwd") == null ? localStorage.getItem("lass_pwd") : $.url.get("pwd");
 	$("#txt_usr").val(usr);
 	$("#txt_pwd").val(pwd);
+	
+    $("#games_table").setTemplateElement("games_temp");
+    $("#seats_table").setTemplateElement("seats_temp");
 }
 
 function autoSingin() {
@@ -49,7 +52,9 @@ $.pp.reg("LOGIN", function(usr) {
 	$.unblockUI();
 	localStorage.setItem("lass_usr", $("#txt_usr").val());
 	localStorage.setItem("lass_pwd", $("#txt_pwd").val());
+	
     $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: usr.id}));
+    
    	$("#login").hide();
    	$("#game_panel").show();
 });
@@ -59,4 +64,32 @@ $.pp.reg("PLAYER_INFO", function(obj) {
   $("#lab_location").text(obj.location);
   $("#lab_inplay").text(obj.inplay);
   $("#img_photo").attr("src", "" + obj.photo);
+  
+  // 登录后默认请求游戏列表
+  $.games.clear();
+  $.ws.send($.pp.write($.games.gen_query()));
+});
+
+$.pp.reg("GAME_INFO", function(obj) {
+  $.games.add(obj);
+  $("#games_table").processTemplate({datas: $.games.all()});
+  
+  if ($.games.length() == 1) {
+	$.games.cur(obj.id);
+	$(document).everyTime(1000, "ref_seats", function() {
+      $.seats.clear(); 
+      $.ws.send($.pp.write({cmd: "SEAT_QUERY", gid: $.games.cur()}));
+    });
+  }
+  
+  $(".cmd_check").bind("click", function() {
+	$.games.cur($(this).attr("gid"));
+    $.blockUI({message: '<h3>......</h3>'});
+  });
+});
+
+$.pp.reg("SEAT_STATE", function(obj) {
+  $.seats.add(obj);
+  $("#seats_table").processTemplate({datas: $.seats.all()});
+  $.unblockUI();
 });
