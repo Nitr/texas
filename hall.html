@@ -1,0 +1,57 @@
+  <h3>Game Hell</h3>
+  <div id='seats_table'></div>
+  <hr />
+  <div id='games_table'></div>
+  <!--Game Info Table Template-->
+  <textarea id="seats_temp" style="display:none">
+    <hr />
+    <table><tr>
+      <th>GID</th>
+      <th>SN</th>
+      <th>State</th>
+      <th>PID</th>
+      <th>Inplay</th>
+      <th>Commands</th>
+    </tr>
+    {#foreach $T.datas as obj}
+    <tr>
+      <td>{$T.obj.gid}</td>
+      <td>{$T.obj.seat}</td>
+      <td>{#if $T.obj.state == 0} empty {#else} {$T.obj.state} {#/if}</td>
+      <td>{$T.obj.pid}</td>
+      <td>{$T.obj.inplay}</td>
+      <td>
+        <button class="cmd_join" gid="{$T.gid}" seat="{$T.obj.seat}">Join</button> | <button class="cmd_leave" gid="{$T.gid}">Leave</button>
+      </td>
+    </tr>
+    {#/for}
+    </table>
+  </textarea>
+  <textarea id="games_temp" style="display:none">
+    <table>
+      <tr>
+        <th>GID</th>
+        <th>Game Type</th>
+        <th>Seats</th>
+        <th>Joined</th>
+        <th>Waiting</th>
+        <th>Required</th>
+        <th>Limit</th>
+        <th>Commands</th>
+      </tr>
+      {#foreach $T.datas as record}
+      <tr>
+        <td>{$T.record.id}</td>
+        <td>{#if $T.record.game_type == 0} Texas hold 'em {#else} {$T.record.game_type} {#/if} </td>
+        <td>{$T.record.seats}</td>
+        <td>{$T.record.joined}</td>
+        <td>{$T.record.waiting}</td>
+        <td>{$T.record.required}</td>
+        <td>{#if $T.record.limit_type == 1} No Limit {#else} {$T.record.limit_type} {#/if} ${$T.record.height} - ${$T.record.low}</td>
+        <td>           <button class="cmd_check" gid="{$T.record.id}">Check</button>
+        </td>
+      </tr>
+      {#/for}
+    </table>
+  </textarea>
+  <!--Tempalte End-->
