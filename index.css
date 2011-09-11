@@ -1,0 +1,41 @@
+body {
+  border: 0px;
+  margin: 0px;
+  padding-top: 5px;
+  background-image: url(bk.png);
+}
+
+#toolbar {
+  width: 1010px;
+  height: 78px;
+  background-color: #436d90;
+  border: 0px;
+  border-radius: 8px;
+  margin: 0px auto;
+  padding: 0px;
+  opacity: 0.9;
+}
+
+#logo {
+  border: 0px;
+  padding: 0px;
+  margin: -6px 0px 0px 356px;
+  position: absolute; 
+}
+
+#title{
+  position: absolute; 
+  width: 1010px;
+  height: 17px;
+  background-color: #365778;
+  border: 0px;
+  -webkit-border-top-left-radius: 8px;
+  -webkit-border-top-right-radius: 8px;
+  opacity: 0.9;
+}
+
+#content {
+  width: 1010px;
+  height: 576px;
+  margin: 0 auto;
+}

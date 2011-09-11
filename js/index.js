@@ -6,19 +6,9 @@ $(function() {
     $.ws.send($.pp.write({cmd: "PING"}));
   });
 
-  // ajax blockui event {{{
-  var ajax_count = 0;
-  $(document).ajaxStart(function() {
-    $.blockUI({message: '<h3>游戏正在加载中,请稍后...</h3>'});
-    ajax_count += 1;
-  });
+  $.blockUI({message: '<h3>游戏正在加载中,请稍后...</h3>'});
 
-  $(document).ajaxStart(function() {
-    ajax_count -= 1;
-    if (ajax_count == 0)
-      $.unblockUI();
-  });
-  // }}}
+  $("#login").load("login.html");
 
   $("#hall").load("hall.html", function() {
     $.getScript("js/hall.js");

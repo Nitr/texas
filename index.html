@@ -8,24 +8,20 @@
     <script src="js/openpoker/jquery.pp.js" type="text/javascript"></script>  
     <script src="js/openpoker/jquery.ws.js" type="text/javascript"></script>  
     <script src="js/index.js" type="text/javascript"></script>  
+    <link rel=stylesheet type="text/css" href="index.css"/>
   </head>  
   <body>
-    <div id="center">
-      <div id="login">
-        <form id="login" method="post">
-          <label>帐户<input id="txt_usr" 
-            placeholder="请输入您的帐户" required autofocus ></label><br />
-          <label>密码<input id="txt_pwd" type="password" 
-            placeholder="请输入您的密码" required ></label><br />
-          <button type="submit" id="cmd_login">登录</button>
-          <input type="checkbox" id="ckb_save" checked />保存登陆信息
-          <label id="lab_error" style="display: none; color: red;">用户名密码错误</label>
-        </form>
-      </div>
-      <div id="hall" style="display:none;">
-      </div>
-      <div id="game" style="display:none;">
-      </div>
+    <nav id=toolbar>
+      <div id=title></div>
+      <img id=logo src=logo.png />
+    </nav>
+    <article id=content>
+      <article id="login">
+      </article>
+      <article id="hall" style="display:none;">
+      </article>
+      <article id="game" style="display:none;">
+      </article>
     </div>
   </body>
 </html>
