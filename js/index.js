@@ -2,9 +2,6 @@ $(function() {
   var usr, pwd, pong;
   $.ws.defaults.onmessage = $.pp.onmessage;
 
-  $(document).everyTime(500, function() {
-    $.ws.send($.pp.write({cmd: "PING"}));
-  });
 
   $.blockUI({message: '<h3>游戏正在加载中,请稍后...</h3>'});
 
@@ -46,10 +43,6 @@ $(function() {
     $("#lab_error").show();
   });
 
-  $.pp.reg("PONG", function(obj) {
-    pong = pong > 10000 ? 0 : pong + 1;
-  });
-
   $.pp.reg("LOGIN", function(u) {
     if ($("#ckb_save").attr('checked')) {
       localStorage.setItem("save_usr", usr);
@@ -57,17 +50,14 @@ $(function() {
     }
 
     $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: u.id}));
-
-    $("#login").hide();
-
-    $.unblockUI();
   });
 
-  if (pong == 0) {
-    $.blockUI({message: '<h3>网络故障...</h3>'});
-  } else {
-    autoSingin();
-  }
-});
+  $.ws.send($.pp.write({cmd: "PING"}));
+  $.blockUI({message: '<h3>连接中......</h3>'});
 
+  $.pp.reg("PONG", function(obj) {
+    $.blockUI({message: '<h3>自动登陆中...</h3>'});
+    autoSingin();
+  });
+});
 // vim: fdm=marker

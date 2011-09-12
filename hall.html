@@ -1,13 +1,11 @@
 <header>
-  <h3>游戏大厅</h3>
 </header>
-  <div id='seats_table'></div>
+<div id='seats_table'></div>
+<div id='games_table'></div>
+<!--Game Info Table Template-->
+<textarea id="seats_temp" style="display:none">
   <hr />
-  <div id='games_table'></div>
-  <!--Game Info Table Template-->
-  <textarea id="seats_temp" style="display:none">
-    <hr />
-    <table><tr>
+  <table><tr>
       <th>GID</th>
       <th>SN</th>
       <th>State</th>
@@ -27,33 +25,33 @@
       </td>
     </tr>
     {#/for}
-    </table>
-  </textarea>
-  <textarea id="games_temp" style="display:none">
-    <table>
-      <tr>
-        <th>GID</th>
-        <th>Game Type</th>
-        <th>Seats</th>
-        <th>Joined</th>
-        <th>Waiting</th>
-        <th>Required</th>
-        <th>Limit</th>
-        <th>Commands</th>
-      </tr>
-      {#foreach $T.datas as record}
-      <tr>
-        <td>{$T.record.id}</td>
-        <td>{#if $T.record.game_type == 0} Texas hold 'em {#else} {$T.record.game_type} {#/if} </td>
-        <td>{$T.record.seats}</td>
-        <td>{$T.record.joined}</td>
-        <td>{$T.record.waiting}</td>
-        <td>{$T.record.required}</td>
-        <td>{#if $T.record.limit_type == 1} No Limit {#else} {$T.record.limit_type} {#/if} ${$T.record.height} - ${$T.record.low}</td>
-        <td>           <button class="cmd_check" gid="{$T.record.id}">Check</button>
-        </td>
-      </tr>
-      {#/for}
-    </table>
-  </textarea>
-  <!--Tempalte End-->
+  </table>
+</textarea>
+<textarea id="games_temp" style="display:none">
+  <table>
+    <tr>
+      <th>GID</th>
+      <th>Game Type</th>
+      <th>Seats</th>
+      <th>Joined</th>
+      <th>Waiting</th>
+      <th>Required</th>
+      <th>Limit</th>
+      <th>Commands</th>
+    </tr>
+    {#foreach $T.datas as record}
+    <tr>
+      <td>{$T.record.id}</td>
+      <td>{#if $T.record.game_type == 0} Texas hold 'em {#else} {$T.record.game_type} {#/if} </td>
+      <td>{$T.record.seats}</td>
+      <td>{$T.record.joined}</td>
+      <td>{$T.record.waiting}</td>
+      <td>{$T.record.required}</td>
+      <td>{#if $T.record.limit_type == 1} No Limit {#else} {$T.record.limit_type} {#/if} ${$T.record.height} - ${$T.record.low}</td>
+      <td>           <button class="cmd_check" gid="{$T.record.id}">Check</button>
+      </td>
+    </tr>
+    {#/for}
+  </table>
+</textarea>
+<!--Tempalte End-->
