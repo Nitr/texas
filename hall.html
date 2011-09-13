@@ -1,10 +1,7 @@
-<header>
-</header>
 <div id='seats_table'></div>
 <div id='games_table'></div>
 <!--Game Info Table Template-->
 <textarea id="seats_temp" style="display:none">
-  <hr />
   <table><tr>
       <th>GID</th>
       <th>SN</th>
@@ -28,30 +25,27 @@
   </table>
 </textarea>
 <textarea id="games_temp" style="display:none">
-  <table>
-    <tr>
-      <th>GID</th>
-      <th>Game Type</th>
-      <th>Seats</th>
-      <th>Joined</th>
-      <th>Waiting</th>
-      <th>Required</th>
-      <th>Limit</th>
-      <th>Commands</th>
+  <table id="gtable">
+    <thead>
+    <tr class=header>
+      <th>ID</th>
+      <th>房间</th>
+      <th>大/小盲注</th>
+      <th>人数</th>
+      <th>旁观</th>
     </tr>
+  </thead>
+  <tbody>
     {#foreach $T.datas as record}
-    <tr>
-      <td>{$T.record.id}</td>
+    <tr gid="{$T.record.id}" seats="{$T.record.seats}" class=content>
+      <td>#{$T.record.id}</td>
       <td>{#if $T.record.game_type == 0} Texas hold 'em {#else} {$T.record.game_type} {#/if} </td>
-      <td>{$T.record.seats}</td>
-      <td>{$T.record.joined}</td>
+      <td>{$T.record.low} / {$T.record.height}</td>
+      <td>{$T.record.joined} / {$T.record.seats}</td>
       <td>{$T.record.waiting}</td>
-      <td>{$T.record.required}</td>
-      <td>{#if $T.record.limit_type == 1} No Limit {#else} {$T.record.limit_type} {#/if} ${$T.record.height} - ${$T.record.low}</td>
-      <td>           <button class="cmd_check" gid="{$T.record.id}">Check</button>
-      </td>
     </tr>
     {#/for}
+  </tbody>
   </table>
 </textarea>
 <!--Tempalte End-->

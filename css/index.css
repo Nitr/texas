@@ -1,0 +1,128 @@
+body, td, div, a {
+  font-family: sans-serif;
+}
+
+body {
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+}
+
+#page {
+  background: url(bk.png) repeat;
+  height: 674px;
+  width: 1010px;
+  min-width: 1010px;
+  margin: auto;
+  padding-top: 5px;
+}
+
+#toolbar {
+  width: 930px;
+  height: 78px;
+  margin: 0px auto;
+  border-radius: 8px;
+  background-color: #436d90;
+  -webkit-box-shadow: 0px 2px 2px black;
+}
+
+#logo {
+  margin: -22px auto auto 318px;
+  -webkit-box-shadow: 0px 5px 5px black;
+}
+
+#title{
+  width: 930px;
+  height: 17px;
+  background-color: #365778;
+  border: 0px;
+  -webkit-border-top-left-radius: 8px;
+  -webkit-border-top-right-radius: 8px;
+}
+
+#usr {
+  position: absolute; 
+  padding: 0px;
+  display: none;
+  left: 40px;
+  top: 14px;
+}
+
+#usr > * {
+  float: left;
+  margin-left: 10px;
+}
+
+#usr > #nick {
+  margin-top: 14px;
+  margin-bottom: 10px;
+}
+
+#usr > #photo {
+  width: 60px;
+  height: 60px;
+  border: 1px solid black;
+}
+
+#content {
+  width: 1000px;
+  margin: 0 auto;
+}
+
+/* GAME_TABLE */
+#gtable {
+  margin: 0px auto auto 60px;
+  border-collapse: collapse;
+  width: 660px;
+  border-bottom: 1px solid black;
+  -webkit-box-shadow: 0px 2px 2px black;
+}
+
+#gtable .content {
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  height: 38px;
+  text-align: center;
+  background-color: #d0d2d3;
+}
+
+#gtable tbody .selected {
+  background-color: #bab1c6;
+}
+
+#gtable .header {
+  border: 1px solid black;
+  background: -webkit-gradient(linear, left top, left bottom, from(#e8e8ee), to(#bdbfc2));
+  height: 40px;
+  border-bottom-width: 2px;
+}
+
+/* SEATS_TABLE */
+#seats_table {
+  width: 450px;
+  height: 310px;
+  margin: 0px auto;
+}
+
+.blockMsg {
+  border-radius: 8px !important;
+  border: 3px solid #174f75 !important;
+  background-color: #0f263d !important;
+  color: #ffffff !important;
+  text-shadow: 1px 1px 1px #929da7 !important;
+  margin: 0px auto !important;
+  width: 400px !important;
+  -webkit-box-shadow: 2px 2px 2px black;
+  left: 0px !important;
+  right: 0px !important;
+  top: 260px !important;
+}
+
+.msg {
+  padding: 0px;
+  color: #ffffff;
+  text-shadow: 1px 1px 1px #929da7;
+}

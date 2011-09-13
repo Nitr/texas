@@ -1,22 +1,28 @@
 (function($) {
   $.ws = {
     send: function(bin) {
-      var ws = init();
-      var timeout = ws.readyState == WebSocket.CONNECTING ? 1000 : 0;
-
-      setTimeout(function() {
-        var msg = $.base64.encode(bin);
-        ws.send(msg);
-      }, timeout);
+      var msg = $.base64.encode(bin);
+      ws.send(msg);
     },
 
     defaults: {
       host: "127.0.0.1",
       port: "8002",
       onmessage: function(e) {
-        console.log(e);
+        console.log(['websocket message', e]);
+      },
+      onopen: function() {
+        console.log('websocket open');
       }
     },
+    
+    init: function() {
+      init();
+    },
+
+    isConnection: function() {
+      return ws.readyState == WebSocket.OPEN;
+    }
   };
 
   function init() {
@@ -25,11 +31,8 @@
                 ":" + $.ws.defaults.port + "/";
       ws = new WebSocket(url, "chat");  
       ws.onmessage = $.ws.defaults.onmessage;
+      ws.onopen = $.ws.defaults.onopen;
       return ws;
-    }
-
-    if (ws.readyState != WebSocket.OPEN) {
-      throw "NETWORK CONNECTION NOT OPEN";
     }
 
     return ws;

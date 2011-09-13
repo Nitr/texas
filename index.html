@@ -8,22 +8,23 @@
     <script src="js/openpoker/jquery.pp.js" type="text/javascript"></script>  
     <script src="js/openpoker/jquery.ws.js" type="text/javascript"></script>  
     <script src="js/index.js" type="text/javascript"></script>  
-    <link rel=stylesheet type="text/css" href="index.css"/>
+    <link rel=stylesheet type="text/css" href="css/index.css"/>
   </head>  
   <body>
-    <nav id=toolbar>
-      <div id=title></div>
-      <img id=logo src=logo.png />
-      <img id=photo />
-      <label id=nick class=msg ></label>
-      <label id=money class=msg ></label>
-    </nav>
-    <article id=content>
-      <article id=login>
-      </article>
-      <article id=hall style="display:none;">
-      </article>
-      <article id=game style="display:none;">
+    <div id=page>
+      <nav id=toolbar>
+        <div id=title></div>
+        <img id=logo src='css/logo.png' />
+        <div id=usr>
+          <img id=photo />
+          <label id=nick class=msg ></label><br />
+          <label id=money class=msg ></label>
+        </div>
+      </nav>
+      <article id=content>
+        <article id=login style="display:none;"></article>
+        <article id=hall style="display:none;"></article>
+        <article id=game style="display:none;"></article>
       </article>
     </div>
   </body>
