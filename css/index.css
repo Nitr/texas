@@ -26,7 +26,7 @@ body {
   margin: 0px auto;
   border-radius: 8px;
   background-color: #436d90;
-  -webkit-box-shadow: 0px 2px 2px black;
+  -webkit-box-shadow: 1px 3px 3px black;
 }
 
 #logo {
@@ -72,16 +72,54 @@ body {
   margin: 0 auto;
 }
 
-/* GAME_TABLE */
-#gtable {
+/* GAME_TABLE {{{ */
+.games {
   margin: 0px auto auto 60px;
   border-collapse: collapse;
   width: 660px;
   border-bottom: 1px solid black;
-  -webkit-box-shadow: 0px 2px 2px black;
+  -webkit-box-shadow: 1px 3px 3px black;
 }
 
-#gtable .content {
+#games_overflow {
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  max-height:191px;
+  height:191px;
+  overflow:auto;
+}
+
+.games thead tr, .games tfoot tr {
+  border: 1px solid black;
+  background: -webkit-gradient(linear, left top, left bottom, from(#e8e8ee), to(#bdbfc2));
+  height: 40px;
+  border-bottom-width: 2px;
+}
+
+.games tfoot tr {
+  height: 30px;
+}
+
+.games tfoot #areas {
+  margin-left: 5px;
+}
+
+.games tfoot .blinds {
+  width: 70px;
+  height: 22px;
+  background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#efefef));
+  border: none;
+  padding: 0px;
+  margin: 0px;
+  -webkit-box-shadow: 0px 1px 1px black;
+}
+
+.games tfoot .selected {
+  background: -webkit-gradient(linear, left top, left bottom, from(#5f5f5f), to(#a4a4a4));
+}
+
+.games tbody tr {
   border-left: 1px solid black;
   border-right: 1px solid black;
   height: 38px;
@@ -89,19 +127,12 @@ body {
   background-color: #d0d2d3;
 }
 
-#gtable tbody .selected {
+.games tbody .selected {
   background-color: #bab1c6;
 }
 
-#gtable .header {
-  border: 1px solid black;
-  background: -webkit-gradient(linear, left top, left bottom, from(#e8e8ee), to(#bdbfc2));
-  height: 40px;
-  border-bottom-width: 2px;
-}
-
 /* SEATS_TABLE */
-#seats_table {
+#seats {
   width: 450px;
   height: 310px;
   margin: 0px auto;
@@ -126,3 +157,5 @@ body {
   color: #ffffff;
   text-shadow: 1px 1px 1px #929da7;
 }
+
+/*vim :fdm=market*/

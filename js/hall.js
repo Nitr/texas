@@ -15,8 +15,7 @@ $(function() {
     return o;
   }
 
-  $("#games_table").setTemplateElement("games_temp");
-  //$("#seats_table").setTemplateElement("seats_temp");
+  $("#games_wrapper").setTemplateElement("games_temp");
 
   $.pp.reg("PLAYER_INFO", function(obj) {
     $("#login").hide();
@@ -33,11 +32,11 @@ $(function() {
 
   $.pp.reg("GAME_INFO", function(obj) {
     games.push(obj);
-    $("#games_table").processTemplate({datas: games});
+    $("#games_wrapper").processTemplate({datas: games});
 
-    $("#gtable tbody tr").click(function() {
+    $("#games_wrapper tr").click(function() {
       //遍历所有的行，移除class:selected
-      $.each($("#gtable tbody tr"), function(i, n) {
+      $.each($("#games_wrapper tr"), function(i, n) {
         $(n).removeClass("selected");
       });
       //给当前行添加class:selected
@@ -45,16 +44,21 @@ $(function() {
       seats = [];
       gid = $(this).attr('gid');
       scount = $(this).attr('seats');
-      $.ws.send($.pp.write({cmd: "SEAT_QUERY", gid: gid}));
+      //$.ws.send($.pp.write({cmd: "SEAT_QUERY", gid: gid}));
     });
+
+  });
+
+  $(".games tfoot .blinds").click(function() {
+    //games = [];
+    $.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
+    $.each($(".games tfoot .blinds"), function(i, n) {
+      $(n).removeClass("selected");
+    });
+    //给当前行添加class:selected
+    $(this).addClass("selected");
   });
 
   $.pp.reg("SEAT_STATE", function(obj) {
-    if (obj.gid == gid) {
-      seats.push(obj);
-      if (seats.length >= scount) {
-        $("#seats_table").processTemplate({datas: seats});
-      }
-    }
   });
 });
