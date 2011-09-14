@@ -84,7 +84,6 @@
       {type: "integer", prop: "id"}, 
       {type: "integer", prop: "inplay"}, 
       {type: "string", prop: "nick", base64: true},
-      {type: "image", prop: "photo"},
       {type: "string", prop: "location", base64: true}]),
     notify_game_info: generate_notify("GAME_INFO", [18, 
       {type: "integer", prop: "id"}, 
