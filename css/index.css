@@ -125,6 +125,7 @@ body {
   height: 38px;
   text-align: center;
   background-color: #d0d2d3;
+  -webkit-user-select: none;
 }
 
 .games tbody .selected {
@@ -132,10 +133,27 @@ body {
 }
 
 /* SEATS_TABLE */
-#seats {
-  width: 450px;
+#seats_wrapper {
+  width: 650px;
   height: 310px;
   margin: 0px auto;
+  position: relative;
+  background-image: url(table.png);
+}
+
+.seat {
+  position: absolute;
+  width: 60px;
+  height: 88px;
+  font-size: 16px;
+  padding: 0px
+  margin: 0px;
+  border: 0px;
+}
+
+.seat .photo {
+  width: 60px;
+  height: 60px;
 }
 
 .blockMsg {
