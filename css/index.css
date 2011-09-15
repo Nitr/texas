@@ -8,16 +8,17 @@ body {
   padding: 0px;
   width: 100%;
   height: 100%;
-  background-color: black;
+  background-color: gray;
 }
 
 #page {
-  background: url(bk.png) repeat;
-  height: 674px;
+  background: url(background.png) no-repeat;
+  height: 758px;
   width: 1010px;
   min-width: 1010px;
   margin: auto;
-  padding-top: 5px;
+  padding-top: 20px;
+  margin-top: 15px;
 }
 
 #toolbar {
@@ -30,7 +31,7 @@ body {
 }
 
 #logo {
-  margin: -22px auto auto 318px;
+  margin: -26px auto auto 318px;
   -webkit-box-shadow: 0px 5px 5px black;
 }
 
@@ -48,7 +49,7 @@ body {
   padding: 0px;
   display: none;
   left: 40px;
-  top: 14px;
+  top: 29px;
 }
 
 #usr > * {
@@ -136,9 +137,9 @@ body {
 #seats_wrapper {
   width: 650px;
   height: 310px;
-  margin: 0px auto;
+  margin: 30px auto -30px auto;
   position: relative;
-  background-image: url(table.png);
+  background: url(table.png) no-repeat center;
 }
 
 .seat {

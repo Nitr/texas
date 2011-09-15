@@ -1,10 +1,21 @@
 $(function() {
   var five_point = [{},
-    {x: 223, y: 211},
-    {x: 49, y: 148},
-    {x: 145, y: 17},
-    {x: 374, y: 17},
-    {x: 438, y: 148}
+    {x: 299, y: 183},
+    {x: 98, y: 120},
+    {x: 185, y: 17},
+    {x: 399, y: 17},
+    {x: 498, y: 120}
+  ];
+
+  var eight_point = [{},
+    {x: 379, y: 183},
+    {x: 205, y: 183},
+    {x: 90, y: 150},
+    {x: 98, y: 65},
+    {x: 205, y: 17},
+    {x: 379, y: 17},
+    {x: 498, y: 65},
+    {x: 490, y: 150}
   ];
   
   var games = [], seats = [];
@@ -78,7 +89,7 @@ $(function() {
     if (obj.gid != gid)
       return;
 
-    $('#seat' + obj.seat).show('normal').attr("style", "top: " + five_point[obj.seat].y + "px; left: " + five_point[obj.seat].x + "px;");
+    $('#seat' + obj.seat).show('normal').attr("style", "top: " + eight_point[obj.seat].y + "px; left: " + eight_point[obj.seat].x + "px;");
     $('#seat' + obj.seat + ' > .inplay').text(obj.inplay);
     $('#seat' + obj.seat + ' > .nick').text(obj.pid);
   });
