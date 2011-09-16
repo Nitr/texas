@@ -49,7 +49,7 @@ $(function() {
     $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: obj.id}));
 
     $("#hall").show();
-    //$.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
+    $.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
   });
 
   $.pp.reg("PHOTO_INFO", function(obj) {

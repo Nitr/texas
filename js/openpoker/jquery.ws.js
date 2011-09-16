@@ -2,7 +2,7 @@
   $.ws = {
     send: function(bin) {
       var msg = $.base64.encode(bin);
-      ws.send(msg);
+      queue.push(msg);
     },
 
     defaults: {
@@ -18,6 +18,13 @@
     
     init: function() {
       init();
+
+      $(this).everyTime(300, function() {
+        if (queue.length == 0)
+          return;
+
+        ws.send(queue.pop());
+      });
     },
 
     isConnection: function() {
@@ -39,4 +46,5 @@
   }
 
   var ws;
+  var queue = [];
 })($);
