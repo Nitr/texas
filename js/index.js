@@ -10,7 +10,7 @@ $(function() {
   var blockUI = function(obj) {
     dot = 1;
     $(document).stopTime();
-    $('#page').block(obj);
+    $.blockUI(obj);
 
     if (obj.generate == true) {
       $(document).everyTime(250, obj.id, function() {

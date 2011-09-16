@@ -46,13 +46,14 @@
     	return commands_by_id[command].cmd;
     },
 
-    // 瀵逛簬cmd涓惈鏈塱d鐨勫睘鎬�浣跨敤Uint32澶勭悊,鍏朵綑浣跨敤Uint8澶勭悊
     cmd_login:  generate_cmd("LOGIN", 
       [1, {type: "string", prop: "usr"}, 
           {type: "string", prop: "pass"}]),
     cmd_logout: generate_cmd("LOGOUT", [2]),
     cmd_player_query: generate_cmd("PLAYER_QUERY", 
       [15, {type: "integer", prop: "id"}]),
+    cmd_player_query: generate_cmd("PHOTO_QUERY", 
+      [102, {type: "integer", prop: "id"}]),
     cmd_game_query: generate_cmd("GAME_QUERY", 
       [13, {type: "byte", prop: "game_type"},
            {type: "byte", prop: "limit_type"}, 
@@ -85,6 +86,9 @@
       {type: "integer", prop: "inplay"}, 
       {type: "string", prop: "nick", base64: true},
       {type: "string", prop: "location", base64: true}]),
+    notify_player_info: generate_notify("PHOTO_INFO", [101,
+      {type: "integer", prop: "id"}, 
+      {type: "image", prop: "photo"}]),
     notify_game_info: generate_notify("GAME_INFO", [18, 
       {type: "integer", prop: "id"}, 
       {type: "string", prop: "table_name"}, 

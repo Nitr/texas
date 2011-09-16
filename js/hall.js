@@ -44,10 +44,16 @@ $(function() {
     $("#photo").attr("src", "" + obj.photo);
     $("#nick").text("昵称: " + obj.nick);
     $("#money").text("游戏币: " + obj.inplay);
-    $('#page').unblock();
+    $.unblockUI();
+
+    $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: obj.id}));
 
     $("#hall").show();
-    $.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
+    //$.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
+  });
+
+  $.pp.reg("PHOTO_INFO", function(obj) {
+    console.log(obj.photo);
   });
 
   $.pp.reg("GAME_INFO", function(obj) {
@@ -89,7 +95,7 @@ $(function() {
     if (obj.gid != gid)
       return;
 
-    $('#seat' + obj.seat).show('normal').attr("style", "top: " + eight_point[obj.seat].y + "px; left: " + eight_point[obj.seat].x + "px;");
+    $('#seat' + obj.seat).show('normal').attr("style", "top: " + eight_point[obj.seat].y + "px; left: " + eight_point[obj.seat].x + "px;").addClass('photo-' + obj.pid);
     $('#seat' + obj.seat + ' > .inplay').text(obj.inplay);
     $('#seat' + obj.seat + ' > .nick').text(obj.pid);
   });

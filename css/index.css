@@ -28,6 +28,7 @@ body {
   border-radius: 8px;
   background-color: #436d90;
   -webkit-box-shadow: 1px 3px 3px black;
+  position: relative;
 }
 
 #logo {
@@ -48,8 +49,8 @@ body {
   position: absolute; 
   padding: 0px;
   display: none;
-  left: 40px;
-  top: 29px;
+  left: 6px;
+  top: 10px;
 }
 
 #usr > * {
@@ -131,6 +132,10 @@ body {
 
 .games tbody .selected {
   background-color: #bab1c6;
+}
+
+.games thead {
+  text-shadow: 1px 1px 2px #000000; 
 }
 
 /* SEATS_TABLE */
