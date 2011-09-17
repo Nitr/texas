@@ -100,10 +100,13 @@ $(function() {
     if (obj.gid != gid)
       return;
 
+    console.log([obj]);
+
     if (obj.state == 0) {
       play_seat = obj.seat;
       return;
     }
+
 
     $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: obj.pid}));
 

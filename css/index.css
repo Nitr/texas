@@ -51,6 +51,7 @@ body {
   display: none;
   left: 6px;
   top: 10px;
+  width: 250px;
 }
 
 #usr > * {
