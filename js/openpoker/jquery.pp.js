@@ -73,6 +73,8 @@
           {type: "decimal", prop: "buyin"}]),
     cmd_watch:  generate_cmd("WATCH", 
       [3, {type: "integer", prop: "gid"}]),
+    cmd_watch:  generate_cmd("UNWATCH", 
+      [4, {type: "integer", prop: "gid"}]),
     cmd_watch:  generate_cmd("LEAVE", 
       [9, {type: "integer", prop: "gid"}]),
 
@@ -100,7 +102,8 @@
       {type: "integer", prop: "seats"}, 
       {type: "integer", prop: "required"},
       {type: "integer", prop: "joined"}, 
-      {type: "integer", prop: "waiting"}]),
+      {type: "integer", prop: "waiting"},
+      {type: "integer", prop: "game_count"}]),
     notify_error: generate_notify("ERROR", [255, 
       {type: "byte", prop: "command"},
       {type: "byte", prop: "code"}]),

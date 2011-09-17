@@ -19,7 +19,7 @@ $(function() {
   ];
   
   var games = [], seats = [];
-  var gid = 0, scount = 0;
+  var gid = 0, scount = 0, play_seat = 0;
 
   var gen_game_query = function(arr) {
     var o = {cmd: 'GAME_QUERY', game_type: 0};
@@ -58,6 +58,10 @@ $(function() {
 
   $.pp.reg("GAME_INFO", function(obj) {
     games.push(obj);
+
+    if (games.length != obj.game_count) 
+      return;
+
     $("#games_wrapper").processTemplate({datas: games});
 
     $("#games_wrapper tr").click(function() {
@@ -74,11 +78,12 @@ $(function() {
       seats = [];
       gid = $(this).attr('gid');
       scount = $(this).attr('seats');
+      play_seat = 0;
 
-      $('.seat').hide();
+      $('.seat').hide("normal");
       $('.seat > .photo').attr('src', $("#def_face").attr('src'));
       $.ws.send($.pp.write({cmd: "SEAT_QUERY", gid: gid}));
-    });
+    }).eq(0).click();
   });
 
   $(".games tfoot .blinds").click(function() {
@@ -95,12 +100,10 @@ $(function() {
     if (obj.gid != gid)
       return;
 
-    obj.pid = 1;
-
-    console.log(obj);
-
-    //if (obj.state == 0)
-      //return;
+    if (obj.state == 0) {
+      play_seat = obj.seat;
+      return;
+    }
 
     $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: obj.pid}));
 
@@ -126,5 +129,21 @@ $(function() {
     });
 
     $(pid).parent().show();
+  });
+
+  var switch_game = function() {
+    $('#hall').hide("normal");
+    $('#game').show("normal").trigger("startup", gid);
+  };
+
+  $('#cmd_watch').click(function() {
+    $.ws.send($.pp.write({cmd: "WATCH", gid: gid }));
+    switch_game();
+  });
+
+  $('#cmd_join').click(function() {
+    $.ws.send($.pp.write({cmd: "WATCH", gid: gid }));
+    $.ws.send($.pp.write({cmd: "JOIN", gid: gid, seat: play_seat, buyin: 100}));
+    switch_game();
   });
 });
