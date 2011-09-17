@@ -37,6 +37,10 @@ $(function() {
   $("#seats_wrapper").setTemplateElement("seats_temp");
   $("#seats_wrapper").processTemplate({end: 8});
 
+  $(".seat").each(function() {
+    $(this).attr("style", "top: " + eight_point[$(this).attr("seat")].y + "px; left: " + eight_point[$(this).attr("seat")].x + "px;").hide();;
+  });
+
   $.pp.reg("PLAYER_INFO", function(obj) {
     $("#login").hide();
     $("#hall").show();
@@ -91,28 +95,36 @@ $(function() {
     if (obj.gid != gid)
       return;
 
+    obj.pid = 1;
+
     console.log(obj);
 
-    if (obj.state == 0)
-      return;
-
-    $('#seat' + obj.seat).show('normal').attr("style", "top: " + eight_point[obj.seat].y + "px; left: " + eight_point[obj.seat].x + "px;").addClass('photo-' + obj.pid);
-    $('#seat' + obj.seat + ' > .inplay').text(obj.inplay);
-    $('#seat' + obj.seat + ' > .nick').text(obj.pid);
+    //if (obj.state == 0)
+      //return;
 
     $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: obj.pid}));
+
+    $('#seat-' + obj.seat + ' > .photo').addClass('photo-' + obj.pid);
+    $('#seat-' + obj.seat + ' > .inplay').text(obj.inplay);
+    $('#seat' + obj.seat + ' > .nick').text(obj.pid);
   });
 
   $.pp.reg("PHOTO_INFO", function(obj) {
-    
+    var pid = ".photo-" + obj.id;
     // #开头直接找到对应的id使用src负值
     if (obj.photo.indexOf('#') == 0 && $(obj.photo).length >= 0)
-      $('.photo-' + obj.id).attr('src', $(obj.photo).attr('src'));
+      $(pid).attr('src', $(obj.photo).attr('src'));
     // base64开头使用src直接负值
     else if (obj.photo.indexOf('data:image') == 0)
-      $('.photo-' + obj.id).attr('src', obj.photo);
+      $(pid).attr('src', obj.photo);
     // 最终默认使用def_face负值
     else 
-      $('.photo-' + obj.id).attr('src', $('#def_face').attr('src'));
+      $(pid).attr('src', $('#def_face').attr('src'));
+
+    $(pid).prev().each(function() {
+      $(this).text(obj.nick);
+    });
+
+    $(pid).parent().show();
   });
 });

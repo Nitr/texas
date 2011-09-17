@@ -36,9 +36,9 @@
 
 <textarea id=seats_temp style="display:none;">
   {#for index = 1 to $T.end}
-  <div id=seat{$T.index} class=seat gid='' style='display: none;'>
-    <div class=nikc></div>
-    <img class=photo src="" />
+  <div id=seat-{$T.index} seat={$T.index} class=seat style='display: none;'>
+    <div class=nick></div>
+    <img class=photo />
     <div class=inplay></div>
   </div>
   {#/for}
