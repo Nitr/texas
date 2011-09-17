@@ -2,7 +2,7 @@
   $.ws = {
     send: function(bin) {
       var msg = $.base64.encode(bin);
-      queue.push(msg);
+      queue.unshift(msg);
     },
 
     defaults: {
