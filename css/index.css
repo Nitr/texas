@@ -162,6 +162,17 @@ body {
   height: 60px;
 }
 
+#hall_commands {
+  margin-left: 780px;
+  margin-top: -240px;
+}
+
+#cmd_watch {
+  width: 90px;
+  height: 30px;
+}
+
+
 .blockMsg {
   border-radius: 8px !important;
   border: 3px solid #174f75 !important;

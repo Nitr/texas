@@ -4,6 +4,10 @@ var STA_LOADING = {message: '<h3 id=sta_loading>加载中...</h3>', id: '#sta_lo
 var STA_SINGIN = {message: '<h3 id=sta_singin>登陆中...</h3>', id: '#sta_singin', generate: true};
 
 $(function() {
+  $.ajaxSetup ({
+    cache: false //关闭缓存
+  });
+
   var usr, pwd, pong, dot;
 
   // block user interface {{{
@@ -58,6 +62,8 @@ $(function() {
     // 当login加载后,开始进行自动登陆
     // 如果不能自动登陆则启动手动登陆
     $("#login").load("login.html", function() {
+      $("#res_wrapper").load("res.html");
+
       $("#hall").load("hall.html", function() {
         $.getScript("js/hall.js");
       });

@@ -211,7 +211,7 @@
               obj[val.prop] = result[1];
 
               if (val.type == "image") {
-                obj[val.prop] = "data:image/png;base64," + obj[val.prop];
+                obj[val.prop] = obj[val.prop];
               }
 
               break;

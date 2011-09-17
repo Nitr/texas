@@ -41,7 +41,7 @@ $(function() {
     $("#login").hide();
     $("#hall").show();
     $("#usr").show();
-    $("#photo").attr("src", "" + obj.photo);
+    $("#photo").addClass('photo-' + obj.id);
     $("#nick").text("昵称: " + obj.nick);
     $("#money").text("游戏币: " + obj.inplay);
     $.unblockUI();
@@ -50,10 +50,6 @@ $(function() {
 
     $("#hall").show();
     $.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
-  });
-
-  $.pp.reg("PHOTO_INFO", function(obj) {
-    console.log(obj.photo);
   });
 
   $.pp.reg("GAME_INFO", function(obj) {
@@ -76,9 +72,9 @@ $(function() {
       scount = $(this).attr('seats');
 
       $('.seat').hide();
+      $('.seat > .photo').attr('src', $("#def_face").attr('src'));
       $.ws.send($.pp.write({cmd: "SEAT_QUERY", gid: gid}));
     });
-
   });
 
   $(".games tfoot .blinds").click(function() {
@@ -95,8 +91,28 @@ $(function() {
     if (obj.gid != gid)
       return;
 
+    console.log(obj);
+
+    if (obj.state == 0)
+      return;
+
     $('#seat' + obj.seat).show('normal').attr("style", "top: " + eight_point[obj.seat].y + "px; left: " + eight_point[obj.seat].x + "px;").addClass('photo-' + obj.pid);
     $('#seat' + obj.seat + ' > .inplay').text(obj.inplay);
     $('#seat' + obj.seat + ' > .nick').text(obj.pid);
+
+    $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: obj.pid}));
+  });
+
+  $.pp.reg("PHOTO_INFO", function(obj) {
+    
+    // #开头直接找到对应的id使用src负值
+    if (obj.photo.indexOf('#') == 0 && $(obj.photo).length >= 0)
+      $('.photo-' + obj.id).attr('src', $(obj.photo).attr('src'));
+    // base64开头使用src直接负值
+    else if (obj.photo.indexOf('data:image') == 0)
+      $('.photo-' + obj.id).attr('src', obj.photo);
+    // 最终默认使用def_face负值
+    else 
+      $('.photo-' + obj.id).attr('src', $('#def_face').attr('src'));
   });
 });
