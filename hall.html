@@ -1,38 +1,20 @@
 <div id=seats_wrapper></div>
-<table class=games>
-  <thead>
-    <tr>
-      <th style="width: 80px;">ID</th>
-      <th style="width: 260px;">房间</th>
-      <th style="width: 120px;">大/小盲注</th>
-      <th style="width: 120px;">人数</th>
-      <th>旁观</th>
-    </tr>
-  </thead>
-</table>
-<div id=games_overflow>
-<table class=games>
-  <tbody id=games_wrapper>
-  </tbody>
-</table>
+<div id=games_wrapper> 
+  <table id=games_table>
+    <thead>
+      <tr>
+        <th>房间</th>
+        <th>大/小盲注</th>
+        <th>人数</th>
+        <th>旁观</th>
+      </tr>
+    </thead>
+    <tbody />
+  </table>
 </div>
-<table class=games>
-  <tfoot>
-    <tr>
-      <td colspan=5>
-        <div id=areas>
-          <button class='blinds selected'>5/10</button>
-          <button class=blinds>50/100</button>
-          <button class=blinds>100/500</button>
-          <button class=blinds>500/1000</button>
-        </div>
-      </td>
-    </tr>
-  </tfoot>
-</table>
 <div id=hall_commands>
-  <button type=command id=cmd_join >加入</button><br />
-  <button type=command id=cmd_watch >观战</button>
+  <button type=command id=cmd_join class=command >加入</button><br />
+  <button type=command id=cmd_watch class=command >观战</button>
 </div>
 
 <textarea id=seats_temp style="display:none;">
@@ -47,10 +29,9 @@
 <textarea id=games_temp style="display:none;">
   {#foreach $T.datas as record}
   <tr gid="{$T.record.id}" seats="{$T.record.seats}">
-    <td style="width: 80px;">#{$T.record.id}</td>
-    <td style="width: 260px;">{#if $T.record.game_type == 0} Texas hold 'em {#else} {$T.record.game_type} {#/if} </td>
-    <td style="width: 120px;">{$T.record.low} / {$T.record.height}</td>
-    <td style="width: 120px;">{$T.record.joined} / {$T.record.seats}</td>
+    <td>{#if $T.record.game_type == 0} Texas hold 'em {#else} {$T.record.game_type} {#/if} </td>
+    <td>{$T.record.low} / {$T.record.height}</td>
+    <td>{$T.record.joined} / {$T.record.seats}</td>
     <td>{$T.record.waiting}</td>
   </tr>
   {#/for}

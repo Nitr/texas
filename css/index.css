@@ -49,19 +49,13 @@ body {
   position: absolute; 
   padding: 0px;
   display: none;
-  left: 6px;
   top: 10px;
   width: 250px;
 }
 
 #usr > * {
-  float: left;
   margin-left: 10px;
-}
-
-#usr > #nick {
-  margin-top: 14px;
-  margin-bottom: 10px;
+  position: relative;
 }
 
 #usr > #photo {
@@ -70,73 +64,22 @@ body {
   border: 1px solid black;
 }
 
+#usr label {
+  position: absolute;
+  left: 65px;
+}
+
+#usr #nick {
+  top: 15px;
+}
+
+#usr #money {
+  top: 42px;
+}
+
 #content {
   width: 1000px;
   margin: 0 auto;
-}
-
-/* GAME_TABLE {{{ */
-.games {
-  margin: 0px auto auto 60px;
-  border-collapse: collapse;
-  width: 660px;
-  border-bottom: 1px solid black;
-  -webkit-box-shadow: 1px 3px 3px black;
-}
-
-#games_overflow {
-  border: 0px;
-  padding: 0px;
-  margin: 0px;
-  max-height:191px;
-  height:191px;
-  overflow:auto;
-}
-
-.games thead tr, .games tfoot tr {
-  border: 1px solid black;
-  background: -webkit-gradient(linear, left top, left bottom, from(#e8e8ee), to(#bdbfc2));
-  height: 40px;
-  border-bottom-width: 2px;
-}
-
-.games tfoot tr {
-  height: 30px;
-}
-
-.games tfoot #areas {
-  margin-left: 5px;
-}
-
-.games tfoot .blinds {
-  width: 70px;
-  height: 22px;
-  background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#efefef));
-  border: none;
-  padding: 0px;
-  margin: 0px;
-  -webkit-box-shadow: 0px 1px 1px black;
-}
-
-.games tfoot .selected {
-  background: -webkit-gradient(linear, left top, left bottom, from(#5f5f5f), to(#a4a4a4));
-}
-
-.games tbody tr {
-  border-left: 1px solid black;
-  border-right: 1px solid black;
-  height: 38px;
-  text-align: center;
-  background-color: #d0d2d3;
-  -webkit-user-select: none;
-}
-
-.games tbody .selected {
-  background-color: #bab1c6;
-}
-
-.games thead {
-  text-shadow: 1px 1px 2px #000000; 
 }
 
 /* SEATS_TABLE */
@@ -168,7 +111,7 @@ body {
   margin-top: -240px;
 }
 
-#cmd_watch {
+.command {
   width: 90px;
   height: 30px;
 }
@@ -194,4 +137,79 @@ body {
   text-shadow: 1px 1px 1px #929da7;
 }
 
-/*vim :fdm=market*/
+/* @group Reset */
+
+.fht-table,
+.fht-table thead,
+.fht-table tfoot,
+.fht-table tbody,
+.fht-table tr,
+.fht-table th,
+.fht-table td {
+  margin: 0;
+  padding: 0;
+
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+.fht-table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* @end */
+
+/* @group Content */
+
+div.fht-table-wrapper {
+  overflow: hidden;
+}
+
+div.fht-tbody {
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.fht-table .fht-cell {
+  overflow: hidden;
+  height: 1px;
+}
+
+/* @end */
+
+/* GAME_TABLE */
+#games_wrapper {
+  position: relative;
+  width: 680px;
+  left: 80px;
+}
+
+.games-table {
+  -webkit-box-shadow: 1px 3px 3px black;
+  border: 2px solid black;
+  font-size: 20px;
+}
+
+.games-table th {
+  background: -webkit-gradient(linear, left top, left bottom, from(#e8e8ee), to(#bdbfc2));
+  text-shadow: 1px 1px 2px #000000;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid black;
+}
+
+.games-table td {
+  text-align: center;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.games-table tr {
+  background-color: #d0d2d3;
+}
+
+.selected {
+  background-color: #bab1c6 !important;
+}

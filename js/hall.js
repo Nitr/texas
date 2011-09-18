@@ -33,7 +33,7 @@ $(function() {
     return o;
   }
 
-  $("#games_wrapper").setTemplateElement("games_temp");
+  $("#games_wrapper tbody").setTemplateElement("games_temp");
   $("#seats_wrapper").setTemplateElement("seats_temp");
   $("#seats_wrapper").processTemplate({end: 8});
 
@@ -62,19 +62,22 @@ $(function() {
     if (games.length != obj.game_count) 
       return;
 
-    $("#games_wrapper").processTemplate({datas: games});
+    $('#games_wrapper tbody').processTemplate({datas: games});
+    $('#games_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false, themeClass: 'games-table', height: '248px'});
 
-    $("#games_wrapper tr").click(function() {
+
+    $('#games_table tbody tr').click(function() {
       if ($(this).attr('gid') == gid)
         return;
 
       //遍历所有的行，移除class:selected
-      $.each($("#games_wrapper tr"), function(i, n) {
+      $.each($("#games_table tbody tr"), function(i, n) {
         $(n).removeClass("selected");
       });
 
       //给当前行添加class:selected
       $(this).addClass("selected");
+
       seats = [];
       gid = $(this).attr('gid');
       scount = $(this).attr('seats');
