@@ -110,12 +110,11 @@ $(function() {
       return;
     }
 
-
     $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: obj.pid}));
 
     $('#seat-' + obj.seat + ' > .photo').addClass('photo-' + obj.pid);
     $('#seat-' + obj.seat + ' > .inplay').text(obj.inplay);
-    $('#seat' + obj.seat + ' > .nick').text(obj.pid);
+    $('#seat-' + obj.seat + ' > .nick').text(obj.nick);
   });
 
   $.pp.reg("PHOTO_INFO", function(obj) {
@@ -129,10 +128,6 @@ $(function() {
     // 最终默认使用def_face负值
     else 
       $(pid).attr('src', $('#def_face').attr('src'));
-
-    $(pid).prev().each(function() {
-      $(this).text(obj.nick);
-    });
 
     $(pid).parent().show();
   });

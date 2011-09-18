@@ -206,9 +206,10 @@ div.fht-tbody {
   padding-bottom: 5px;
 }
 
-.games-table tr {
+.games-table {
   background-color: #d0d2d3;
 }
+
 
 .selected {
   background-color: #bab1c6 !important;

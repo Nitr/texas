@@ -90,8 +90,7 @@
       {type: "string", prop: "location", base64: true}]),
     notify_player_info: generate_notify("PHOTO_INFO", [101,
       {type: "integer", prop: "id"}, 
-      {type: "image", prop: "photo"},
-      {type: "string", prop: "nick", base64: true}]),
+      {type: "image", prop: "photo"}]),
     notify_game_info: generate_notify("GAME_INFO", [18, 
       {type: "integer", prop: "id"}, 
       {type: "string", prop: "table_name"}, 
@@ -112,7 +111,8 @@
       {type: "byte",    prop: "seat"},
       {type: "byte",    prop: "state"},
       {type: "integer", prop: "pid"},
-      {type: "integer", prop: "inplay"}])
+      {type: "integer", prop: "inplay"},
+      {type: "string", prop: "nick", base64: true}])
   };
 
   function generate_cmd(cmd, status) {
