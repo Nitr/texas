@@ -8,7 +8,7 @@ $(function() {
     cache: false //关闭缓存
   });
 
-  var usr, pwd, pong, dot;
+  var usr, pwd, pong, dot, pid;
 
   // block user interface {{{
   var blockUI = function(obj) {
@@ -121,9 +121,28 @@ $(function() {
     }
 
     $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: u.id}));
+    pid = u.id;
   });
 
   $.pp.reg("PONG", function(obj) {
+  });
+
+  $.pp.reg("PLAYER_INFO", function(obj) {
+    $("#singin").hide();
+
+    if (obj.photo.indexOf('def_face_') == 0)
+      $("#photo").attr('src', $.rl.img[obj.photo]);
+    else if (obj.photo.indexOf('base64'))
+      $("#photo").attr('src', obj.photo);
+    else 
+      $("#photo").attr('src', $.rl.img.def_face_0);
+
+    $("#nick").text("昵称: " + obj.nick);
+    $("#money").text("游戏币: " + obj.inplay);
+    $("#usr").show();
+    unblockUI();
+    
+    //$.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
   });
 
   // }}}

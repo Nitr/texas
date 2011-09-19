@@ -87,7 +87,7 @@
       {type: "integer", prop: "id"}, 
       {type: "integer", prop: "inplay"}, 
       {type: "string", prop: "nick", base64: true},
-      {type: "string", prop: "location", base64: true}]),
+      {type: "image", prop: "photo"}]),
     notify_player_info: generate_notify("PHOTO_INFO", [101,
       {type: "integer", prop: "id"}, 
       {type: "image", prop: "photo"}]),

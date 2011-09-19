@@ -41,21 +41,6 @@ $(function() {
     $(this).attr("style", "top: " + eight_point[$(this).attr("seat")].y + "px; left: " + eight_point[$(this).attr("seat")].x + "px;").hide();;
   });
 
-  $.pp.reg("PLAYER_INFO", function(obj) {
-    $("#login").hide();
-    $("#hall").show();
-    $("#usr").show();
-    $("#photo").addClass('photo-' + obj.id);
-    $("#nick").text("昵称: " + obj.nick);
-    $("#money").text("游戏币: " + obj.inplay);
-    $.unblockUI();
-
-    $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: obj.id}));
-
-    $("#hall").show();
-    $.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
-  });
-
   $.pp.reg("GAME_INFO", function(obj) {
     games.push(obj);
 
