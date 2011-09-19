@@ -9,7 +9,8 @@ $(function() {
   };
 
   var loadHtml = function(html) {
-    $("#singin").html(html);
+    $.rl.load([
+      {url: 'sample.js', callback: function() { $("#singin").html(html); }}]);
   };
 
   $.rl.load([

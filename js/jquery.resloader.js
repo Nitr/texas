@@ -11,6 +11,8 @@
           handleImage(r);
         else if (/\.html$/.test(r.url))
           handleHtml(r);
+        else if (/\.js$/.test(r.url))
+          handleJs(r);
         else
           throw 'UNKNOW RESOURCE TYPE ' + r.url;
       });
@@ -32,6 +34,15 @@
       canvas = null;
       return url;
     }
+  }
+
+  function handleJs(res) {
+    $.getScript(res.url, function() {
+      if (res.callback) {
+        res.callback();
+      }
+      sub();
+    });
   }
 
   function handleHtml(res) {
