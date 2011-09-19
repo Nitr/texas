@@ -47,7 +47,6 @@
 
   function handleHtml(res) {
     $.get(res.url, function(result, state, xhr) {
-      console.log('request html ' + state);
       res.callback(result);
       sub();
     }, 'html');

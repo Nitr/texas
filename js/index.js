@@ -59,26 +59,37 @@ $(function() {
       }
     }
 
-    // 当login加载后,开始进行自动登陆
+    var resources = [{
+      url: 'login.html', 
+      callback: function(h) {
+        $('#login').html(h);
+      }
+    }, {
+      url: 'hall.html', 
+      callback: function(h) {
+        $('#hall').html(h);
+        $.rl.load([{ url: 'js/hall.js' }]);
+      }
+    }, {
+      url: 'game.html', 
+      callback: function(h) {
+        $('#game').html(h);
+        $.rl.load([{ url: 'js/game.js' }]);
+      }
+    }];
+
+    // 加载后开始进行自动登陆
     // 如果不能自动登陆则启动手动登陆
-    $("#login").load("login.html", function() {
-      $("#res_wrapper").load("res.html");
-
-      $("#hall").load("hall.html", function() {
-        $.getScript("js/hall.js");
-      });
-
-      $("#game").load("game.html", function() {
-        $.getScript("js/game.js");
-      });
-
+    var loadFinish = function() {
       autoSingin();
-    });
+    };
 
+    $.rl.load(resources, loadFinish);
   } // }}}
 
-  var onopen = function() {
+  var onConnection = function() {
     $(document).oneTime(1000, function() {
+      blockUI(STA_LOADING);
       loading();
     });
   }
@@ -86,7 +97,7 @@ $(function() {
   blockUI(STA_CONNECT);
 
   $.ws.defaults.onmessage = $.pp.onmessage;
-  $.ws.defaults.onopen = onopen;
+  $.ws.defaults.onopen = onConnection;
 
   // PROTOTYPE REGISTER {{{
   $.pp.reg("ERROR", function(obj) {
