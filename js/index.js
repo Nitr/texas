@@ -76,6 +76,14 @@ $(function() {
         $('#game').html(h);
         $.rl.load([{ url: 'js/game.js' }]);
       }
+    }, {
+      url: 'css/heads.png', 
+      callback: function(img) {
+        for (var i = 0; i < img.width / 80; i++) {
+          $.rl.img['def_face_' + (i + 1)] = 
+            $.rl.getImgDataUrl(img, i * 80, 0, 80, 80);
+        }
+      }
     }];
 
     // 加载后开始进行自动登陆

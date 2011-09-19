@@ -33,7 +33,9 @@
       url = canvas.toDataURL("image/png");
       canvas = null;
       return url;
-    }
+    },
+
+    img: {}
   }
 
   function handleJs(res) {
