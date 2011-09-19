@@ -45,7 +45,7 @@ $(function() {
       usr = usr == null ? localStorage.getItem("save_usr") : usr;
       pwd = pwd == null ? localStorage.getItem("save_pwd") : pwd;
 
-      $("#login").bind("submit", function() {
+      $("#singin").bind("submit", function() {
         usr = $('#txt_usr').val();
         pwd = $('#txt_pwd').val();
         singin();
@@ -55,14 +55,14 @@ $(function() {
       if (!$.isEmpty(usr) && !$.isEmpty(pwd)) {
         singin();
       } else {
-        blockUI({message: $("#login"), id: '#login', generate: false});
+        blockUI({message: $("#singin"), id: '#singin', generate: false});
       }
     }
 
     var resources = [{
-      url: 'login.html', 
+      url: 'singin.html', 
       callback: function(h) {
-        $('#login').html(h);
+        $('#singin').html(h);
       }
     }, {
       url: 'hall.html', 
