@@ -7,14 +7,19 @@
       length = length == 0 ? res.length : length += res.length;
 
       $.each(res, function(index, r) {
-        handleImage(r);
+        if (/\.png$/.test(r.url)) 
+          handleImage(r);
+        else if (/\.html$/.test(r.url))
+          handleHtml(r);
+        else
+          throw 'UNKNOW RESOURCE TYPE ' + r.url;
       });
     },
 
     getImgDataUrl: function(img, x, y, w, h) {
-      x = x == null ? 0 : x;
-      y = y == null ? 0 : y;
-      w = w == null ? img.width : w;
+      x = x == null ? 0 : x,
+      y = y == null ? 0 : y,
+      w = w == null ? img.width : w,
       h = h == null ? img.height : h;
 
       var canvas = document.createElement("canvas"),
@@ -27,6 +32,14 @@
       canvas = null;
       return url;
     }
+  }
+
+  function handleHtml(res) {
+    $.get(res.url, function(result, state, xhr) {
+      console.log('request html ' + state);
+      res.callback(result);
+      sub();
+    }, 'html');
   }
 
   function handleImage(res) {
