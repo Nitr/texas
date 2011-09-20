@@ -33,6 +33,12 @@ $(function() {
     return o;
   }
 
+  $('#hall').bind('setup', function() {
+    $('#games_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false, themeClass: 'games-table', height: '248px'});
+
+    $.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
+  });
+
   $("#games_wrapper tbody").setTemplateElement("games_temp");
   $("#seats_wrapper").setTemplateElement("seats_temp");
   $("#seats_wrapper").processTemplate({end: 8});
@@ -48,10 +54,8 @@ $(function() {
       return;
 
     $('#games_wrapper tbody').processTemplate({datas: games});
-    $('#games_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false, themeClass: 'games-table', height: '248px'});
 
-
-    $('#games_table tbody tr').click(function() {
+    $('#games_wrapper tbody tr').click(function() {
       if ($(this).attr('gid') == gid)
         return;
 

@@ -3,13 +3,14 @@
   <table id=games_table>
     <thead>
       <tr>
-        <th>房间</th>
-        <th>大/小盲注</th>
-        <th>人数</th>
-        <th>旁观</th>
+        <th class=col_longest>房间</th>
+        <th class=col_short>大/小盲注</th>
+        <th class=col_short>人数</th>
+        <th class=col_short>旁观</th>
       </tr>
     </thead>
-    <tbody />
+    <tbody>
+    </tbody>
   </table>
 </div>
 <div id=hall_commands>
@@ -29,10 +30,10 @@
 <textarea id=games_temp style="display:none;">
   {#foreach $T.datas as record}
   <tr gid="{$T.record.id}" seats="{$T.record.seats}">
-    <td>{#if $T.record.game_type == 0} Texas hold 'em {#else} {$T.record.game_type} {#/if} </td>
-    <td>{$T.record.low} / {$T.record.height}</td>
-    <td>{$T.record.joined} / {$T.record.seats}</td>
-    <td>{$T.record.waiting}</td>
+    <td class=col_longest>{#if $T.record.game_type == 0} Texas hold 'em {#else} {$T.record.game_type} {#/if} </td>
+    <td class=col_short>{$T.record.low} / {$T.record.height}</td>
+    <td class=col_short>{$T.record.joined} / {$T.record.seats}</td>
+    <td class=col_short>{$T.record.waiting}</td>
   </tr>
   {#/for}
 </textarea>

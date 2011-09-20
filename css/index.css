@@ -210,6 +210,13 @@ div.fht-tbody {
   background-color: #d0d2d3;
 }
 
+.col_longest {
+  width: 180px;
+}
+
+.col_short {
+  width: 90px;
+}
 
 .selected {
   background-color: #bab1c6 !important;

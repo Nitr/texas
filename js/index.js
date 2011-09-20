@@ -8,7 +8,7 @@ $(function() {
     cache: false //关闭缓存
   });
 
-  var usr, pwd, pong, dot, pid;
+  var input_usr, input_pwd, pong, dot, player;
 
   // block user interface {{{
   var blockUI = function(obj) {
@@ -25,41 +25,12 @@ $(function() {
       });
     }
   } 
-
-  var unblockUI = function() {
-    $(document).stopTime();
-    $.unblockUI();
-  }
   // }}}
 
   var loading = function() { // {{{
-    var autoSingin = function() { 
+    blockUI(STA_LOADING);
 
-      var singin = function() {
-        blockUI(STA_SINGIN);
-        $.ws.send($.pp.write({cmd: "LOGIN", usr: usr, pass: pwd}));
-      }
-
-      usr = $.url.get("usr");
-      pwd = $.url.get("pwd"); 
-      usr = usr == null ? localStorage.getItem("save_usr") : usr;
-      pwd = pwd == null ? localStorage.getItem("save_pwd") : pwd;
-
-      $("#singin").bind("submit", function() {
-        usr = $('#txt_usr').val();
-        pwd = $('#txt_pwd').val();
-        singin();
-        return false;
-      });
-
-      if (!$.isEmpty(usr) && !$.isEmpty(pwd)) {
-        singin();
-      } else {
-        blockUI({message: $("#singin"), id: '#singin', generate: false});
-      }
-    }
-
-    var resources = [{
+    var resources = [{ 
       url: 'singin.html', 
       callback: function(h) {
         $('#singin').html(h);
@@ -86,26 +57,59 @@ $(function() {
       }
     }];
 
-    // 加载后开始进行自动登陆
-    // 如果不能自动登陆则启动手动登陆
-    var loadFinish = function() {
-      autoSingin();
-    };
+    var autoSingin = function() { // {{{
 
-    $.rl.load(resources, loadFinish);
+      var singin = function() {
+        blockUI(STA_SINGIN);
+        $.ws.send($.pp.write(
+          {cmd: "LOGIN", usr: input_usr, pass: input_pwd}));
+      }
+
+      input_usr = $.url.get("usr");
+      input_usr = input_usr == null ? 
+        localStorage.getItem("save_usr") : input_usr;
+      input_pwd = $.url.get("pwd"); 
+      input_pwd = input_pwd == null ? 
+        localStorage.getItem("save_pwd") : input_pwd;
+
+      $("#singin").bind("submit", function() {
+        input_usr = $('#txt_usr').val();
+        input_pwd = $('#txt_pwd').val();
+        singin();
+        return false;
+      });
+
+      if (!$.isEmpty(input_usr) && !$.isEmpty(input_pwd)) {
+        singin();
+      } else {
+        blockUI({message: $("#singin"), id: '#singin', generate: false});
+      }
+    } // }}}
+
+    // 加载后回调进行自动登陆
+    // 如果不能自动登陆则启动手动登陆
+    $.rl.load(resources, autoSingin);
   } // }}}
 
   var onConnection = function() {
     $(document).oneTime(1000, function() {
-      blockUI(STA_LOADING);
       loading();
     });
   }
 
-  blockUI(STA_CONNECT);
+  var singinFinish = function() {
+    $(document).stopTime();
+    $("#singin").hide();
+    $.unblockUI();
+    $("#hall").show('slow').trigger('setup');
+  }
 
-  $.ws.defaults.onmessage = $.pp.onmessage;
-  $.ws.defaults.onopen = onConnection;
+  var saveAccountInfo = function() {
+    if ($("#ckb_save").attr('checked')) {
+      localStorage.setItem("save_usr", input_usr);
+      localStorage.setItem("save_pwd", input_pwd);
+    }
+  }
 
   // PROTOTYPE REGISTER {{{
   $.pp.reg("ERROR", function(obj) {
@@ -114,38 +118,34 @@ $(function() {
     $("#lab_err_singin").show();
   });
 
-  $.pp.reg("LOGIN", function(u) {
-    if ($("#ckb_save").attr('checked')) {
-      localStorage.setItem("save_usr", usr);
-      localStorage.setItem("save_pwd", pwd);
-    }
+  $.pp.reg("LOGIN", function(you) {
+    pid = you.id;
+    $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: pid}));
 
-    $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: u.id}));
-    pid = u.id;
+    singinFinish();
   });
 
   $.pp.reg("PONG", function(obj) {
   });
 
-  $.pp.reg("PLAYER_INFO", function(obj) {
-    $("#singin").hide();
-
-    if (obj.photo.indexOf('def_face_') == 0)
-      $("#photo").attr('src', $.rl.img[obj.photo]);
-    else if (obj.photo.indexOf('base64'))
-      $("#photo").attr('src', obj.photo);
+  $.pp.reg("PLAYER_INFO", function(player) {
+    if (player.photo.indexOf('def_face_') == 0)
+      $("#photo").attr('src', $.rl.img[player.photo]);
+    else if (player.photo.indexOf('base64'))
+      $("#photo").attr('src', player.photo);
     else 
       $("#photo").attr('src', $.rl.img.def_face_0);
 
-    $("#nick").text("昵称: " + obj.nick);
-    $("#money").text("游戏币: " + obj.inplay);
+    $("#nick").text("昵称: " + player.nick);
+    $("#money").text("游戏币: " + player.inplay);
     $("#usr").show();
-    unblockUI();
-    
-    //$.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
   });
 
   // }}}
+  
+  $('#toolbar').bind("setup", function() {
+    $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: pid}));
+  });
 
   $(document).oneTime(5000, function() {
     if ($.ws.isConnection() == false) {
@@ -154,6 +154,11 @@ $(function() {
     }
   });
 
+  // 初始化websocket并通过建立连接
+  // 引发系列的事件与协议的通讯
+  blockUI(STA_CONNECT);
+  $.ws.defaults.onmessage = $.pp.onmessage;
+  $.ws.defaults.onopen = onConnection;
   $.ws.init();
 });
 // vim: fdm=marker
