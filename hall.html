@@ -30,7 +30,7 @@
 <textarea id=games_temp style="display:none;">
   {#foreach $T.datas as record}
   <tr gid="{$T.record.id}" seats="{$T.record.seats}">
-    <td class=col_longest>{#if $T.record.game_type == 0} Texas hold 'em {#else} {$T.record.game_type} {#/if} </td>
+    <td class=col_longest>{#if $T.record.type == 0} Texas hold 'em {#else} {$T.record.type} {#/if} </td>
     <td class=col_short>{$T.record.low} / {$T.record.height}</td>
     <td class=col_short>{$T.record.joined} / {$T.record.seats}</td>
     <td class=col_short>{$T.record.waiting}</td>

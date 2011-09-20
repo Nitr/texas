@@ -218,6 +218,17 @@ div.fht-tbody {
   width: 90px;
 }
 
+.seat > .inplay,
+.seat > .nick {
+  color: white;
+  text-align: center;
+}
+
+.seat > .photo {
+  -webkit-box-shadow: 1px 3px 3px black;
+}
+
+
 .selected {
   background-color: #bab1c6 !important;
 }

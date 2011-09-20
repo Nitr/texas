@@ -101,7 +101,7 @@ $(function() {
     $(document).stopTime();
     $("#singin").hide();
     $.unblockUI();
-    $("#hall").show('slow').trigger('setup');
+    $("#hall").show('slow').trigger('setup').trigger('active');
   }
 
   var saveAccountInfo = function() {
