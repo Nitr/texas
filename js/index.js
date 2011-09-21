@@ -122,6 +122,7 @@ $(function() {
     pid = you.id;
     $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: pid}));
 
+    saveAccountInfo();
     singinFinish();
   });
 
