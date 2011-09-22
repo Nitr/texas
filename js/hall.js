@@ -24,8 +24,7 @@ $(function() {
     $('#games_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false, themeClass: 'games-table', height: '248px'});
   });
 
-  $('#hall').bind('active', function(event, game) {
-    cur_game = game;
+  $('#hall').bind('active', function(event) {
     // TODO: 保存每次搜索过的条件并在激活的时候重新读取
     $.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
   });
@@ -44,7 +43,16 @@ $(function() {
   $.pp.reg("GAME_INFO", function(game_info) { // {{{
     // 对于已经加载过的数据不需要重新构建列表
     // 找到对应的行然后更新其内容即可
-    if ($('#games_wrapper tbody tr[gid=' + game_info.id + ']').length > 0) {
+    var inline = $('#games_wrapper tbody tr[gid=' + game_info.id + ']').children();
+
+    if (inline.length > 0) {
+      $(inline[2]).text(game_info.joined + ' / ' + game_info.seats);
+      $(inline[3]).text(game_info.waiting);
+
+      if ($(inline).parent().hasClass("selected")) {
+        $(inline).parent().trigger('update');
+      }
+
       return;
     }
 
@@ -52,22 +60,18 @@ $(function() {
 
     if (games.length == game_info.count) {
       $('#games_wrapper tbody').processTemplate({datas: games});
+      $('#games_wrapper tbody tr').bind('update', function() {
+        reset_seats($(this).attr('gid'), $(this).attr('seats'));
+        $.ws.send($.pp.write({cmd: "SEAT_QUERY", gid: cur_game}));
+      });
       $('#games_wrapper tbody tr').click(function() {
         if ($(this).hasClass('selected'))
           return;
 
-        $('#games_wrapper').stopTime();
-
         $(this).parent().children().removeClass("selected");
         $(this).addClass("selected");
 
-        reset_seats($(this).attr('gid'), $(this).attr('seats'));
-        $.ws.send($.pp.write({cmd: "SEAT_QUERY", gid: cur_game}));
-
-        // 间隔时间重新取桌面信息
-        $(document).oneTime('2s', function() {
-          $.ws.send($.pp.write({cmd: "SEAT_QUERY", gid: cur_game}));
-        });
+        $(this).trigger('update');
       }).eq(0).click();
     }
   }); // }}}

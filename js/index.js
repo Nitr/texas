@@ -131,7 +131,6 @@ $(function() {
   });
 
   $.pp.reg("PONG", function(obj) {
-    console.log("reg pong from index.js");
   });
 
   $.pp.reg("PLAYER_INFO", function(player) {
