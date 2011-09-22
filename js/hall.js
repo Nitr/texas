@@ -18,6 +18,8 @@ $(function() {
       five_table_style = [], 
       eight_table_style = [];
 
+  var is_disable = function() { return $('#hall').css('display') == 'none'; };
+
   $('#hall').bind('setup', function() {
     $('#games_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false, themeClass: 'games-table', height: '248px'});
   });
@@ -35,6 +37,12 @@ $(function() {
     $.ws.send($.pp.write({cmd: "WATCH", gid: cur_game }));
     $.ws.send($.pp.write({cmd: "JOIN", gid: cur_game, seat: auto_join_seat, buyin: 100}));
     switch_game();
+  });
+
+  $.pp.reg("PONG", function(obj) {
+    if (!is_disable()) {
+      console.log("reg pong from hall.js");
+    }
   });
 
   $.pp.reg("GAME_INFO", function(game_info) { // {{{

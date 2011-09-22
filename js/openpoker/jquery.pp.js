@@ -24,21 +24,21 @@
     },
 
     reg: function(notify, fun) {
-      events[notify] = fun;
+      if (events[notify])
+        events[notify].push(fun);
+      else
+        events[notify] = [fun];
     },
 
     onmessage: function(evt) {
       var bin = $.base64.decode(evt.data);
       var obj = $.pp.read(bin);
 
-      if (obj == null) {
-        console.log('undefined message event');
+      if (obj != null) {
+        $.each(events[obj.notify], function(i, fun) { fun(obj); } );
+      } else {
         console.log(evt);
-        return;
       }
-
-      var fun = events[obj.notify];
-      fun(obj);
     },
     // }}}
     

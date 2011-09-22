@@ -95,6 +95,10 @@ $(function() {
     $(document).oneTime(1000, function() {
       loading();
     });
+
+    $('#pong').everyTime('2s', function() {
+      $.ws.send($.pp.write({cmd: "PING"}));
+    });
   }
 
   var singinFinish = function() {
@@ -127,6 +131,7 @@ $(function() {
   });
 
   $.pp.reg("PONG", function(obj) {
+    console.log("reg pong from index.js");
   });
 
   $.pp.reg("PLAYER_INFO", function(player) {
@@ -153,6 +158,7 @@ $(function() {
       $(document).stopTime();
       blockUI(ERR_NETWORK);
     }
+
   });
 
   // 初始化websocket并通过建立连接
