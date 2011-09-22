@@ -1,4 +1,17 @@
 $(function() {
+  var PS_EMPTY     = 0, // {{{
+      PS_PLAY      = 1,
+      PS_FOLD      = 2,
+      PS_WAIT_BB   = 4,
+      PS_SIT_OUT   = 8,
+      PS_MAKEUP_BB = 16,
+      PS_ALL_IN    = 32,
+      PS_BET       = 64,
+      PS_RESERVED  = 128,
+      PS_AUTOPLAY  = 256,
+      PS_MUCK      = 512,
+      PS_OUT       = 1024; // }}}
+
   var cur_game = 0, cur_scount = 0, auto_join_seat = 0;
 
   var games = [], seats = [],
@@ -14,13 +27,13 @@ $(function() {
   });
 
   $('#cmd_watch').click(function() {
-    $.ws.send($.pp.write({cmd: "WATCH", game: game }));
+    $.ws.send($.pp.write({cmd: "WATCH", gid: cur_game }));
     switch_game();
   });
 
   $('#cmd_join').click(function() {
-    $.ws.send($.pp.write({cmd: "WATCH", game: game }));
-    $.ws.send($.pp.write({cmd: "JOIN", game: game, seat: play_seat, buyin: 100}));
+    $.ws.send($.pp.write({cmd: "WATCH", gid: cur_game }));
+    $.ws.send($.pp.write({cmd: "JOIN", gid: cur_game, seat: auto_join_seat, buyin: 100}));
     switch_game();
   });
 
@@ -30,25 +43,28 @@ $(function() {
     if (games.length == game_info.count) {
       $('#games_wrapper tbody').processTemplate({datas: games});
       $('#games_wrapper tbody tr').click(function() {
-
         if ($(this).hasClass('selected'))
           return;
+
+        $('#games_wrapper').stopTime();
 
         $(this).parent().children().removeClass("selected");
         $(this).addClass("selected");
 
-        resetSeats($(this).attr('gid'), $(this).attr('seats'));
+        reset_seats($(this).attr('gid'), $(this).attr('seats'));
         $.ws.send($.pp.write({cmd: "SEAT_QUERY", gid: cur_game}));
+
+        // 间隔时间重新取桌面信息
+        $(document).oneTime('2s', function() {
+          $.ws.send($.pp.write({cmd: "SEAT_QUERY", gid: cur_game}));
+        });
       }).eq(0).click();
     }
   }); // }}}
 
   $.pp.reg("SEAT_STATE", function(seat) { // {{{
-    seat.nick = '测(' + seat.sn + ')试';
-    seat.inplay = '10000';
-
     if (seat.game == cur_game) {
-      if (seat.state != 1) {
+      if (seat.state != PS_EMPTY) {
         //$.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: obj.pid}));
 
         // 使用seat的序号与标签顺序对应
@@ -58,7 +74,7 @@ $(function() {
       } else {
         // 没有人游戏的座位可以作为
         // 自动加入游戏的座位的位置
-        auto_join_seat = seat.id;
+        there_can_join(seat.sn);
       }
     }
   }); // }}}
@@ -81,7 +97,7 @@ $(function() {
   // {{{ private
   var switch_game = function() {
     $('#hall').hide("normal");
-    $('#game').show("normal").trigger("startup", cur_game);
+    $('#game').show("normal").trigger("startup", {game: cur_game, seat: auto_join_seat});
   };
 
   var gen_game_query = function(arr) {
@@ -118,7 +134,7 @@ $(function() {
       {x: 476, y: 15}, {x: 518, y: 125}]);
   }
 
-  var resetSeats = function(gid, seats_count) {
+  var reset_seats = function(gid, seats_count) {
     setas = [];
     cur_game = gid;
     cur_seats_count = seats_count;
@@ -133,6 +149,13 @@ $(function() {
       if (styles[index] != undefined)
         $(this).css(styles[index]).children('.photo').attr('src', $.rl.img.def_face_1);
     });
+
+    $('#cmd_join').attr('disabled', 'true');
+  }
+
+  var there_can_join = function(seat_sn) {
+    auto_join_seat = seat_sn;
+    $('#cmd_join').removeAttr('disabled');
   }
   // }}}
 
