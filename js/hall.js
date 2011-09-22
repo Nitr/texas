@@ -24,28 +24,30 @@ $(function() {
     $('#games_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false, themeClass: 'games-table', height: '248px'});
   });
 
-  $('#hall').bind('active', function() {
+  $('#hall').bind('active', function(event, game) {
+    cur_game = game;
+    // TODO: 保存每次搜索过的条件并在激活的时候重新读取
     $.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
   });
 
   $('#cmd_watch').click(function() {
     $.ws.send($.pp.write({cmd: "WATCH", gid: cur_game }));
-    switch_game();
+    active_game();
   });
 
   $('#cmd_join').click(function() {
     $.ws.send($.pp.write({cmd: "WATCH", gid: cur_game }));
     $.ws.send($.pp.write({cmd: "JOIN", gid: cur_game, seat: auto_join_seat, buyin: 100}));
-    switch_game();
-  });
-
-  $.pp.reg("PONG", function(obj) {
-    if (!is_disable()) {
-      console.log("reg pong from hall.js");
-    }
+    active_game();
   });
 
   $.pp.reg("GAME_INFO", function(game_info) { // {{{
+    // 对于已经加载过的数据不需要重新构建列表
+    // 找到对应的行然后更新其内容即可
+    if ($('#games_wrapper tbody tr[gid=' + game_info.id + ']').length > 0) {
+      return;
+    }
+
     games.push(game_info);
 
     if (games.length == game_info.count) {
@@ -71,6 +73,9 @@ $(function() {
   }); // }}}
 
   $.pp.reg("SEAT_STATE", function(seat) { // {{{
+    if (is_disable())
+      return;
+
     if (seat.game == cur_game) {
       if (seat.state != PS_EMPTY) {
         //$.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: obj.pid}));
@@ -88,6 +93,9 @@ $(function() {
   }); // }}}
 
   $.pp.reg("PHOTO_INFO", function(obj) { // {{{
+    if (is_disable())
+      return;
+
     var pid = ".photo-" + obj.id;
     // #开头直接找到对应的id使用src负值
     if (obj.photo.indexOf('#') == 0 && $(obj.photo).length >= 0)
@@ -103,9 +111,9 @@ $(function() {
   }); // }}}
 
   // {{{ private
-  var switch_game = function() {
+  var active_game = function() {
     $('#hall').hide("normal");
-    $('#game').show("normal").trigger("startup", {game: cur_game, seat: auto_join_seat});
+    $('#game').show("normal").trigger("active", {game: cur_game, seat: auto_join_seat});
   };
 
   var gen_game_query = function(arr) {

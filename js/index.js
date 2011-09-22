@@ -61,8 +61,8 @@ $(function() {
 
       var singin = function() {
         blockUI(STA_SINGIN);
-        $.ws.send($.pp.write(
-          {cmd: "LOGIN", usr: input_usr, pass: input_pwd}));
+        var cmd = {cmd: "LOGIN", usr: input_usr, pass: input_pwd};
+        $.ws.send($.pp.write(cmd));
       }
 
       input_usr = $.url.get("usr");
@@ -105,7 +105,7 @@ $(function() {
     $(document).stopTime();
     $("#singin").hide();
     $.unblockUI();
-    $("#hall").show('slow').trigger('setup').trigger('active');
+    $("#hall").show('slow').trigger('setup').trigger('active', 0);
   }
 
   var saveAccountInfo = function() {
