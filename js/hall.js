@@ -82,10 +82,11 @@ $(function() {
 
     if (seat.game == cur_game) {
       if (seat.state != PS_EMPTY) {
-        //$.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: obj.pid}));
+        $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: seat.player}));
 
         // 使用seat的序号与标签顺序对应
         $('.seat:eq(' + (seat.sn - 1) + ')').show('normal').
+          children('.photo').attr('player', seat.player).parent().
           children('.inplay').text(seat.inplay).parent().
           children('.nick').text(seat.nick);
       } else {
@@ -96,22 +97,18 @@ $(function() {
     }
   }); // }}}
 
-  $.pp.reg("PHOTO_INFO", function(obj) { // {{{
+  $.pp.reg("PHOTO_INFO", function(player) { // {{{
     if (is_disable())
       return;
 
-    var pid = ".photo-" + obj.id;
-    // #开头直接找到对应的id使用src负值
-    if (obj.photo.indexOf('#') == 0 && $(obj.photo).length >= 0)
-      $(pid).attr('src', $(obj.photo).attr('src'));
-    // base64开头使用src直接负值
-    else if (obj.photo.indexOf('data:image') == 0)
-      $(pid).attr('src', obj.photo);
-    // 最终默认使用def_face负值
-    else 
-      $(pid).attr('src', $('#def_face').attr('src'));
+    var photo = $("#seats_wrapper div .photo:[player=" + player.id + "]");
 
-    $(pid).parent().show();
+    if (player.photo.indexOf('def_face_') == 0)
+      $(photo).attr('src', $.rl.img[player.photo]);
+    else if (player.photo.indexOf('base64'))
+      $(photo).attr('src', player.photo);
+    else 
+      $(photo).attr('src', $.rl.img.def_face_0);
   }); // }}}
 
   // {{{ private
