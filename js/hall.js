@@ -14,7 +14,7 @@ $(function() {
 
   var cur_game = 0, cur_scount = 0, auto_join_seat = 0;
 
-  var games = [], seats = [],
+  var games = [], seats = [], empty_seats = [],
       five_table_style = [], 
       eight_table_style = [];
 
@@ -36,7 +36,7 @@ $(function() {
 
   $('#cmd_join').click(function() {
     $.ws.send($.pp.write({cmd: "WATCH", gid: cur_game }));
-    $.ws.send($.pp.write({cmd: "JOIN", gid: cur_game, seat: auto_join_seat, buyin: 100}));
+    $.ws.send($.pp.write({cmd: "JOIN", gid: cur_game, seat: get_auto_join_seat(), buyin: 100}));
     active_game();
   });
 
@@ -155,7 +155,8 @@ $(function() {
   }
 
   var reset_seats = function(gid, seats_count) {
-    setas = [];
+    seats = [];
+    empty_seats = [];
     cur_game = gid;
     cur_seats_count = seats_count;
 
@@ -174,8 +175,14 @@ $(function() {
   }
 
   var there_can_join = function(seat_sn) {
-    auto_join_seat = seat_sn;
+    empty_seats.push(seat_sn);
     $('#cmd_join').removeAttr('disabled');
+  }
+
+  var get_auto_join_seat = function() {
+    // TODO: 随机获取自动加入的座位编号
+    var i = Math.floor(Math.random() * empty_seats.length);
+    return empty_seats[i];
   }
   // }}}
 
