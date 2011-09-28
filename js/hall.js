@@ -165,7 +165,7 @@ $(function() {
 
       // 使用seat的序号与标签顺序对应
       if (styles[index] != undefined)
-        $(this).css(styles[index]).children('.photo').attr('src', $.rl.img.def_face_1);
+        $(this).css(styles[index]).children('.photo').attr('src', $.rl.img.def_face_0);
     });
 
     $('#cmd_join').attr('disabled', 'true');

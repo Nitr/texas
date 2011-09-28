@@ -1,5 +1,6 @@
 body, td, div, a {
   font-family: sans-serif;
+  -webkit-user-select: none;
 }
 
 body {
@@ -45,11 +46,45 @@ body {
   -webkit-border-top-right-radius: 8px;
 }
 
+#tools {
+  position: relative; 
+  padding: 0px;
+  top: -72px;
+  left: 698px;
+  width: 215px;
+}
+
+#tools > * {
+  background: url(icon.png);
+  background-repeat: no-repeat;
+  float: left;
+}
+
+.split {
+  width: 5px;
+  height: 55px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+#settings, #helps, #logout {
+  width: 55px;
+  height: 55px;
+  padding-top: 54px;
+  text-align: center;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+#helps    { background-position: -60px 0px; }
+#logout   { background-position: -115px 0px; }
+#settings { background-position: -5px 0px; }
+
 #usr {
-  position: absolute; 
+  position: relative; 
   padding: 0px;
   display: none;
-  top: 10px;
+  top: -75px;
   width: 250px;
 }
 
@@ -107,15 +142,9 @@ body {
 }
 
 #hall_commands {
-  margin-left: 780px;
+  margin-left: 809px;
   margin-top: -240px;
 }
-
-.command {
-  width: 90px;
-  height: 30px;
-}
-
 
 .blockMsg {
   border-radius: 8px !important;
@@ -228,7 +257,25 @@ div.fht-tbody {
   -webkit-box-shadow: 1px 3px 3px black;
 }
 
-
 .selected {
   background-color: #bab1c6 !important;
+}
+
+#hall button {
+  font-size: 17px;
+  display: block;
+  background-image: url(btn.png);
+  width: 138px;
+  height: 48px;
+}
+
+.cmdred {
+  background-position: 138px 0px;
+}
+
+.cmdblue {
+  background-position: 276px 0px;
+}
+
+#cmd_watch{
 }

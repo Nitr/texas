@@ -51,7 +51,7 @@ $(function() {
       url: 'css/heads.png', 
       callback: function(img) {
         for (var i = 0; i < img.width / 80; i++) {
-          $.rl.img['def_face_' + (i + 1)] = 
+          $.rl.img['def_face_' + i] = 
             $.rl.getImgDataUrl(img, i * 80, 0, 80, 80);
         }
       }
@@ -152,12 +152,10 @@ $(function() {
     $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: pid}));
   });
 
-  $(document).oneTime(5000, function() {
+  $('#page').oneTime('5s', function() {
     if ($.ws.isConnection() == false) {
-      $(document).stopTime();
       blockUI(ERR_NETWORK);
     }
-
   });
 
   // 初始化websocket并通过建立连接
@@ -165,6 +163,12 @@ $(function() {
   blockUI(STA_CONNECT);
   $.ws.defaults.onmessage = $.pp.onmessage;
   $.ws.defaults.onopen = onConnection;
+
+  is_debug = $.url.get("debug") != undefined;
+  if ($.url.get("debug") != undefined) {
+    $.ws.defaults.host = "127.0.0.1";
+  }
+
   $.ws.init();
 });
 // vim: fdm=marker
