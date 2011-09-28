@@ -113,8 +113,9 @@ $(function() {
 
   // {{{ private
   var active_game = function() {
-    $('#hall').hide("normal");
+    $('#hall').hide();
     $('#game').show("normal").trigger("active", {game: cur_game, seat: auto_join_seat});
+    console.log('test');
   };
 
   var gen_game_query = function(arr) {

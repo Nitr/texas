@@ -121,8 +121,9 @@ body {
 #seats_wrapper {
   width: 650px;
   height: 310px;
-  margin: 30px auto -30px auto;
-  position: relative;
+  position: absolute;
+  top: 20px;
+  left: 172px;
   background: url(table.png) no-repeat center;
 }
 
@@ -142,8 +143,9 @@ body {
 }
 
 #hall_commands {
-  margin-left: 809px;
-  margin-top: -240px;
+  position: absolute;
+  top: 320px;
+  left: 800px;
 }
 
 .blockMsg {
@@ -210,9 +212,10 @@ div.fht-tbody {
 
 /* GAME_TABLE */
 #games_wrapper {
-  position: relative;
+  position: absolute;
   width: 680px;
-  left: 80px;
+  top: 320px;
+  left:80px;
 }
 
 .games-table {
@@ -259,6 +262,10 @@ div.fht-tbody {
 
 .selected {
   background-color: #bab1c6 !important;
+}
+
+#hall {
+  position: absolute;
 }
 
 #hall button {
