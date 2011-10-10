@@ -31,12 +31,13 @@ $(function() {
 
   $('#cmd_watch').click(function() {
     $.ws.send($.pp.write({cmd: "WATCH", gid: cur_game }));
-    active_game();
   });
 
   $('#cmd_join').click(function() {
-    $.ws.send($.pp.write({cmd: "WATCH", gid: cur_game }));
     $.ws.send($.pp.write({cmd: "JOIN", gid: cur_game, seat: get_auto_join_seat(), buyin: 100}));
+  });
+
+  $.pp.reg("GAME_DETAIL", function(game) { // {{{
     active_game();
   });
 

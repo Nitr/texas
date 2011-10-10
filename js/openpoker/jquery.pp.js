@@ -112,7 +112,11 @@
       {type: "byte",    prop: "state"},
       {type: "integer", prop: "player"},
       {type: "integer", prop: "inplay"},
-      {type: "string", prop: "nick", base64: true}])
+      {type: "string", prop: "nick", base64: true}]),
+    notify_seat_state: generate_notify("GAME_DETAIL", [81,
+      {type: "integer", prop: "game"},
+      {type: "decimal", prop: "pot"},
+      {type: "byte",    prop: "players"}])
   };
 
   function generate_cmd(cmd, status) {
