@@ -12,13 +12,18 @@ $(function() {
       PS_MUCK      = 512,
       PS_OUT       = 1024; // }}}
 
-  var cur_game = 0, cur_scount = 0, auto_join_seat = 0;
+  var cur_game = 0, cur_scount = 0, 
+      auto_join_seat = 0, 
+      auto_join = false;
 
   var games = [], seats = [], empty_seats = [],
       five_table_style = [], 
       eight_table_style = [];
 
   var is_disable = function() { return $('#hall').css('display') == 'none'; };
+
+  if ($.url.get("auto_join") != undefined)
+    auto_join = true;
 
   $('#hall').bind('setup', function() {
     $('#games_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false, themeClass: 'games-table', height: '248px'});
@@ -37,7 +42,7 @@ $(function() {
     $.ws.send($.pp.write({cmd: "JOIN", gid: cur_game, seat: get_auto_join_seat(), buyin: 100}));
   });
 
-  $.pp.reg("GAME_DETAIL", function(game) { // {{{
+  $.pp.reg("GAME_DETAIL", function(game) { 
     active_game();
   });
 
@@ -61,10 +66,12 @@ $(function() {
 
     if (games.length == game_info.count) {
       $('#games_wrapper tbody').processTemplate({datas: games});
+
       $('#games_wrapper tbody tr').bind('update', function() {
         reset_seats($(this).attr('gid'), $(this).attr('seats'));
         $.ws.send($.pp.write({cmd: "SEAT_QUERY", gid: cur_game}));
       });
+
       $('#games_wrapper tbody tr').click(function() {
         if ($(this).hasClass('selected'))
           return;
@@ -74,6 +81,10 @@ $(function() {
 
         $(this).trigger('update');
       }).eq(0).click();
+
+      $(document).oneTime(1000, function() {
+        $('#cmd_join').click();
+      });
     }
   }); // }}}
 
