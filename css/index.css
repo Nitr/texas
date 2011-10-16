@@ -289,3 +289,32 @@ button {
 
 #cmd_watch{
 }
+
+
+#game {
+  width: 100%;
+  position: absolute;
+}
+
+#game > #table {
+  position: absolute;
+  top: 100px;
+  left: 125px;
+}
+
+#game > #cmds {
+  position: absolute;
+  top: 500px;
+  left: 125px;
+}
+
+#game button {
+  width: 100px;
+  height: 30px;
+}
+
+#game > #room {
+  position: absolute;
+  top: 60px;
+  left: 825px;
+}

@@ -107,16 +107,98 @@
       {type: "byte", prop: "command"},
       {type: "byte", prop: "code"}]),
     notify_seat_state: generate_notify("SEAT_STATE", [30,
-      {type: "integer", prop: "game"},
+      {type: "integer", prop: "gid"},
       {type: "byte",    prop: "sn"},
       {type: "byte",    prop: "state"},
-      {type: "integer", prop: "player"},
-      {type: "integer", prop: "inplay"},
+      {type: "integer", prop: "pid"},
+      {type: "decimal", prop: "inplay"},
       {type: "string", prop: "nick", base64: true}]),
     notify_seat_state: generate_notify("GAME_DETAIL", [81,
-      {type: "integer", prop: "game"},
+      {type: "integer", prop: "gid"},
       {type: "decimal", prop: "pot"},
-      {type: "byte",    prop: "players"}])
+      {type: "byte",    prop: "players"},
+      {type: "byte",    prop: "seats"},
+      {type: "byte",    prop: "button"},
+      {type: "byte",    prop: "sblind"},
+      {type: "byte",    prop: "bblind"},
+      {type: "byte",    prop: "stage"}
+    ]),
+    notify_seat_state: generate_notify("END", [24,
+      {type: "integer", prop: "gid"}
+    ]),
+    notify_seat_state: generate_notify("START", [23,
+      {type: "integer", prop: "gid"}
+    ]),
+    notify_seat_state: generate_notify("CANCEL", [25,
+      {type: "integer", prop: "gid"}
+    ]),
+    notify_seat_state: generate_notify("STAGE", [29,
+      {type: "integer", prop: "gid"},
+      {type: "byte", prop: "stage"}
+    ]),
+    notify_seat_state: generate_notify("PRIVATE", [82,
+      {type: "integer", prop: "gid"},
+      {type: "integer", prop: "pid"},
+      {type: "byte", prop: "face"},
+      {type: "byte", prop: "suit"}
+    ]),
+    notify_seat_state: generate_notify("DRAW", [21,
+      {type: "integer", prop: "gid"},
+      {type: "integer", prop: "pid"},
+      {type: "byte", prop: "face"},
+      {type: "byte", prop: "suit"}
+    ]),
+    notify_seat_state: generate_notify("BUTTON", [35,
+      {type: "integer", prop: "gid"},
+      {type: "byte", prop: "seat"}
+    ]),
+    notify_seat_state: generate_notify("SBLIND", [36,
+      {type: "integer", prop: "gid"},
+      {type: "byte", prop: "seat"}
+    ]),
+    notify_seat_state: generate_notify("BBLIND", [37,
+      {type: "integer", prop: "gid"},
+      {type: "byte", prop: "seat"}
+    ]),
+    notify_seat_state: generate_notify("BET_REQ", [20,
+      {type: "integer", prop: "gid"},
+      {type: "decimal", prop: "call"},
+      {type: "decimal", prop: "min"},
+      {type: "decimal", prop: "max"}
+    ]),
+    notify_seat_state: generate_notify("RAISE", [42,
+      {type: "integer", prop: "gid"},
+      {type: "integer", prop: "pid"},
+      {type: "decimal", prop: "raise"},
+      {type: "decimal", prop: "call"}
+    ]),
+    notify_seat_state: generate_notify("SHOW", [40,
+      {type: "integer", prop: "gid"},
+      {type: "integer", prop: "pid"},
+      {type: "byte", prop: "size"},
+      {type: "byte", prop: "face1"},
+      {type: "byte", prop: "suit1"},
+      {type: "byte", prop: "face2"},
+      {type: "byte", prop: "suit2"}
+    ]),
+    notify_seat_state: generate_notify("HAND", [27,
+      {type: "integer", prop: "gid"},
+      {type: "integer", prop: "pid"},
+      {type: "byte", prop: "rank"},
+      {type: "byte", prop: "face1"},
+      {type: "byte", prop: "face2"}
+    ]),
+    notify_seat_state: generate_notify("WIN", [26,
+      {type: "integer", prop: "gid"},
+      {type: "integer", prop: "pid"},
+      {type: "decimal", prop: "amount"}
+    ]),
+    notify_seat_state: generate_notify("JOIN", [44,
+      {type: "integer", prop: "gid"},
+      {type: "integer", prop: "pid"},
+      {type: "byte", prop: "seat"},
+      {type: "decimal", prop: "buyin"}
+    ])
   };
 
   function generate_cmd(cmd, status) {

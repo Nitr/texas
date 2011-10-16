@@ -35,15 +35,11 @@ $(function() {
   });
 
   $('#cmd_watch').click(function() {
-    $.ws.send($.pp.write({cmd: "WATCH", gid: cur_game }));
+    active_game();
   });
 
   $('#cmd_join').click(function() {
-    $.ws.send($.pp.write({cmd: "JOIN", gid: cur_game, seat: get_auto_join_seat(), buyin: 100}));
-  });
-
-  $.pp.reg("GAME_DETAIL", function(game) { 
-    active_game();
+    active_game(get_auto_join_seat());
   });
 
   $.pp.reg("GAME_INFO", function(game_info) { // {{{
@@ -92,13 +88,13 @@ $(function() {
     if (is_disable())
       return;
 
-    if (seat.game == cur_game) {
+    if (seat.gid == cur_game) {
       if (seat.state != PS_EMPTY) {
-        $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: seat.player}));
+        $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: seat.pid}));
 
         // 使用seat的序号与标签顺序对应
         $('.seat:eq(' + (seat.sn - 1) + ')').show('normal').
-          children('.photo').attr('player', seat.player).parent().
+          children('.photo').attr('player', seat.pid).parent().
           children('.inplay').text(seat.inplay).parent().
           children('.nick').text(seat.nick);
       } else {
@@ -124,10 +120,9 @@ $(function() {
   }); // }}}
 
   // {{{ private
-  var active_game = function() {
+  var active_game = function(join_seat) {
     $('#hall').hide();
-    $('#game').show("normal").trigger("active", {game: cur_game, seat: auto_join_seat});
-    console.log('test');
+    $('#game').show("normal").trigger("active", {gid: cur_game, seat: join_seat});
   };
 
   var gen_game_query = function(arr) {

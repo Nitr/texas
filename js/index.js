@@ -108,11 +108,13 @@ $(function() {
     $("#hall").show('slow').trigger('setup').trigger('active', 0);
   }
 
-  var saveAccountInfo = function() {
+  var saveAccountInfo = function(pid) {
     if ($("#ckb_save").attr('checked')) {
       localStorage.setItem("save_usr", input_usr);
       localStorage.setItem("save_pwd", input_pwd);
     }
+
+    $(document).data("pid", pid);
   }
 
   // PROTOTYPE REGISTER {{{
@@ -126,7 +128,7 @@ $(function() {
     pid = you.id;
     $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: pid}));
 
-    saveAccountInfo();
+    saveAccountInfo(pid);
     singinFinish();
   });
 
