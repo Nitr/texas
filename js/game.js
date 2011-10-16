@@ -13,13 +13,16 @@ $(document).ready(function() {
       PS_OUT       = 1024; // }}}
 
   var cur_pid = 0, cur_gid = 0, cur_seat = 0, only_watching = false, playing = false;
-  var seats = [];  // 存放与服务器对应的座位数据
+  var seats = [],  // 存放与服务器对应的座位数据
+      pot = {};
 
-  $('#game').bind('active', function(event, args) {
+  $('#game').bind('active', function(event, args) { // {{{
     console.log(["active_game", args]);
     cur_gid = args.gid;
     only_watching = args.seat == undefined;
     cur_pid = $(document).data("pid");
+
+    $('#game > #cmds > button').attr('disabled', 'true');
 
     // not setting seat is watch game
     if (only_watching) {
@@ -34,27 +37,36 @@ $(document).ready(function() {
         seat: args.seat, buyin: 100
       }));
     }
-  });
+  }); // }}}
 
   $('#cmd_hall').click(function() {
-    $.ws.send($.pp.write({cmd: "UNWATCH", gid: cur_gid}));
-    return_hall();
+    //$.ws.send($.pp.write({cmd: "UNWATCH", gid: cur_gid}));
+    //return_hall();
+    console.log(["pot", pot]);
   });
 
-  var reset_seat = function(state) {
-    if (state == undefined)
-      state = PS_EMPTY; 
+  $('#cmd_fold').click(function() {
+    $.ws.send($.pp.write({cmd: "FOLD", gid: cur_gid}));
+  });
 
-    return function(i, s) {
-      if (s == undefined)
-        return;
+  $('#cmd_call').click(function() {
+    $.ws.send($.pp.write({cmd: "RAISE", gid: cur_gid, amount: 0}));
+  });
 
-      seats[s.seat].st = state;
-      seats[s.seat].is_b = false;
-      seats[s.seat].is_sb = false;
-      seats[s.seat].is_bb = false;
-    }
-  }
+  $('#cmd_raise').click(function() {
+    a = parseInt($('#raise_range').val());
+    $.ws.send($.pp.write({cmd: "RAISE", gid: cur_gid, amount: a}));
+  });
+
+  $('#raise_range').bind('change', function(event) {
+    var v = parseInt($(this).val());
+    var max = parseInt($(this).attr("max"));
+
+    if (v == max)
+      $('#cmd_raise').text("ALL-IN " + v);
+    else 
+      $('#cmd_raise').text("加注 " + v);
+  });
 
   var is_disable = function() { return $('#game').css('display') == 'none'; };
 
@@ -74,14 +86,14 @@ $(document).ready(function() {
     if (seat.gid == cur_gid) {
       if (seat.state == PS_EMPTY) {
         seats[seat.sn] = undefined;
+        console.log([tt(),"seat_state", "seat", seat.sn, "undefined"]); 
       } else {
-        console.log([tt(),"seat_state", "seat", seat.sn, "pid", seat.pid, 
-                    "state", seat.state, "inplay", seat.inplay, "nick", seat.nick]);
-        seats[seat.sn] = {
-          seat: seat.sn, pid: seat.player, st: seat.state, 
-          is_b: false, is_sb: false, is_bb: false, 
-          inplay: seat.inplay, nick: seat.nick
-        };
+        seats[seat.sn] = seat;
+        console.log(
+          [tt(),"seat_state", "seat", seat.sn, "pid", 
+           seat.pid, "state", seat.state, "inplay", 
+           seat.inplay, "nick", seat.nick]
+        );
       }
 
       return;
@@ -92,7 +104,6 @@ $(document).ready(function() {
 
   $.pp.reg("CANCEL", function(notify) { 
     if (notify.gid == cur_gid) {
-      $.each(seats, reset_seat(PS_PLAY));
       console.log([tt(),'notify_cancel', notify]);
       return;
     }
@@ -102,7 +113,6 @@ $(document).ready(function() {
 
   $.pp.reg("START", function(notify) { 
     if (notify.gid == cur_gid) {
-      $.each(seats, reset_seat(PS_PLAY));
       console.log([tt(),'notify_start', notify]);
       return;
     }
@@ -146,6 +156,11 @@ $(document).ready(function() {
 
   $.pp.reg("BET_REQ", function(req) { 
     console.log([tt(),'notify_bet_request', 'call', req.call, 'min', req.min, 'max', req.max]);
+
+    $('#raise_range').
+      attr('min', req.min).
+      attr('max', req.max).
+      val(req.min);
   });
 
   $.pp.reg("PRIVATE", function(notify) { 
@@ -156,12 +171,20 @@ $(document).ready(function() {
     //console.log([tt(),'notify_draw', 'pid', notify.pid, 'suit', notify.suit, 'face', notify.face]);
   });
 
+  $.pp.reg("SHARE", function(notify) { 
+    console.log([tt(),'notify_share', 'suit', notify.suit, 'face', notify.face]);
+  });
+
   $.pp.reg("STAGE", function(notify) { 
     console.log([tt(),'notify_stage', 'stage', notify.stage]);
   });
 
   $.pp.reg("RAISE", function(notify) { 
     console.log([tt(),'notify_raise', 'pid', notify.pid, 'raise', notify.raise, 'call', notify.call]);
+    //if (pot[notify.pid] == undefined)
+      //pot[notify.pid] = 0;
+
+    //pot[notify.pid] += notify.call + notify.raise
   });
 
   $.pp.reg("SHOW", function(notify) { 
@@ -173,7 +196,8 @@ $(document).ready(function() {
   });
 
   $.pp.reg("END", function(notify) { 
-    console.log([tt(),'notify_end']);
+    console.log([tt(),'----------------------notify_end----------------------']);
+    pot = {};
   });
 
   $.pp.reg("WIN", function(notify) { 
@@ -189,4 +213,6 @@ $(document).ready(function() {
     a = new Date();
     return a.getMinutes() + ":" + a.getSeconds();
   }
+
 });
+// vim: fdm=marker

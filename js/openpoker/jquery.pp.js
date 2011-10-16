@@ -77,7 +77,11 @@
       [4, {type: "integer", prop: "gid"}]),
     cmd_watch:  generate_cmd("LEAVE", 
       [9, {type: "integer", prop: "gid"}]),
-
+    cmd_watch:  generate_cmd("FOLD", 
+      [7, {type: "integer", prop: "gid"}]),
+    cmd_watch:  generate_cmd("RAISE", 
+      [6, {type: "integer", prop: "gid"},
+          {type: "decimal", prop: "amount"}]),
     notify_pong:  generate_notify("PONG", 
       [254, {type: "timestamp", prop: "orign_send"},
             {type: "timestamp", prop: "send"}]),
@@ -139,6 +143,11 @@
     notify_seat_state: generate_notify("PRIVATE", [82,
       {type: "integer", prop: "gid"},
       {type: "integer", prop: "pid"},
+      {type: "byte", prop: "face"},
+      {type: "byte", prop: "suit"}
+    ]),
+    notify_seat_state: generate_notify("SHARE", [22,
+      {type: "integer", prop: "gid"},
       {type: "byte", prop: "face"},
       {type: "byte", prop: "suit"}
     ]),
