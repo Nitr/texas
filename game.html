@@ -1,12 +1,25 @@
 <img id=table src='css/gametable.png' />
-<div id=room>
+<div id=game_table></div>
+
+<div id=room_commands>
   <button type=command id=cmd_hall >大厅</button><br />
   <button type=command id=cmd_sit >起身</button><br />
 </div>
-<div id=cmds>
+
+<div id=game_commands>
   <button type=command id=cmd_fold>弃牌</button>
   <button type=command id=cmd_check>看牌</button>
   <button type=command id=cmd_call>跟注</button>
   <button type=command id=cmd_raise>加注</button>
   <input type=range value=0 max=50 min=0 id=raise_range></input>
 </div>
+
+<textarea id="game_table_template" style="display:none;">
+  {#for index = 1 to $T.end}
+  <div id=game_seat_{$T.index} seat={$T.index} class=game_seat style='display: none'>
+    <div class=nick></div>
+    <img class=photo />
+    <div class=inplay></div>
+  </div>
+  {#/for}
+</textarea>

@@ -79,7 +79,7 @@ $(function() {
       }).eq(0).click();
 
       $(document).oneTime(2000, function() {
-        $('#cmd_join').click();
+        $('#cmd_watch').click();
       });
     }
   }); // }}}

@@ -290,9 +290,8 @@ button {
 #cmd_watch{
 }
 
-
 #game {
-  width: 100%;
+  width: 1000px;
   position: absolute;
 }
 
@@ -302,7 +301,7 @@ button {
   left: 125px;
 }
 
-#game > #cmds {
+#game_commands {
   position: absolute;
   top: 500px;
   left: 125px;
@@ -313,8 +312,19 @@ button {
   height: 30px;
 }
 
-#game > #room {
+#room_commands {
   position: absolute;
   top: 60px;
   left: 825px;
+}
+
+.game_seat {
+  position: absolute;
+  width: 80px;
+  height: 100px;
+  font-size: 16px;
+  padding: 0px
+  margin: 0px;
+  border: 0px;
+  background-color: red;
 }

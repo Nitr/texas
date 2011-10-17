@@ -12,37 +12,33 @@ $(document).ready(function() {
       PS_MUCK      = 512,
       PS_OUT       = 1024; // }}}
 
-  var cur_pid = 0, cur_gid = 0, cur_seat = 0, only_watching = false, playing = false;
-  var seats = [],  // 存放与服务器对应的座位数据
-      pot = {};
+  var cur_pid = 0, cur_gid = 0, cur_seat = 0, only_watching = false, playing = false, seats = [], pot = {}, positions = null;
 
-  $('#game').bind('active', function(event, args) { // {{{
+  var initialization = function(args) { // {{{
     console.log(["active_game", args]);
-    cur_gid = args.gid;
-    only_watching = args.seat == undefined;
-    cur_pid = $(document).data("pid");
 
-    $('#game > #cmds > button').attr('disabled', 'true');
+    cur_gid = args.gid;
+    cur_pid = $(document).data("pid");
+    only_watching = args.seat == undefined;
+    $('#game_commands > *').attr('disabled', 'true');
+
+    $("#game_table").setTemplateElement("game_table_template");
+    $("#game_table").processTemplate({end: 10});
+
+    console.log([five_positions, nine_positions]);
+  }; // }}}
+
+  // event {{{
+  $('#game').bind('active', function(event, args) {
+    initialization(args);
 
     // not setting seat is watch game
-    if (only_watching) {
-      $.ws.send($.pp.write({
-        cmd: "WATCH", gid: cur_gid
-      }));
-    } else {
-      // 等收到notify_join的消息
-      // 激活游戏相关内容
-      $.ws.send($.pp.write({
-        cmd: "JOIN", gid: cur_gid, 
-        seat: args.seat, buyin: 100
-      }));
-    }
-  }); // }}}
+    var cmd = only_watching == true ? {cmd: "WATCH", gid: cur_gid} : 
+      {cmd: "JOIN", gid: cur_gid, seat: args.seat, buyin: 100};
+    $.ws.send($.pp.write(cmd));
+  });
 
   $('#cmd_hall').click(function() {
-    //$.ws.send($.pp.write({cmd: "UNWATCH", gid: cur_gid}));
-    //return_hall();
-    console.log(["pot", pot]);
   });
 
   $('#cmd_fold').click(function() {
@@ -68,15 +64,21 @@ $(document).ready(function() {
       $('#cmd_raise').text("加注 " + v);
   });
 
-  var is_disable = function() { return $('#game').css('display') == 'none'; };
+  // }}}
 
+  // protocol {{{
   $.pp.reg("GAME_DETAIL", function(detail) { 
-    if (detail.gid == cur_gid) {
-      console.log([tt(), "game_detail", detail]);
-      return;
-    }
+    console.log([tt(), "game_detail", detail]);
 
-    throw 'error notify_game_detail protocol'
+    if (detail.gid != cur_gid) 
+      throw 'error notify_game_detail protocol'
+
+    positions = detail.seats == 5 ? five_positions : nine_positions;
+
+    // init seats
+    for (var i = 1; i <= detail.seats; i++) {
+      $("#game_seat_" + i).css(positions[i].outer).show();
+    }
   });
 
   $.pp.reg("SEAT_STATE", function(seat) { 
@@ -203,16 +205,46 @@ $(document).ready(function() {
   $.pp.reg("WIN", function(notify) { 
     console.log([tt(),'notify_win', 'pid', notify.pid, 'amount', notify.amount]);
   });
+
   var return_hall = function() {
     console.log(["seat", cur_seat, "pid", cur_pid, "gid", cur_gid, "seats", seats]);
     //$('#game').hide("normal");
     //$('#hall').show("normal").trigger('active', cur_game);
   };
+  // }}}
 
   var tt = function() {
     a = new Date();
     return a.getMinutes() + ":" + a.getSeconds();
-  }
+  };
 
+  var is_disable = function() { return $('#game').css('display') == 'none'; };
+
+  var convert_points = function(points) {
+    return $.map(points, function(pos) {
+      o = pos.outer.split(',');
+      return {outer: {left: o[0] + 'px', top: o[1] + 'px'}};
+    });
+  };
+
+  var five_positions = convert_points([{outer: "0,0"}, 
+    {outer: "100,100"},
+    {outer: "200,200"},
+    {outer: "300,300"},
+    {outer: "400,400"},
+    {outer: "500,500"}
+  ]);
+
+  var nine_positions = convert_points([{outer: "0,0"},
+    {outer: "100,100"},
+    {outer: "200,200"},
+    {outer: "300,300"},
+    {outer: "400,400"},
+    {outer: "500,500"},
+    {outer: "200,200"},
+    {outer: "300,300"},
+    {outer: "400,400"},
+    {outer: "500,500"}
+  ]);
 });
 // vim: fdm=marker
