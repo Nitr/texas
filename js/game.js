@@ -14,7 +14,8 @@ $(document).ready(function() {
 
   var cur_pid = 0, cur_gid = 0, cur_seat = 0, only_watching = false, playing = false, seats = [], pot = {}, positions = null;
 
-  var initialization = function(args) { // {{{
+  // {{{ initialization
+  var initialization = function(args) { 
     console.log(["active_game", args]);
 
     cur_gid = args.gid;
@@ -218,7 +219,9 @@ $(document).ready(function() {
     return a.getMinutes() + ":" + a.getSeconds();
   };
 
-  var is_disable = function() { return $('#game').css('display') == 'none'; };
+  var is_disable = function() { 
+    return $('#game').css('display') == 'none'; 
+  };
 
   var convert_points = function(points) {
     return $.map(points, function(pos) {
@@ -228,23 +231,23 @@ $(document).ready(function() {
   };
 
   var five_positions = convert_points([{outer: "0,0"}, 
-    {outer: "100,100"},
-    {outer: "200,200"},
-    {outer: "300,300"},
-    {outer: "400,400"},
-    {outer: "500,500"}
+    {outer: "450,346"},
+    {outer: "110,260"},
+    {outer: "290,60"},
+    {outer: "630,60"},
+    {outer: "805,260"}
   ]);
 
   var nine_positions = convert_points([{outer: "0,0"},
-    {outer: "100,100"},
-    {outer: "200,200"},
-    {outer: "300,300"},
-    {outer: "400,400"},
-    {outer: "500,500"},
-    {outer: "200,200"},
-    {outer: "300,300"},
-    {outer: "400,400"},
-    {outer: "500,500"}
+    {outer: "440,346"},
+    {outer: "253,340"},
+    {outer: "117,252"},
+    {outer: "150,100"},
+    {outer: "322,60"},
+    {outer: "555,60"},
+    {outer: "766,100"},
+    {outer: "801,252"},
+    {outer: "649,340"}
   ]);
 });
 // vim: fdm=marker
