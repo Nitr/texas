@@ -55,6 +55,19 @@ $(function() {
             $.rl.getImgDataUrl(img, i * 80, 0, 80, 80);
         }
       }
+    }, {
+      url: 'css/poker.png', 
+      callback: function(img) {
+        //$.rl.poker = [undefined];
+        var swp = [1,4,3,2]
+        for (var j = 0; j < img.height / 65; j ++) {
+          for (var i = 0; i < img.width / 45; i++) {
+            var key = new Number(i + 1 << 8 | swp[j]);
+            $.rl.poker[key.toString()] = 
+              $.rl.getImgDataUrl(img, i * 45, j * 65, 45, 65);
+          }
+        }
+      }
     }];
 
     var autoSingin = function() { // {{{
@@ -152,6 +165,12 @@ $(function() {
   
   $('#toolbar').bind("setup", function() {
     $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: pid}));
+  });
+
+  $("#settings").bind('click', function() {
+  });
+
+  $("#helps").bind('click', function() {
   });
 
   $('#page').oneTime('5s', function() {

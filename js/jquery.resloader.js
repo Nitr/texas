@@ -35,7 +35,8 @@
       return url;
     },
 
-    img: {}
+    img: {},
+    poker: {}
   }
 
   function handleJs(res) {
