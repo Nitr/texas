@@ -1,4 +1,4 @@
-body, td, div, a {
+body, td, div, a, img {
   font-family: 'Microsoft Yahei','simhei',sans-serif;
   -webkit-user-select: none;
 }
@@ -320,11 +320,58 @@ button {
 
 .game_seat {
   position: absolute;
-  width: 80px;
+  width: 84px;
   height: 100px;
-  font-size: 16px;
+  font-size: 14px;
   padding: 0px
   margin: 0px;
   border: 0px;
-  background-color: red;
+  text-align: center;
+}
+
+.game_seat > .photo {
+  padding: 0px;
+  margin: 0px;
+  width: 82px;
+  height: 80px;
+  border: 1px solid gray;
+}
+
+.game_seat > .nick {
+  padding: 0px;
+  margin: 0px;
+  width: 82px;
+  height: 18px;
+  background-color: #485465;
+  opacity: 0.7;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+  color: white;
+  padding-top: 3px;
+  border: 1px solid gray;
+  border-bottom: 0px;
+}
+
+.game_seat > .inplay {
+  padding: 0px;
+  margin: 0px;
+  width: 82px;
+  height: 16px;
+  background-color: #485465;
+  margin-top: -4px;
+  opacity: 0.7;
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+  color: white;
+  border: 1px solid gray;
+  border-top: 0px;
+}
+
+.button {
+  position: absolute;
+  top: 75px;
+  left: 65px;
+}
+
+#game_table {
 }

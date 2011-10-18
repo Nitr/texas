@@ -70,7 +70,8 @@
     cmd_join:  generate_cmd("JOIN", 
       [8, {type: "integer", prop: "gid"},
           {type: "byte", prop: "seat"},
-          {type: "decimal", prop: "buyin"}]),
+          {type: "decimal", prop: "buyin"},
+          {type: "string", prop: "nick"}]),
     cmd_watch:  generate_cmd("WATCH", 
       [3, {type: "integer", prop: "gid"}]),
     cmd_watch:  generate_cmd("UNWATCH", 
@@ -206,7 +207,8 @@
       {type: "integer", prop: "gid"},
       {type: "integer", prop: "pid"},
       {type: "byte", prop: "seat"},
-      {type: "decimal", prop: "buyin"}
+      {type: "decimal", prop: "buyin"},
+      {type: "string", prop: "nick", base64: true}
     ])
   };
 

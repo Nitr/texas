@@ -12,7 +12,9 @@ $(document).ready(function() {
       PS_MUCK      = 512,
       PS_OUT       = 1024; // }}}
 
-  var cur_pid = 0, cur_gid = 0, cur_seat = 0, only_watching = false, playing = false, seats = [], pot = {}, positions = null;
+  var cur_pid = 0, cur_gid = 0, cur_seat = 0, 
+      only_watching = false, playing = false, 
+      pot = {}, positions = null, all_seats = 0;
 
   // {{{ initialization
   var initialization = function(args) { 
@@ -25,9 +27,50 @@ $(document).ready(function() {
 
     $("#game_table").setTemplateElement("game_table_template");
     $("#game_table").processTemplate({end: 10});
+  }; 
 
-    console.log([five_positions, nine_positions]);
-  }; // }}}
+  var init_seats = function(seats) {
+    all_seats = seats;
+
+    if (positions == null) {
+      positions = seats == 5 ? five_positions : nine_positions;
+    }
+
+    // init seats outer position
+    for (var i = 1; i <= seats; i++) {
+      $("#game_seat_" + i).css(positions[i].outer);
+    }
+  };
+
+  var get_seat = function(sn) {
+    return $("#game_seat_" + sn);
+  };
+
+  // 更新座位信息,需要参数中携带座位编号,昵称,带入金额.
+  var update_seat = function(seat) {
+    var s = get_seat(seat.sn);
+    if (seat.state == PS_EMPTY) {
+      s.hide();
+    } else {
+      s.show("normal");
+      
+      // 对玩家显示区进行基本设置
+      s.children('.inplay').text(seat.inplay).parent().
+        children('.nick').text(seat.nick).parent().
+        children('.photo').attr('player', seat.pid);
+
+      $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: seat.pid}));
+    }
+  };
+
+  var trim_position = function(offset) {
+    var t = positions.shift();
+    for (var i = 1; i <= offset; i++) {
+      positions.unshift(positions.pop());
+    }
+    positions.unshift(t);
+  };
+  // }}}
 
   // event {{{
   $('#game').bind('active', function(event, args) {
@@ -40,6 +83,7 @@ $(document).ready(function() {
   });
 
   $('#cmd_hall').click(function() {
+    update_seat({sn: 1, nick: "Nick", inplay: 1000, pid: 3});
   });
 
   $('#cmd_fold').click(function() {
@@ -64,7 +108,6 @@ $(document).ready(function() {
     else 
       $('#cmd_raise').text("加注 " + v);
   });
-
   // }}}
 
   // protocol {{{
@@ -72,38 +115,42 @@ $(document).ready(function() {
     console.log([tt(), "game_detail", detail]);
 
     if (detail.gid != cur_gid) 
-      throw 'error notify_game_detail protocol'
+      throw 'error notify_game_detail protocol';
 
-    positions = detail.seats == 5 ? five_positions : nine_positions;
-
-    // init seats
-    for (var i = 1; i <= detail.seats; i++) {
-      $("#game_seat_" + i).css(positions[i].outer).show();
-    }
+    init_seats(detail.seats);
   });
 
   $.pp.reg("SEAT_STATE", function(seat) { 
     if (is_disable())
       return;
 
-    if (seat.gid == cur_gid) {
-      if (seat.state == PS_EMPTY) {
-        seats[seat.sn] = undefined;
-        console.log([tt(),"seat_state", "seat", seat.sn, "undefined"]); 
-      } else {
-        seats[seat.sn] = seat;
-        console.log(
-          [tt(),"seat_state", "seat", seat.sn, "pid", 
-           seat.pid, "state", seat.state, "inplay", 
-           seat.inplay, "nick", seat.nick]
-        );
-      }
+    console.log(
+      [tt(),"seat_state", "seat", seat.sn, "pid", 
+        seat.pid, "state", seat.state, "inplay", 
+        seat.inplay, "nick", seat.nick]
+    );
 
+    if (seat.gid == cur_gid) {
+      update_seat({inplay: 1000, sn: seat.sn, nick: seat.nick, pid: seat.pid, state: seat.state});
       return;
     }
 
     throw 'error seat_state protocol'
   }); 
+
+  $.pp.reg("PHOTO_INFO", function(player) { // {{{
+    if (is_disable())
+      return;
+
+    var photo = $("#game_table div .photo:[player=" + player.id + "]");
+
+    if (player.photo.indexOf('def_face_') == 0)
+      $(photo).attr('src', $.rl.img[player.photo]);
+    else if (player.photo.indexOf('base64'))
+      $(photo).attr('src', player.photo);
+    else 
+      $(photo).attr('src', $.rl.img.def_face_0);
+  });
 
   $.pp.reg("CANCEL", function(notify) { 
     if (notify.gid == cur_gid) {
@@ -124,36 +171,44 @@ $(document).ready(function() {
   });
 
   $.pp.reg("JOIN", function(notify) { 
-    if (notify.gid == cur_gid) {
-      seats[notify.seat] = {
-        seat: notify.seat, pid: notify.pid, st: PS_PLAY, 
-        is_b: false, is_sb: false, is_bb: false
-      };
+    console.log(
+      [tt(),'notify_join', "pid", notify.pid, "nick", notify.nick,
+       "buyin", notify.buyin, "seat", notify.seat, notify
+    ]);
 
+    if (notify.gid == cur_gid) {
       if (notify.pid == cur_pid) {
-        cur_seat = notify.seat; 
-        // 轮转座位
+        // 根据当前玩家的座位号调整一次座位顺序
+        trim_position(notify.seat - 1);
+        init_seats(all_seats);
       }
 
-      console.log([tt(),'notify_join', "pid", notify.pid, "buyin", notify.buyin, "seat", notify.seat, notify]);
+      update_seat({
+        sn: notify.seat, pid: notify.pid, 
+        nick: notify.nick, inplay: notify.buyin
+      });
+
+      //for (var i = 1; i < 6; i ++) {
+        //update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 10, state: PS_PLAY});
+      //}
       return;
     }
 
-    throw 'error notify_join protocol'
+    throw 'error notify_join protocol';
   });
 
   $.pp.reg("BUTTON", function(notify) { 
-    seats[notify.seat].is_b = true;
     console.log([tt(),'notify_button', notify]);
+
+    var s = get_seat(notify.seat);
+    s.children('.button').show();
   });
 
   $.pp.reg("SBLIND", function(notify) { 
-    seats[notify.seat].is_sb = true;
     console.log([tt(),'notify_sb', notify]);
   });
 
   $.pp.reg("BBLIND", function(notify) { 
-    seats[notify.seat].is_bb = true;
     console.log([tt(),'notify_bb', notify]);
   });
 
@@ -200,7 +255,7 @@ $(document).ready(function() {
 
   $.pp.reg("END", function(notify) { 
     console.log([tt(),'----------------------notify_end----------------------']);
-    pot = {};
+    ////pot = {};
   });
 
   $.pp.reg("WIN", function(notify) { 
@@ -208,7 +263,6 @@ $(document).ready(function() {
   });
 
   var return_hall = function() {
-    console.log(["seat", cur_seat, "pid", cur_pid, "gid", cur_gid, "seats", seats]);
     //$('#game').hide("normal");
     //$('#hall').show("normal").trigger('active', cur_game);
   };
@@ -230,24 +284,24 @@ $(document).ready(function() {
     });
   };
 
-  var five_positions = convert_points([{outer: "0,0"}, 
-    {outer: "450,346"},
-    {outer: "110,260"},
-    {outer: "290,60"},
-    {outer: "630,60"},
-    {outer: "805,260"}
+  var five_positions = convert_points([{outer: "0,0"},
+    {outer: "435,350"},
+    {outer: "117,230"},
+    {outer: "322,20"},
+    {outer: "585,20"},
+    {outer: "801,230"}
   ]);
 
   var nine_positions = convert_points([{outer: "0,0"},
-    {outer: "440,346"},
-    {outer: "253,340"},
-    {outer: "117,252"},
-    {outer: "150,100"},
-    {outer: "322,60"},
-    {outer: "555,60"},
-    {outer: "766,100"},
-    {outer: "801,252"},
-    {outer: "649,340"}
+    {outer: "435,350"},
+    {outer: "233,350"},
+    {outer: "117,230"},
+    {outer: "145,60"},
+    {outer: "342,20"},
+    {outer: "565,20"},
+    {outer: "766,60"},
+    {outer: "801,230"},
+    {outer: "680,350"}
   ]);
 });
 // vim: fdm=marker
