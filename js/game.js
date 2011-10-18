@@ -15,7 +15,7 @@ $(document).ready(function() {
   var cur_pid = 0, cur_gid = 0, cur_seat = 0, 
       only_watching = false, playing = false, 
       pot = {}, positions = null, seats_size = 0;
-  var seats = [], private_card_index = 0;
+  var seats = [], private_card_index = 0, share_card_index = 0;
 
   // {{{ initialization
   var initialization = function(args) { 
@@ -219,7 +219,7 @@ $(document).ready(function() {
         nick: notify.nick, inplay: notify.buyin
       });
 
-      //for (var i = 1; i < 6; i ++) {
+      //for (var i = 1; i < 10; i ++) {
         //update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 10, state: PS_PLAY});
         //get_seat(i).children('.blind').css(positions[i].blind).text("1000").show();
         //get_seat(i).children('.card').css(positions[i].card).show();
@@ -271,6 +271,8 @@ $(document).ready(function() {
 
   $.pp.reg("SHARE", function(notify) { 
     console.log([tt(),'notify_share', 'suit', notify.suit, 'face', notify.face]);
+    share_card_index += 1;
+    $("#share_card_" + share_card_index).attr('src', get_poker(notify.face, notify.suit)).show('normal');
   });
 
   $.pp.reg("STAGE", function(notify) { 
