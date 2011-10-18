@@ -15,7 +15,7 @@ $(document).ready(function() {
   var cur_pid = 0, cur_gid = 0, cur_seat = 0, 
       only_watching = false, playing = false, 
       pot = {}, positions = null, seats_size = 0;
-  var seats = [];
+  var seats = [], private_card_index = 0;
 
   // {{{ initialization
   var initialization = function(args) { 
@@ -61,6 +61,11 @@ $(document).ready(function() {
     return sn;
   };
 
+  var get_poker = function(face, suit) {
+    var a = new Number(face << 8 | suit);
+    return $.rl.poker[a.toString()];
+  };
+
   // 更新座位信息,需要参数中携带座位编号,昵称,带入金额.
   var update_seat = function(seat) {
     var s = get_seat(seat.sn);
@@ -99,6 +104,7 @@ $(document).ready(function() {
 
   // event {{{
   $('#game').bind('active', function(event, args) {
+    
     initialization(args);
 
     // not setting seat is watch game
@@ -249,6 +255,9 @@ $(document).ready(function() {
 
   $.pp.reg("PRIVATE", function(notify) { 
     console.log([tt(),'notify_private', 'pid', notify.pid, 'suit', notify.suit, 'face', notify.face]);
+
+    private_card_index += 1;
+    $("#private_card_" + private_card_index).attr('src', get_poker(notify.face, notify.suit)).show('normal');
   });
 
   $.pp.reg("DRAW", function(notify) { 
@@ -309,32 +318,36 @@ $(document).ready(function() {
     return $.map(points, function(pos) {
       var o = pos.outer.split(',');
       var b = pos.blind.split(',');
+      var c = pos.card.split(',');
 
       return {
         outer: {left: o[0] + 'px', top: o[1] + 'px'},
-        blind: {left: b[0] + 'px', top: b[1] + 'px'}
+        blind: {left: b[0] + 'px', top: b[1] + 'px'},
+        card : {left: c[0] + 'px', top: c[1] + 'px'},
       };
     });
   };
 
-  var five_positions = convert_points([{outer: "0,0", blind: "0,0"},
-    {outer: "435,350", blind: "90,-10"},
-    {outer: "117,230", blind: "90,35"},
-    {outer: "322,20", blind: "55,130"},
-    {outer: "585,20", blind: "-10,130"},
-    {outer: "801,230", blind: "-40,35"}
+  var five_positions = convert_points([
+    {outer: "0,0", blind: "0,0", card: "0,0"},
+    {outer: "435,350", blind: "90,-10", card: "100,20"},
+    {outer: "117,230", blind: "90,35", card: "100,20"},
+    {outer: "322,20", blind: "55,130", card: "100,20"},
+    {outer: "585,20", blind: "-10,130", card: "100,20"},
+    {outer: "801,230", blind: "-40,35", card: "100,20"}
   ]);
 
-  var nine_positions = convert_points([{outer: "0,0", blind: "0,0"},
-    {outer: "435,350", blind: "90,-10"},
-    {outer: "233,350", blind: "40,-25"},
-    {outer: "117,230", blind: "90,35"},
-    {outer: "145,60", blind: "118,95"},
-    {outer: "342,20", blind: "55,130"},
-    {outer: "565,20", blind: "-10,130"},
-    {outer: "766,60", blind: "-68,95"},
-    {outer: "801,230", blind: "-40,35"},
-    {outer: "680,350", blind: "20,-25"}
+  var nine_positions = convert_points([
+    {outer: "0,0", blind: "0,0", card: "0,0"},
+    {outer: "435,350", blind: "90,-10", card: "100,20"},
+    {outer: "233,350", blind: "40,-25", card: "100,20"},
+    {outer: "117,230", blind: "90,35", card: "100,20"},
+    {outer: "145,60", blind: "118,95", card: "100,20"},
+    {outer: "342,20", blind: "55,130", card: "100,20"},
+    {outer: "565,20", blind: "-10,130", card: "100,20"},
+    {outer: "766,60", blind: "-68,95", card: "100,20"},
+    {outer: "801,230", blind: "-40,35", card: "100,20"},
+    {outer: "680,350", blind: "20,-25", card: "100,20"}
   ]);
 });
 // vim: fdm=marker

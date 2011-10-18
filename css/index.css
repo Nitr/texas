@@ -383,3 +383,12 @@ button {
   border-radius: 20px;
   width: 35px;
 }
+
+.private_card {
+  position: absolute;
+  width: 45px;
+  height: 65px;
+  border-radius: 4px;
+  -webkit-box-shadow: 3px 3px 20px black;
+  display: none;
+}
