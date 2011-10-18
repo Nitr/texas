@@ -222,6 +222,7 @@ $(document).ready(function() {
       //for (var i = 1; i < 6; i ++) {
         //update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 10, state: PS_PLAY});
         //get_seat(i).children('.blind').css(positions[i].blind).text("1000").show();
+        //get_seat(i).children('.card').css(positions[i].card).show();
       //}
       return;
     }
@@ -262,6 +263,10 @@ $(document).ready(function() {
 
   $.pp.reg("DRAW", function(notify) { 
     //console.log([tt(),'notify_draw', 'pid', notify.pid, 'suit', notify.suit, 'face', notify.face]);
+    if (cur_pid != notify.pid) {
+      var sn = get_seat_number(notify.pid)
+      get_seat(sn).children('.card').css(positions[sn].card).show();
+    }
   });
 
   $.pp.reg("SHARE", function(notify) { 
@@ -330,24 +335,24 @@ $(document).ready(function() {
 
   var five_positions = convert_points([
     {outer: "0,0", blind: "0,0", card: "0,0"},
-    {outer: "435,350", blind: "90,-10", card: "100,20"},
-    {outer: "117,230", blind: "90,35", card: "100,20"},
-    {outer: "322,20", blind: "55,130", card: "100,20"},
-    {outer: "585,20", blind: "-10,130", card: "100,20"},
-    {outer: "801,230", blind: "-40,35", card: "100,20"}
+    {outer: "435,350", blind: "90,-10", card: "90,30"},
+    {outer: "117,230", blind: "110,5", card: "90,30"},
+    {outer: "292,20", blind: "55,130", card: "90,60"},
+    {outer: "625,20", blind: "-10,130", card: "-52,60"},
+    {outer: "801,230", blind: "-63,5", card: "-51,30"}
   ]);
 
   var nine_positions = convert_points([
     {outer: "0,0", blind: "0,0", card: "0,0"},
-    {outer: "435,350", blind: "90,-10", card: "100,20"},
-    {outer: "233,350", blind: "40,-25", card: "100,20"},
-    {outer: "117,230", blind: "90,35", card: "100,20"},
-    {outer: "145,60", blind: "118,95", card: "100,20"},
-    {outer: "342,20", blind: "55,130", card: "100,20"},
-    {outer: "565,20", blind: "-10,130", card: "100,20"},
-    {outer: "766,60", blind: "-68,95", card: "100,20"},
-    {outer: "801,230", blind: "-40,35", card: "100,20"},
-    {outer: "680,350", blind: "20,-25", card: "100,20"}
+    {outer: "435,350", blind: "90,-10", card: "90,30"},
+    {outer: "233,350", blind: "40,-25", card: "90,28"},
+    {outer: "117,230", blind: "110,5", card: "90,30"},
+    {outer: "145,60", blind: "145,95", card: "90,40"},
+    {outer: "342,20", blind: "50,125", card: "90,60"},
+    {outer: "565,20", blind: "-5,125", card: "-52,60"},
+    {outer: "766,60", blind: "-95,95", card: "-52,40"},
+    {outer: "801,230", blind: "-63,5", card: "-51,30"},
+    {outer: "680,350", blind: "20,-25", card: "-51,28"}
   ]);
 });
 // vim: fdm=marker

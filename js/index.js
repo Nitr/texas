@@ -68,11 +68,6 @@ $(function() {
           }
         }
       }
-    }, {
-      url: 'css/share_poker.png', 
-      callback: function(img) {
-        $.rl.img['share_poker'] = $.rl.getImgDataUrl(img, 0, 0, 45, 65);
-      }
     }];
 
     var autoSingin = function() { // {{{

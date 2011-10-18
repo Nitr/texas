@@ -369,8 +369,8 @@ button {
 
 .button {
   position: absolute;
-  top: 75px;
-  left: 65px;
+  top: 70px;
+  left: 60px;
 }
 
 #game_table {
@@ -382,6 +382,14 @@ button {
   font-size: 12px;
   border-radius: 20px;
   width: 35px;
+}
+
+.card {
+  position: absolute;
+  width: 45px;
+  height: 65px;
+  border-radius: 4px;
+  -webkit-box-shadow: 3px 3px 20px black;
 }
 
 .private_card {
