@@ -375,3 +375,11 @@ button {
 
 #game_table {
 }
+
+.blind {
+  background-color: #77B73E;
+  position: absolute;
+  font-size: 12px;
+  border-radius: 20px;
+  width: 35px;
+}

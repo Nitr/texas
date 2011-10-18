@@ -14,7 +14,8 @@ $(document).ready(function() {
 
   var cur_pid = 0, cur_gid = 0, cur_seat = 0, 
       only_watching = false, playing = false, 
-      pot = {}, positions = null, all_seats = 0;
+      pot = {}, positions = null, seats_size = 0;
+  var seats = [];
 
   // {{{ initialization
   var initialization = function(args) { 
@@ -23,21 +24,21 @@ $(document).ready(function() {
     cur_gid = args.gid;
     cur_pid = $(document).data("pid");
     only_watching = args.seat == undefined;
-    $('#game_commands > *').attr('disabled', 'true');
+    //$('#game_commands > *').attr('disabled', 'true');
 
     $("#game_table").setTemplateElement("game_table_template");
     $("#game_table").processTemplate({end: 10});
   }; 
 
-  var init_seats = function(seats) {
-    all_seats = seats;
+  var init_seats = function(size) {
+    seats_size = size;
 
     if (positions == null) {
-      positions = seats == 5 ? five_positions : nine_positions;
+      positions = size == 5 ? five_positions : nine_positions;
     }
 
     // init seats outer position
-    for (var i = 1; i <= seats; i++) {
+    for (var i = 1; i <= size ; i++) {
       $("#game_seat_" + i).css(positions[i].outer);
     }
   };
@@ -46,13 +47,37 @@ $(document).ready(function() {
     return $("#game_seat_" + sn);
   };
 
+  var get_seat_number = function(pid) {
+    var sn = 0;
+    $.each(seats, function(i, s) {
+      if (s == undefined)
+        return;
+
+      if (s.pid == pid) {
+        sn = s.sn;
+      }
+    });
+
+    return sn;
+  };
+
   // 更新座位信息,需要参数中携带座位编号,昵称,带入金额.
   var update_seat = function(seat) {
     var s = get_seat(seat.sn);
     if (seat.state == PS_EMPTY) {
       s.hide();
+      seats[seat.sn] = undefined;
     } else {
       s.show("normal");
+
+      if (seats[seat.sn] == undefined) {
+        seat.betting = 0;
+        seats[seat.sn] = seat;
+      }
+      else {
+        seat.betting = seats[seat.sn].betting;
+        seats[seat.sn] = seat;
+      }
       
       // 对玩家显示区进行基本设置
       s.children('.inplay').text(seat.inplay).parent().
@@ -138,7 +163,7 @@ $(document).ready(function() {
     throw 'error seat_state protocol'
   }); 
 
-  $.pp.reg("PHOTO_INFO", function(player) { // {{{
+  $.pp.reg("PHOTO_INFO", function(player) { 
     if (is_disable())
       return;
 
@@ -180,7 +205,7 @@ $(document).ready(function() {
       if (notify.pid == cur_pid) {
         // 根据当前玩家的座位号调整一次座位顺序
         trim_position(notify.seat - 1);
-        init_seats(all_seats);
+        init_seats(seats_size);
       }
 
       update_seat({
@@ -190,6 +215,7 @@ $(document).ready(function() {
 
       //for (var i = 1; i < 6; i ++) {
         //update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 10, state: PS_PLAY});
+        //get_seat(i).children('.blind').css(positions[i].blind).text("1000").show();
       //}
       return;
     }
@@ -239,10 +265,12 @@ $(document).ready(function() {
 
   $.pp.reg("RAISE", function(notify) { 
     console.log([tt(),'notify_raise', 'pid', notify.pid, 'raise', notify.raise, 'call', notify.call]);
-    //if (pot[notify.pid] == undefined)
-      //pot[notify.pid] = 0;
 
-    //pot[notify.pid] += notify.call + notify.raise
+    var sum = notify.call + notify.raise;
+    var sn = get_seat_number(notify.pid)
+
+    seats[sn].betting = seats[sn].betting + sum;
+    get_seat(sn).children('.blind').css(positions[sn].blind).text(seats[sn].betting).show();
   });
 
   $.pp.reg("SHOW", function(notify) { 
@@ -279,29 +307,34 @@ $(document).ready(function() {
 
   var convert_points = function(points) {
     return $.map(points, function(pos) {
-      o = pos.outer.split(',');
-      return {outer: {left: o[0] + 'px', top: o[1] + 'px'}};
+      var o = pos.outer.split(',');
+      var b = pos.blind.split(',');
+
+      return {
+        outer: {left: o[0] + 'px', top: o[1] + 'px'},
+        blind: {left: b[0] + 'px', top: b[1] + 'px'}
+      };
     });
   };
 
-  var five_positions = convert_points([{outer: "0,0"},
-    {outer: "435,350"},
-    {outer: "117,230"},
-    {outer: "322,20"},
-    {outer: "585,20"},
-    {outer: "801,230"}
+  var five_positions = convert_points([{outer: "0,0", blind: "0,0"},
+    {outer: "435,350", blind: "90,-10"},
+    {outer: "117,230", blind: "90,35"},
+    {outer: "322,20", blind: "55,130"},
+    {outer: "585,20", blind: "-10,130"},
+    {outer: "801,230", blind: "-40,35"}
   ]);
 
-  var nine_positions = convert_points([{outer: "0,0"},
-    {outer: "435,350"},
-    {outer: "233,350"},
-    {outer: "117,230"},
-    {outer: "145,60"},
-    {outer: "342,20"},
-    {outer: "565,20"},
-    {outer: "766,60"},
-    {outer: "801,230"},
-    {outer: "680,350"}
+  var nine_positions = convert_points([{outer: "0,0", blind: "0,0"},
+    {outer: "435,350", blind: "90,-10"},
+    {outer: "233,350", blind: "40,-25"},
+    {outer: "117,230", blind: "90,35"},
+    {outer: "145,60", blind: "118,95"},
+    {outer: "342,20", blind: "55,130"},
+    {outer: "565,20", blind: "-10,130"},
+    {outer: "766,60", blind: "-68,95"},
+    {outer: "801,230", blind: "-40,35"},
+    {outer: "680,350", blind: "20,-25"}
   ]);
 });
 // vim: fdm=marker
