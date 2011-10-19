@@ -72,7 +72,7 @@ $(function() {
       url: 'css/betting.png', 
       callback: function(img) {
         for (var i = 0; i < img.width / 138; i++) {
-          $.rl.img["betting_" + i] = 
+          $.rl.img["betting_" + (i + 1)] = 
             $.rl.getImgDataUrl(img, i * 138, 0, 138, 145);
         }
       }

@@ -125,22 +125,39 @@ $(document).ready(function() {
 
     b.children("label").text(bet);
 
+    var ori_bet = bet;
     // generate bet animation
-    $('<img />').
-      attr("src", $.rl.img["betting_1"]).
-      css(positions[seat].blind.ori).
-      appendTo(b).
-      animate(random(positions[seat].betting), 450);
-    $('<img />').
-      attr("src", $.rl.img["betting_2"]).
-      css(positions[seat].blind.ori).
-      appendTo(b).
-      animate(random(positions[seat].betting), 450);
-    $('<img />').
-      attr("src", $.rl.img["betting_3"]).
-      css(positions[seat].blind.ori).
-      appendTo(b).
-      animate(random(positions[seat].betting), 450);
+    var bets = [];
+    var maxs = [
+      {key: 100, val: "betting_1"},
+      {key: 50, val: "betting_2"}, 
+      {key: 20, val: "betting_3"}, 
+      {key: 10, val: "betting_4"}, 
+      {key: 5, val: "betting_5"}
+    ];
+
+    while (true) {
+      var max = maxs.shift();
+      var l = Math.floor(bet / max.key);
+      for (var i = 1; i <= l; i++) {
+        bets.push(max.val);
+      }
+
+      bet = bet % max.key;
+
+      if (maxs.length == 0) {
+        if (bet != 0)
+          bets.push(max.val);
+
+        break;
+      }
+    }
+
+    console.log(ori_bet, bets);
+
+    for (var i = 0; i < bets.length; i++) {
+      $('<img />').attr("src", $.rl.img[bets[i]]).css(positions[seat].blind.ori).appendTo(b).animate(random(positions[seat].betting), 450);
+    }
   };
 
   var showall = function() {
@@ -246,7 +263,7 @@ $(document).ready(function() {
 
   $.pp.reg("CANCEL", function(notify) { 
     if (notify.gid == cur_gid) {
-      console.log([tt(),'notify_cancel', notify]);
+      //console.log([tt(),'notify_cancel', notify]);
       return;
     }
 
@@ -345,7 +362,7 @@ $(document).ready(function() {
     var sn = get_seat_number(notify.pid)
 
     seats[sn].betting = seats[sn].betting + sum;
-    get_seat(sn).children('.blind').css(positions[sn].blind).text(seats[sn].betting).show();
+    betting(sn, sum);
   });
 
   $.pp.reg("SHOW", function(notify) { 
