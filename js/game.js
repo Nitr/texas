@@ -380,23 +380,23 @@ $(document).ready(function() {
   var five_positions = convert_points([
     {outer: "0,0", blind: "0,0", card: "0,0"},
     {outer: "435,350", blind: "90,-10", card: "90,30"},
-    {outer: "117,230", blind: "110,5", card: "90,30"},
-    {outer: "292,20", blind: "55,130", card: "90,60"},
-    {outer: "625,20", blind: "-10,130", card: "-52,60"},
+    {outer: "117,230", blind: "105,5", card: "90,30"},
+    {outer: "292,20", blind: "50,125", card: "90,60"},
+    {outer: "625,20", blind: "-5,125", card: "-52,60"},
     {outer: "801,230", blind: "-63,5", card: "-51,30"}
   ]);
 
   var nine_positions = convert_points([
     {outer: "0,0", blind: "0,0", card: "0,0"},
     {outer: "435,350", blind: "90,-10", card: "90,30"},
-    {outer: "233,350", blind: "40,-25", card: "90,28"},
-    {outer: "117,230", blind: "110,5", card: "90,30"},
+    {outer: "233,350", blind: "65,-20", card: "90,28"},
+    {outer: "117,230", blind: "105,5", card: "90,30"},
     {outer: "145,60", blind: "145,95", card: "90,40"},
     {outer: "342,20", blind: "50,125", card: "90,60"},
     {outer: "565,20", blind: "-5,125", card: "-52,60"},
-    {outer: "766,60", blind: "-95,95", card: "-52,40"},
+    {outer: "766,60", blind: "-105,95", card: "-52,40"},
     {outer: "801,230", blind: "-63,5", card: "-51,30"},
-    {outer: "680,350", blind: "20,-25", card: "-51,28"}
+    {outer: "680,350", blind: "20,-20", card: "-51,28"}
   ]);
 });
 // vim: fdm=marker
