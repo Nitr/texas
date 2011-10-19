@@ -110,30 +110,46 @@ $(document).ready(function() {
       return Math.abs(i);
   };
 
+  var random = function(ori) {
+    var x = new Number(Math.floor((Math.random() * 100)) % 30 + ori.left);
+    var y = new Number(Math.floor((Math.random() * 100)) % 30 + ori.top);
+    
+    return {left: x.toString() + "px", top: y.toString() + "px"};
+  }
+
   var betting = function(seat, bet) {
     var b = get_seat(seat).
       children(".blind").
       css(positions[seat].blind).
-      text(bet).
       show();
+
+    b.children("label").text(bet);
 
     // generate bet animation
     $('<img />').
       attr("src", $.rl.img["betting_1"]).
       css(positions[seat].blind.ori).
       appendTo(b).
-      animate({left: "0px", top: "0px"}, 450);
+      animate(random(positions[seat].betting), 450);
+    $('<img />').
+      attr("src", $.rl.img["betting_2"]).
+      css(positions[seat].blind.ori).
+      appendTo(b).
+      animate(random(positions[seat].betting), 450);
+    $('<img />').
+      attr("src", $.rl.img["betting_3"]).
+      css(positions[seat].blind.ori).
+      appendTo(b).
+      animate(random(positions[seat].betting), 450);
   };
 
   var showall = function() {
     if (show_all == false)
       return; 
 
-    console.log('test');
-
     for (var i = 1; i < seats_size + 1; i ++) {
       update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 10, state: PS_PLAY});
-      get_seat(i).children('.blind').css(positions[i].blind).text("1000").show();
+      get_seat(i).children('.blind').css(positions[i].blind).children("label").text("1000").parent().show();
       get_seat(i).children('.card').css(positions[i].card).show();
     }
   };
@@ -149,10 +165,17 @@ $(document).ready(function() {
     $.ws.send($.pp.write(cmd));
   });
 
+  var betting_i = 0;
   $('#cmd_hall').click(function() {
-    for (var i = 1; i <= seats_size; i++) {
-      betting(i, 100);
-    }
+    betting_i++;
+    betting(betting_i, Math.floor((Math.random() * 100)));
+
+    if (betting_i == seats_size)
+      betting_i = 0;
+
+    //for (var i = 1; i <= seats_size; i++) {
+      //betting(i, 100);
+    //}
   });
 
   $('#cmd_fold').click(function() {
@@ -362,41 +385,45 @@ $(document).ready(function() {
       var o = pos.outer.split(',');
       var b = pos.blind.split(',');
       var c = pos.card.split(',');
+      var bb = pos.betting.split(',');
 
       return {
         outer: {left: o[0] + 'px', top: o[1] + 'px'},
         card : {left: c[0] + 'px', top: c[1] + 'px'},
         blind: {
-          left: b[0] + 'px', top: b[1] + 'px',
-          ori: {
+          left: b[0] + 'px', top: b[1] + 'px', // 下注文字显示坐标
+          end: { left: 50, top: 50 }, // 动画随机结束点的起始计算坐标
+          ori: { // 下注动画显示的起始点坐标
             left: new Number(fan(new Number(b[0])) + 50).toString() + "px", 
             top: new Number(fan(new Number(b[1])) + 50).toString() + "px"
           }
-        }
+        },
+        betting: { left: new Number(bb[0]), top: new Number(bb[1]) }
       };
     });
   };
 
   var five_positions = convert_points([
-    {outer: "0,0", blind: "0,0", card: "0,0"},
-    {outer: "435,350", blind: "90,-10", card: "90,30"},
-    {outer: "117,230", blind: "105,5", card: "90,30"},
-    {outer: "292,20", blind: "50,125", card: "90,60"},
-    {outer: "625,20", blind: "-5,125", card: "-52,60"},
-    {outer: "801,230", blind: "-63,5", card: "-51,30"}
+    {outer: "0,0", blind: "0,0", betting: "0,0", card: "0,0"},
+    {outer: "435,350", blind: "90,-10", betting: "0,0", card: "90,30"},
+    {outer: "117,230", blind: "105,5", betting: "0,0", card: "90,30"},
+    {outer: "292,20", blind: "50,125", betting: "0,0", card: "90,60"},
+    {outer: "625,20", blind: "-5,125", betting: "0,0", card: "-52,60"},
+    {outer: "801,230", blind: "-63,5", betting: "0,0", card: "-51,30"}
   ]);
 
   var nine_positions = convert_points([
-    {outer: "0,0", blind: "0,0", card: "0,0"},
-    {outer: "435,350", blind: "90,-10", card: "90,30"},
-    {outer: "233,350", blind: "65,-20", card: "90,28"},
-    {outer: "117,230", blind: "105,5", card: "90,30"},
-    {outer: "145,60", blind: "145,95", card: "90,40"},
-    {outer: "342,20", blind: "50,125", card: "90,60"},
-    {outer: "565,20", blind: "-5,125", card: "-52,60"},
-    {outer: "766,60", blind: "-105,95", card: "-52,40"},
-    {outer: "801,230", blind: "-63,5", card: "-51,30"},
-    {outer: "680,350", blind: "20,-20", card: "-51,28"}
-  ]);
+    {outer: "0,0", blind: "0,0", betting: "0,0", card: "0,0"},
+    {outer: "435,350", blind: "90,-10", betting: "-5,-40", card: "90,30"},
+    {outer: "233,350", blind: "65,-20", betting: "-5,-40", card: "90,28"},
+    {outer: "117,230", blind: "105,5", betting: "-5,-40", card: "90,30"},
+    {outer: "145,60", blind: "145,95", betting: "-5,13", card: "90,40"},
+    {outer: "342,20", blind: "50,125", betting: "-5,13", card: "90,60"},
+    {outer: "565,20", blind: "-5,125", betting: "-5,13", card: "-52,60"},
+    {outer: "766,60", blind: "-105,95", betting: "-5,13", card: "-52,40"},
+    {outer: "801,230", blind: "-63,5", betting: "-5,-40", card: "-51,30"},
+    {outer: "680,350", blind: "20,-20", betting: "-5,-40", card: "-51,28"}
+  ])
 });
+
 // vim: fdm=marker
