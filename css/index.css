@@ -330,6 +330,18 @@ button {
   text-align: center;
 }
 
+.empty_seat {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  font-size: 18px;
+  padding: 0px
+  margin: 0px;
+  border: 0px;
+  text-align: center;
+  border: 2px solid #000000;
+}
+
 .game_seat > .photo {
   padding: 0px;
   margin: 0px;
@@ -377,7 +389,7 @@ button {
 #game_table {
 }
 
-.blind {
+.betting_label, .pot_label {
   background-color: #77B73E;
   position: absolute;
   font-size: 12px;
@@ -385,9 +397,10 @@ button {
   width: 45px;
 }
 
-.blind > img {
-  position: absolute;
-  width: 15px;
+.pot_label {
+  width: 65px;
+  text-align: center;
+  background-color: #a5a6a6;
 }
 
 .card {
@@ -405,4 +418,9 @@ button {
   border-radius: 4px;
   -webkit-box-shadow: 1px 1px 20px black;
   display: none;
+}
+
+.bet, .pot {
+  position: absolute;
+  width: 13px;
 }

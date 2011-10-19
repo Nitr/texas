@@ -8,7 +8,7 @@
 
 <div id=room_commands>
   <button type=command id=cmd_hall >大厅</button><br />
-  <button type=command id=cmd_sit >起身</button><br />
+  <button type=command id=cmd_stand >起身</button><br />
 </div>
 
 <div id=game_commands>
@@ -21,6 +21,7 @@
 
 <textarea id="game_table_template" style="display:none;">
   {#for index = 1 to $T.end}
+  <div id=empty_seat_{$T.index} seat={$T.index} class=empty_seat>加入</div>
   <div id=game_seat_{$T.index} seat={$T.index} class=game_seat style='display: none'>
     <div class=nick></div>
     <img class=photo />
@@ -28,9 +29,10 @@
     <img class=button src='css/button.png' style='display: none;' />
     <!--<div class=blind style='display: none;'></div>-->
     <img class=card src='css/poker_back.png' style='display: none;' />
-    <div class=blind><label></label></div>
+    <div class=betting_label></div>
   </div>
   {#/for}
   <img id=private_card_1 class=private_card style="top: 375px; left: 530px;"/>
   <img id=private_card_2 class=private_card style="top: 370px; left: 550px;"/>
+  <div class=pot_label style="left: 553px; top: 260px; display: none;"></div>
 </textarea>

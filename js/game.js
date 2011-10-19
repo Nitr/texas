@@ -13,7 +13,7 @@ $(document).ready(function() {
       PS_OUT       = 1024; // }}}
 
   var cur_pid = 0, cur_gid = 0, cur_seat = 0, 
-      only_watching = false, playing = false, 
+      watching = false, playing = false, 
       pot = {}, positions = null, seats_size = 0;
   var seats = [], private_card_index = 0, share_card_index = 0;
   var show_all = false;
@@ -26,8 +26,13 @@ $(document).ready(function() {
     if (args.show_all == true)
       show_all = true;
 
+    if (args.seat == undefined)
+      watching = true;
+
     $("#game_table").setTemplateElement("game_table_template");
     $("#game_table").processTemplate({end: 10});
+
+    $('#cmd_stand').attr('disabled', 'false');
   }; 
 
   var init_seats = function(size) {
@@ -37,14 +42,23 @@ $(document).ready(function() {
       positions = size == 5 ? five_positions : nine_positions;
     }
 
+    $(".game_seat, .empty_seat").hide();
+
     // init seats outer position
     for (var i = 1; i <= size ; i++) {
       $("#game_seat_" + i).css(positions[i].outer);
+      $("#empty_seat_" + i).css(positions[i].empty_outer);
     }
+
+    console.log("init_seats");
   };
 
   var get_seat = function(sn) {
     return $("#game_seat_" + sn);
+  };
+
+  var get_empty_seat = function(sn) {
+    return $("#empty_seat_" + sn);
   };
 
   var get_seat_number = function(pid) {
@@ -67,14 +81,30 @@ $(document).ready(function() {
   };
 
   // 更新座位信息,需要参数中携带座位编号,昵称,带入金额.
-  var update_seat = function(seat) {
-    var s = get_seat(seat.sn);
-    if (seat.state == PS_EMPTY) {
+  var reload_seat = function(sn) {
+    var seat = seats[sn];
+    var s = get_seat(sn);
+    var e = get_empty_seat(sn);
+
+    if (seat == undefined) {
       s.hide();
+      e.show(450);
+    }
+    else {
+      e.hide();
+      // 对玩家显示区进行基本设置
+      s.children('.inplay').text(seat.inplay).parent().
+        children('.nick').text(seat.nick).parent().
+        children('.photo').attr('player', seat.pid).parent().
+        show(450);
+
+      $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: seat.pid}));
+    }
+  };
+  var update_seat = function(seat) {
+    if (seat.state == PS_EMPTY) {
       seats[seat.sn] = undefined;
     } else {
-      s.show("normal");
-
       if (seats[seat.sn] == undefined) {
         seat.betting = 0;
         seats[seat.sn] = seat;
@@ -83,14 +113,9 @@ $(document).ready(function() {
         seat.betting = seats[seat.sn].betting;
         seats[seat.sn] = seat;
       }
-      
-      // 对玩家显示区进行基本设置
-      s.children('.inplay').text(seat.inplay).parent().
-        children('.nick').text(seat.nick).parent().
-        children('.photo').attr('player', seat.pid);
-
-      $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: seat.pid}));
     }
+
+    reload_seat(seat.sn);
   };
 
   var trim_position = function(offset) {
@@ -99,6 +124,12 @@ $(document).ready(function() {
       positions.unshift(positions.pop());
     }
     positions.unshift(t);
+
+
+    for(var i = 1; i <= seats_size; i++) {
+      $("#game_seat_" + i).css(positions[i].outer);
+      $("#empty_seat_" + i).css(positions[i].empty_outer);
+    }
   };
 
   var fan = function(i) {
@@ -110,22 +141,7 @@ $(document).ready(function() {
       return Math.abs(i);
   };
 
-  var random = function(ori) {
-    var x = new Number(Math.floor((Math.random() * 100)) % 30 + ori.left);
-    var y = new Number(Math.floor((Math.random() * 100)) % 30 + ori.top);
-    
-    return {left: x.toString() + "px", top: y.toString() + "px"};
-  }
-
-  var betting = function(seat, bet) {
-    var b = get_seat(seat).
-      children(".blind").
-      css(positions[seat].blind).
-      show();
-
-    b.children("label").text(bet);
-
-    var ori_bet = bet;
+  var get_bets = function(bet) { // {{{
     // generate bet animation
     var bets = [];
     var maxs = [
@@ -153,20 +169,56 @@ $(document).ready(function() {
       }
     }
 
-    console.log(ori_bet, bets);
+    return bets;
+  } // }}}
 
-    for (var i = 0; i < bets.length; i++) {
-      $('<img />').attr("src", $.rl.img[bets[i]]).css(positions[seat].blind.ori).appendTo(b).animate(random(positions[seat].betting), 450);
-    }
+  var random = function(ori, x, y) {
+    var left = new Number(Math.floor((Math.random() * 100)) % x + ori.left);
+    var top = new Number(Math.floor((Math.random() * 100)) % y + ori.top);
+    
+    return {left: left + "px", top: top + "px"};
+  }
+
+  var set_betting = function(seat, bet) {
+    seats[seat].betting = seats[seat].betting + bet;
+
+    var b = get_seat(seat).
+      children(".betting_label").
+      css(positions[seat].betting_label).
+      text(bet).
+      show();
+
+    var bets = get_bets(bet);
+
+    $.each(bets, function(i, x) {
+      $('<img class="bet" />').attr("src", $.rl.img[x]).css(positions[seat].betting_ori).appendTo('#game_table').animate(random(positions[seat].betting, 7, 7), 450);
+    });
   };
+
+  var new_stage = function() {
+    var sum = 0;
+
+    $('.bet').each(function() {
+      $(this).animate(random({left: 571, top: 227}, 20, 20), 350).removeClass('bet').addClass('pot');
+    });
+
+    for (var i = 1; i <= seats_size; i++) {
+      get_seat(i).children(".betting_label").text("").hide();
+      if (seats[i] != undefined) {
+        sum += seats[i].betting;
+      }
+    }
+
+    $('.pot_label').show().text(sum);
+  }
 
   var showall = function() {
     if (show_all == false)
       return; 
 
     for (var i = 1; i < seats_size + 1; i ++) {
-      update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 10, state: PS_PLAY});
-      get_seat(i).children('.blind').css(positions[i].blind).children("label").text("1000").parent().show();
+      update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 10, state: PS_PLAY, betting: 0});
+      get_seat(i).children('.betting_label').css(positions[i].betting_label).text("1000").show();
       get_seat(i).children('.card').css(positions[i].card).show();
     }
   };
@@ -177,22 +229,16 @@ $(document).ready(function() {
     initialization(args);
 
     // not setting seat is watch game
-    var cmd = only_watching == true ? {cmd: "WATCH", gid: cur_gid} : 
+    var cmd = watching == true ? {cmd: "WATCH", gid: cur_gid} : 
       {cmd: "JOIN", gid: cur_gid, seat: args.seat, buyin: 100};
+    console.log(cmd);
     $.ws.send($.pp.write(cmd));
   });
 
-  var betting_i = 0;
+  $('#cmd_stand').click(function() {
+  });
+
   $('#cmd_hall').click(function() {
-    betting_i++;
-    betting(betting_i, Math.floor((Math.random() * 100)));
-
-    if (betting_i == seats_size)
-      betting_i = 0;
-
-    //for (var i = 1; i <= seats_size; i++) {
-      //betting(i, 100);
-    //}
   });
 
   $('#cmd_fold').click(function() {
@@ -287,9 +333,12 @@ $(document).ready(function() {
 
     if (notify.gid == cur_gid) {
       if (notify.pid == cur_pid) {
+        playing = true;
+        watching = false;
+
         // 根据当前玩家的座位号调整一次座位顺序
         trim_position(notify.seat - 1);
-        init_seats(seats_size);
+        $('#cmd_stand').attr('disabled', 'true');
       }
 
       update_seat({
@@ -353,6 +402,7 @@ $(document).ready(function() {
 
   $.pp.reg("STAGE", function(notify) { 
     console.log([tt(),'notify_stage', 'stage', notify.stage]);
+    new_stage();
   });
 
   $.pp.reg("RAISE", function(notify) { 
@@ -360,8 +410,6 @@ $(document).ready(function() {
 
     var sum = notify.call + notify.raise;
     var sn = get_seat_number(notify.pid)
-
-    seats[sn].betting = seats[sn].betting + sum;
     betting(sn, sum);
   });
 
@@ -399,47 +447,42 @@ $(document).ready(function() {
 
   var convert_points = function(points) {
     return $.map(points, function(pos) {
-      var o = pos.outer.split(',');
-      var b = pos.blind.split(',');
       var c = pos.card.split(',');
+      var o = pos.outer.split(',');
       var bb = pos.betting.split(',');
+      var bl = pos.betting_label.split(',');
 
       return {
         outer: {left: o[0] + 'px', top: o[1] + 'px'},
+        empty_outer: {left: (new Number(o[0]) + 30) + 'px', top: (new Number(o[1]) + 40) + 'px'},
         card : {left: c[0] + 'px', top: c[1] + 'px'},
-        blind: {
-          left: b[0] + 'px', top: b[1] + 'px', // 下注文字显示坐标
-          end: { left: 50, top: 50 }, // 动画随机结束点的起始计算坐标
-          ori: { // 下注动画显示的起始点坐标
-            left: new Number(fan(new Number(b[0])) + 50).toString() + "px", 
-            top: new Number(fan(new Number(b[1])) + 50).toString() + "px"
-          }
-        },
-        betting: { left: new Number(bb[0]), top: new Number(bb[1]) }
+        betting: { left: new Number(bb[2]), top: new Number(bb[3]) },
+        betting_ori: { left: bb[0] + 'px', top: bb[1] + 'px' },
+        betting_label: { left: bl[0] + 'px', top: bl[1] + 'px' } // 下注文字显示坐标
       };
     });
   };
 
   var five_positions = convert_points([
-    {outer: "0,0", blind: "0,0", betting: "0,0", card: "0,0"},
-    {outer: "435,350", blind: "90,-10", betting: "0,0", card: "90,30"},
-    {outer: "117,230", blind: "105,5", betting: "0,0", card: "90,30"},
-    {outer: "292,20", blind: "50,125", betting: "0,0", card: "90,60"},
-    {outer: "625,20", blind: "-5,125", betting: "0,0", card: "-52,60"},
-    {outer: "801,230", blind: "-63,5", betting: "0,0", card: "-51,30"}
+    {outer: "0,0", betting_label: "0,0", betting: "0,0,0,0", card: "0,0"},
+    {outer: "435,350", betting_label: "90,-10", betting: "471,413,529,308", card: "90,30"},
+    {outer: "233,350", betting_label: "65,-20", betting: "268,410,337,308", card: "90,28"},
+    {outer: "117,230", betting_label: "105,5", betting: "150,288,231,203", card: "90,30"},
+    {outer: "145,60", betting_label: "145,95", betting: "181,122,294,178", card: "90,40"},
+    {outer: "342,20", betting_label: "50,125", betting: "376,83,389,168", card: "90,60"}
   ]);
 
   var nine_positions = convert_points([
-    {outer: "0,0", blind: "0,0", betting: "0,0", card: "0,0"},
-    {outer: "435,350", blind: "90,-10", betting: "-5,-40", card: "90,30"},
-    {outer: "233,350", blind: "65,-20", betting: "-5,-40", card: "90,28"},
-    {outer: "117,230", blind: "105,5", betting: "-5,-40", card: "90,30"},
-    {outer: "145,60", blind: "145,95", betting: "-5,13", card: "90,40"},
-    {outer: "342,20", blind: "50,125", betting: "-5,13", card: "90,60"},
-    {outer: "565,20", blind: "-5,125", betting: "-5,13", card: "-52,60"},
-    {outer: "766,60", blind: "-105,95", betting: "-5,13", card: "-52,40"},
-    {outer: "801,230", blind: "-63,5", betting: "-5,-40", card: "-51,30"},
-    {outer: "680,350", blind: "20,-20", betting: "-5,-40", card: "-51,28"}
+    {outer: "0,0", betting_label: "0,0", betting: "0,0,0,0", card: "0,0"},
+    {outer: "435,350", betting_label: "90,-10", betting: "471,413,535,314", card: "90,30"},
+    {outer: "233,350", betting_label: "65,-20", betting: "268,410,309,303", card: "90,28"},
+    {outer: "117,230", betting_label: "105,5", betting: "150,288,233,208", card: "90,30"},
+    {outer: "145,60", betting_label: "145,95", betting: "181,122,300,175", card: "90,40"},
+    {outer: "342,20", betting_label: "50,125", betting: "376,83,402,162", card: "90,60"},
+    {outer: "565,20", betting_label: "-5,125", betting: "604,84,572,162", card: "-52,60"},
+    {outer: "766,60", betting_label: "-105,95", betting: "803,129,672,175", card: "-52,40"},
+    {outer: "801,230", betting_label: "-63,5", betting: "832,290,749,208", card: "-51,30"},
+    {outer: "680,350", betting_label: "20,-20", betting: "711,408,710,306", card: "-51,28"}
   ])
 });
 

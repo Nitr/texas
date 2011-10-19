@@ -78,9 +78,9 @@ $(function() {
         $(this).trigger('update');
       }).eq(0).click();
 
-      $(document).oneTime(2000, function() {
-        $('#cmd_join').click();
-      });
+      //$(document).oneTime(2000, function() {
+        //$('#cmd_join').click();
+      //});
     }
   }); // }}}
 
