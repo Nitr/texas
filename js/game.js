@@ -16,15 +16,15 @@ $(document).ready(function() {
       only_watching = false, playing = false, 
       pot = {}, positions = null, seats_size = 0;
   var seats = [], private_card_index = 0, share_card_index = 0;
+  var show_all = false;
 
   // {{{ initialization
   var initialization = function(args) { 
-    console.log(["active_game", args]);
-
     cur_gid = args.gid;
     cur_pid = $(document).data("pid");
-    only_watching = args.seat == undefined;
-    //$('#game_commands > *').attr('disabled', 'true');
+
+    if (args.show_all == true)
+      show_all = true;
 
     $("#game_table").setTemplateElement("game_table_template");
     $("#game_table").processTemplate({end: 10});
@@ -123,6 +123,19 @@ $(document).ready(function() {
       css(positions[seat].blind.ori).
       appendTo(b).
       animate({left: "0px", top: "0px"}, 450);
+  };
+
+  var showall = function() {
+    if (show_all == false)
+      return; 
+
+    console.log('test');
+
+    for (var i = 1; i < seats_size + 1; i ++) {
+      update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 10, state: PS_PLAY});
+      get_seat(i).children('.blind').css(positions[i].blind).text("1000").show();
+      get_seat(i).children('.card').css(positions[i].card).show();
+    }
   };
   // }}}
 
@@ -244,16 +257,14 @@ $(document).ready(function() {
         nick: notify.nick, inplay: notify.buyin
       });
 
-      for (var i = 1; i < 10; i ++) {
-        update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 10, state: PS_PLAY});
-        get_seat(i).children('.blind').css(positions[i].blind).text("1000").show();
-        get_seat(i).children('.card').css(positions[i].card).show();
-      }
+      showall();
       return;
     }
 
     throw 'error notify_join protocol';
   });
+
+  
 
   $.pp.reg("BUTTON", function(notify) { 
     console.log([tt(),'notify_button', notify]);

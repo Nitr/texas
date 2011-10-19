@@ -122,7 +122,13 @@ $(function() {
   // {{{ private
   var active_game = function(join_seat) {
     $('#hall').hide();
-    $('#game').show("normal").trigger("active", {gid: cur_game, seat: join_seat});
+    var cmd = {gid: cur_game, seat: join_seat};
+
+    if ($.url.get("showall") != undefined) {
+      cmd.show_all = true;
+    }
+
+    $('#game').show("normal").trigger("active", cmd);
   };
 
   var gen_game_query = function(arr) {
