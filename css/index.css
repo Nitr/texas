@@ -385,12 +385,17 @@ button {
   width: 35px;
 }
 
+.blind > img {
+  position: absolute;
+  width: 15px;
+}
+
 .card {
   position: absolute;
   width: 45px;
   height: 65px;
   border-radius: 4px;
-  -webkit-box-shadow: 3px 3px 20px black;
+  -webkit-box-shadow: 1px 1px 20px black;
 }
 
 .private_card {
@@ -398,6 +403,6 @@ button {
   width: 45px;
   height: 65px;
   border-radius: 4px;
-  -webkit-box-shadow: 3px 3px 20px black;
+  -webkit-box-shadow: 1px 1px 20px black;
   display: none;
 }

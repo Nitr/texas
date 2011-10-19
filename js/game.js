@@ -100,11 +100,34 @@ $(document).ready(function() {
     }
     positions.unshift(t);
   };
+
+  var fan = function(i) {
+    if (i == 0)
+      return i;
+    else if (i > 0)
+      return 0 - i;
+    else
+      return Math.abs(i);
+  };
+
+  var betting = function(seat, bet) {
+    var b = get_seat(seat).
+      children(".blind").
+      css(positions[seat].blind).
+      text(bet).
+      show();
+
+    // generate bet animation
+    $('<img />').
+      attr("src", $.rl.img["betting_1"]).
+      css(positions[seat].blind.ori).
+      appendTo(b).
+      animate({left: "0px", top: "0px"}, 450);
+  };
   // }}}
 
   // event {{{
   $('#game').bind('active', function(event, args) {
-    
     initialization(args);
 
     // not setting seat is watch game
@@ -114,7 +137,9 @@ $(document).ready(function() {
   });
 
   $('#cmd_hall').click(function() {
-    update_seat({sn: 1, nick: "Nick", inplay: 1000, pid: 3});
+    for (var i = 1; i <= seats_size; i++) {
+      betting(i, 100);
+    }
   });
 
   $('#cmd_fold').click(function() {
@@ -219,11 +244,11 @@ $(document).ready(function() {
         nick: notify.nick, inplay: notify.buyin
       });
 
-      //for (var i = 1; i < 10; i ++) {
-        //update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 10, state: PS_PLAY});
-        //get_seat(i).children('.blind').css(positions[i].blind).text("1000").show();
-        //get_seat(i).children('.card').css(positions[i].card).show();
-      //}
+      for (var i = 1; i < 10; i ++) {
+        update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 10, state: PS_PLAY});
+        get_seat(i).children('.blind').css(positions[i].blind).text("1000").show();
+        get_seat(i).children('.card').css(positions[i].card).show();
+      }
       return;
     }
 
@@ -329,8 +354,14 @@ $(document).ready(function() {
 
       return {
         outer: {left: o[0] + 'px', top: o[1] + 'px'},
-        blind: {left: b[0] + 'px', top: b[1] + 'px'},
         card : {left: c[0] + 'px', top: c[1] + 'px'},
+        blind: {
+          left: b[0] + 'px', top: b[1] + 'px',
+          ori: {
+            left: new Number(fan(new Number(b[0])) + 50).toString() + "px", 
+            top: new Number(fan(new Number(b[1])) + 50).toString() + "px"
+          }
+        }
       };
     });
   };
