@@ -1,6 +1,7 @@
 body, td, div, a, img {
   font-family: 'Microsoft Yahei','simhei',sans-serif;
   -webkit-user-select: none;
+  -webkit-user-drag: none;
 }
 
 body {
