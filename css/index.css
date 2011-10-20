@@ -332,14 +332,19 @@ button {
 
 .empty_seat {
   position: absolute;
-  width: 60px;
-  height: 60px;
+  width: 84px;
+  height: 84px;
   font-size: 18px;
-  padding: 0px
+  padding: 0px;
   margin: 0px;
   border: 0px;
   text-align: center;
-  border: 2px solid #000000;
+  border: 0px solid #000000;
+  background-image: url(sit.png);
+  background-repeat: no-repeat;
+  color: gray;
+  padding-top: 30px;
+  cursor: pointer;
 }
 
 .game_seat > .photo {
@@ -405,10 +410,8 @@ button {
 
 .card {
   position: absolute;
-  width: 45px;
-  height: 65px;
-  border-radius: 4px;
-  -webkit-box-shadow: 1px 1px 20px black;
+  /*border-radius: 4px;*/
+  /*-webkit-box-shadow: 1px 1px 20px black;*/
 }
 
 .private_card {

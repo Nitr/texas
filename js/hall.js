@@ -85,6 +85,7 @@ $(function() {
   }); // }}}
 
   $.pp.reg("SEAT_STATE", function(seat) { // {{{
+
     if (is_disable())
       return;
 

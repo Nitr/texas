@@ -101,6 +101,7 @@ $(document).ready(function() {
       $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: seat.pid}));
     }
   };
+
   var update_seat = function(seat) {
     if (seat.state == PS_EMPTY) {
       seats[seat.sn] = undefined;
@@ -275,6 +276,24 @@ $(document).ready(function() {
     init_seats(detail.seats);
   });
 
+  $.pp.reg("SEAT_DETAIL", function(seat) {
+    if (is_disable())
+      return;
+
+    console.log(
+      [tt(),"init_seat", "seat_detail", "seat", seat.sn, "pid", 
+        seat.pid, "state", seat.state, "inplay", 
+        seat.inplay, "nick", seat.nick]
+    );
+
+    if (seat.gid == cur_gid) {
+      update_seat({inplay: 1000, sn: seat.sn, nick: seat.nick, pid: seat.pid, state: seat.state});
+      return;
+    }
+
+    throw 'error seat_detail protocol'
+  });
+
   $.pp.reg("SEAT_STATE", function(seat) { 
     if (is_disable())
       return;
@@ -402,7 +421,8 @@ $(document).ready(function() {
 
   $.pp.reg("STAGE", function(notify) { 
     console.log([tt(),'notify_stage', 'stage', notify.stage]);
-    new_stage();
+    if (notify.stage != 0)
+      new_stage();
   });
 
   $.pp.reg("RAISE", function(notify) { 
@@ -410,7 +430,7 @@ $(document).ready(function() {
 
     var sum = notify.call + notify.raise;
     var sn = get_seat_number(notify.pid)
-    betting(sn, sum);
+    set_betting(sn, sum);
   });
 
   $.pp.reg("SHOW", function(notify) { 
@@ -454,7 +474,7 @@ $(document).ready(function() {
 
       return {
         outer: {left: o[0] + 'px', top: o[1] + 'px'},
-        empty_outer: {left: (new Number(o[0]) + 30) + 'px', top: (new Number(o[1]) + 40) + 'px'},
+        empty_outer: {left: o[2] + 'px', top: o[3] + 'px'},
         card : {left: c[0] + 'px', top: c[1] + 'px'},
         betting: { left: new Number(bb[2]), top: new Number(bb[3]) },
         betting_ori: { left: bb[0] + 'px', top: bb[1] + 'px' },
@@ -474,15 +494,15 @@ $(document).ready(function() {
 
   var nine_positions = convert_points([
     {outer: "0,0", betting_label: "0,0", betting: "0,0,0,0", card: "0,0"},
-    {outer: "435,350", betting_label: "90,-10", betting: "471,413,535,314", card: "90,30"},
-    {outer: "233,350", betting_label: "65,-20", betting: "268,410,309,303", card: "90,28"},
-    {outer: "117,230", betting_label: "105,5", betting: "150,288,233,208", card: "90,30"},
-    {outer: "145,60", betting_label: "145,95", betting: "181,122,300,175", card: "90,40"},
-    {outer: "342,20", betting_label: "50,125", betting: "376,83,402,162", card: "90,60"},
-    {outer: "565,20", betting_label: "-5,125", betting: "604,84,572,162", card: "-52,60"},
-    {outer: "766,60", betting_label: "-105,95", betting: "803,129,672,175", card: "-52,40"},
-    {outer: "801,230", betting_label: "-63,5", betting: "832,290,749,208", card: "-51,30"},
-    {outer: "680,350", betting_label: "20,-20", betting: "711,408,710,306", card: "-51,28"}
+    {outer: "435,350,448,363", betting_label: "90,-10", betting: "471,413,535,314", card: "90,30"},
+    {outer: "233,350,263,363", betting_label: "65,-20", betting: "268,410,309,303", card: "90,28"},
+    {outer: "117,230,116,275", betting_label: "105,5", betting: "150,288,233,208", card: "90,30"},
+    {outer: "145,60,173,95", betting_label: "145,95", betting: "181,122,300,175", card: "90,40"},
+    {outer: "342,20,342,55", betting_label: "50,125", betting: "376,83,402,162", card: "90,60"},
+    {outer: "565,20,559,55,", betting_label: "-5,125", betting: "604,84,572,162", card: "-52,60"},
+    {outer: "766,60,741,95", betting_label: "-105,95", betting: "803,129,672,175", card: "-52,40"},
+    {outer: "801,230,798,275", betting_label: "-63,5", betting: "832,290,749,208", card: "-51,30"},
+    {outer: "680,350,640,363", betting_label: "20,-20", betting: "711,408,710,306", card: "-51,28"}
   ])
 });
 
