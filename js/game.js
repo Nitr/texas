@@ -476,8 +476,11 @@ $(document).ready(function() {
   });
 
   $.pp.reg("END", function(notify) { 
+    $(".game_seat").children(".button").hide("slow");
+    $(".game_seat").children(".card").hide("slow");
+
+    $(".private_card").hide("slow");
     console.log([tt(),'----------------------notify_end----------------------']);
-    ////pot = {};
   });
 
   $.pp.reg("WIN", function(notify) { 
