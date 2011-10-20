@@ -80,6 +80,27 @@ $(document).ready(function() {
     return $.rl.poker[a.toString()];
   };
 
+  var ps_fold = function(sn) {
+    var seat = seats[sn];
+    var s = get_seat(sn);
+
+    s.addClass("ps_fold");
+    if (seat.pid == cur_pid) {
+      $(".private_card").addClass("ps_fold");
+    } else {
+      s.children(".card").hide("slow");
+    }
+  };
+
+  var ps_play = function(sn) {
+    var seat = seats[sn];
+    var s = get_seat(sn);
+    s.removeClass("ps_fold");
+    if (seat.pid == cur_pid) {
+      $(".private_card").removeClass("ps_fold");
+    }
+  };
+
   // 更新座位信息,需要参数中携带座位编号,昵称,带入金额.
   var reload_seat = function(sn) {
     var seat = seats[sn];
@@ -92,6 +113,17 @@ $(document).ready(function() {
     }
     else {
       e.hide();
+
+      console.log("seat.state", seat);
+
+      if (seat.state == PS_FOLD) {
+        ps_fold(sn);
+      }
+
+      if (seat.state == PS_PLAY) {
+        ps_play(sn);
+      }
+
       // 对玩家显示区进行基本设置
       s.children('.inplay').text(seat.inplay).parent().
         children('.nick').text(seat.nick).parent().
@@ -240,6 +272,8 @@ $(document).ready(function() {
   });
 
   $('#cmd_hall').click(function() {
+    seats[get_seat_number(cur_pid)].state = PS_FOLD;
+    reload_seat(get_seat_number(cur_pid));
   });
 
   $('#cmd_fold').click(function() {

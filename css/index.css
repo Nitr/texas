@@ -427,3 +427,7 @@ button {
   position: absolute;
   width: 13px;
 }
+
+.ps_fold {
+  opacity: 0.75;
+}
