@@ -1,5 +1,9 @@
 $(document).ready(function() {
   // {{{ variable
+  var watching = false, playing = false, 
+      pot = 0, positions = null, seats_size = 0;
+  var seats = [], private_card_index = 0, share_card_index = 0;
+  var show_all = false; 
   var PS_EMPTY     = 0, 
       PS_PLAY      = 1,
       PS_FOLD      = 2,
@@ -13,17 +17,34 @@ $(document).ready(function() {
       PS_MUCK      = 512,
       PS_OUT       = 1024;
 
-  var cur_pid = 0, cur_gid = 0, cur_seat = 0, 
-      watching = false, playing = false, 
-      pot = 0, positions = null, seats_size = 0;
-  var seats = [], private_card_index = 0, share_card_index = 0;
-  var show_all = false; // }}}
+  // some utility function 
+  var is_me = null, check_game = null, get_gid = null;
+  // }}}
 
   // {{{ initialization
   var initialization = function(args) { 
-    cur_gid = args.gid;
-    cur_pid = $(document).data("pid");
+    // {{{ generate check me & game function
+    is_me = function(o, is_callback, not_callback) {
+      var pid = pickup_int(o, 'pid');
 
+      if (is_callback == null && not_callback == null)
+        return pid == args.pid;
+
+      if (pid == args.pid)
+        is_callback();
+      else if (not_callback != undefined)
+        not_callback();
+    };
+
+    check_game = function(o) {
+      var gid = pickup_int(o, 'gid');
+      if (gid != args.gid)
+        throw 'not current game [' + o + ']';
+    };
+
+    get_gid = function() { return args.gid; };
+    // }}}
+    
     if (args.show_all == true)
       show_all = true;
 
@@ -61,11 +82,11 @@ $(document).ready(function() {
 
     s.addClass("ps_fold");
 
-    if (seat.pid == cur_pid) {
+    is_me(seat, function() {
       $(".private_card").addClass("ps_fold");
-    } else {
+    }, function() {
       s.children(".card").hide("slow");
-    }
+    });
 
     play_sound('fold');
   };
@@ -74,9 +95,10 @@ $(document).ready(function() {
     var seat = seats[sn];
     var s = get_seat(sn);
     s.removeClass("ps_fold");
-    if (seat.pid == cur_pid) {
+
+    is_me(seat, function() {
       $(".private_card").removeClass("ps_fold");
-    }
+    });
   };
 
   var set_check = function(seat) {
@@ -204,8 +226,8 @@ $(document).ready(function() {
     initialization(args);
 
     // not setting seat is watch game
-    var cmd = watching == true ? {cmd: "WATCH", gid: cur_gid} : 
-      {cmd: "JOIN", gid: cur_gid, seat: args.seat, buyin: 100};
+    var cmd = watching == true ? {cmd: "WATCH", gid: get_gid()} : 
+      {cmd: "JOIN", gid: get_gid(), seat: args.seat, buyin: 100};
     $.ws.send($.pp.write(cmd));
   });
 
@@ -214,24 +236,22 @@ $(document).ready(function() {
   });
 
   $('#cmd_hall').click(function() {
-    //seats[get_seat_number(cur_pid)].state = PS_FOLD;
-    //reload_seat(get_seat_number(cur_pid));
-    //
-    //share_pot([1,2,3]);
-    new_stage(true);
+    ////
+    ////share_pot([1,2,3]);
+    //new_stage(true);
   });
 
   $('#cmd_fold').click(function() {
-    $.ws.send($.pp.write({cmd: "FOLD", gid: cur_gid}));
+    $.ws.send($.pp.write({cmd: "FOLD", gid: get_gid()}));
   });
 
   $('#cmd_call').click(function() {
-    $.ws.send($.pp.write({cmd: "RAISE", gid: cur_gid, amount: 0}));
+    $.ws.send($.pp.write({cmd: "RAISE", gid: get_gid(), amount: 0}));
   });
 
   $('#cmd_raise').click(function() {
     a = parseInt($('#raise_range').val());
-    $.ws.send($.pp.write({cmd: "RAISE", gid: cur_gid, amount: a}));
+    $.ws.send($.pp.write({cmd: "RAISE", gid: get_gid(), amount: a}));
   });
 
   $('#raise_range').bind('change', function(event) {
@@ -249,9 +269,7 @@ $(document).ready(function() {
   $.pp.reg("GAME_DETAIL", function(detail) { 
     log(["game_detail", detail]);
 
-    if (detail.gid != cur_gid) 
-      throw 'error notify_game_detail protocol';
-
+    check_game(detail);
     init_seats(detail.seats);
   });
 
@@ -259,36 +277,16 @@ $(document).ready(function() {
     if (is_disable())
       return;
 
-    //log(
-      //["init_seat", "seat_detail", "seat", seat.sn, "pid", 
-        //seat.pid, "state", seat.state, "inplay", 
-        //seat.inplay, "nick", seat.nick]
-    //);
-
-    if (seat.gid == cur_gid) {
-      update_seat({inplay: 1000, sn: seat.sn, nick: seat.nick, pid: seat.pid, state: seat.state});
-      return;
-    }
-
-    throw 'error seat_detail protocol'
+    check_game(seat);
+    update_seat({inplay: 1000, sn: seat.sn, nick: seat.nick, pid: seat.pid, state: seat.state});
   });
 
   $.pp.reg("SEAT_STATE", function(seat) { 
     if (is_disable())
       return;
 
-    log(
-      ["seat_state", "seat", seat.sn, "pid", 
-        seat.pid, "state", seat.state, "inplay", 
-        seat.inplay, "nick", seat.nick]
-    );
-
-    if (seat.gid == cur_gid) {
-      update_seat({inplay: 1000, sn: seat.sn, nick: seat.nick, pid: seat.pid, state: seat.state});
-      return;
-    }
-
-    throw 'error seat_state protocol'
+    check_game(seat);
+    update_seat({inplay: 1000, sn: seat.sn, nick: seat.nick, pid: seat.pid, state: seat.state});
   }); 
 
   $.pp.reg("PHOTO_INFO", function(player) { 
@@ -306,48 +304,30 @@ $(document).ready(function() {
   });
 
   $.pp.reg("CANCEL", function(notify) { 
-    if (notify.gid == cur_gid) {
-      //log(['notify_cancel', notify]);
-      return;
-    }
-
-    throw 'error notify_cancel protocol'
+    check_game(notify);
   });
 
   $.pp.reg("START", function(notify) { 
-    if (notify.gid == cur_gid) {
-      log(['notify_start', notify]);
-      return;
-    }
-
-    throw 'error notify_start protocol'
+    check_game(notify);
   });
 
   $.pp.reg("JOIN", function(notify) { 
-    log(
-      ['notify_join', "pid", notify.pid, "nick", notify.nick,
-       "buyin", notify.buyin, "seat", notify.seat, notify
-    ]);
+    check_game(notify);
 
-    if (notify.gid == cur_gid) {
-      if (notify.pid == cur_pid) {
-        playing = true;
-        watching = false;
+    is_me(notify, function() {
+      playing = true;
+      watching = false;
 
-        // 根据当前玩家的座位号调整一次座位顺序
-        trim_position(notify.seat - 1);
-      }
+      // 根据当前玩家的座位号调整一次座位顺序
+      trim_position(notify.seat - 1);
+    });
 
-      update_seat({
-        sn: notify.seat, pid: notify.pid, 
-        nick: notify.nick, inplay: notify.buyin
-      });
+    update_seat({
+      sn: notify.seat, pid: notify.pid, 
+      nick: notify.nick, inplay: notify.buyin
+    });
 
-      testing_show();
-      return;
-    }
-
-    throw 'error notify_join protocol';
+    testing_show();
   });
 
   $.pp.reg("BUTTON", function(notify) { 
@@ -383,10 +363,10 @@ $(document).ready(function() {
 
   $.pp.reg("DRAW", function(notify) { 
     //log(['notify_draw', 'pid', notify.pid, 'suit', notify.suit, 'face', notify.face]);
-    if (cur_pid != notify.pid) {
+    is_me(notify, $.noop, function() {
       var sn = get_seat_number(notify.pid)
       get_seat(sn).children('.card').css(positions[sn].card).show();
-    }
+    });
   });
 
   $.pp.reg("SHARE", function(notify) { 
@@ -549,6 +529,23 @@ $(document).ready(function() {
       return Math.abs(i);
   };
 
+  var pickup_int = function(o, prop) {
+    switch(typeof(o)) {
+      case "string":
+        return new Number(o);
+      break;
+      case "number":
+        return o;
+      break;
+      case "object":
+        return pickup_int(o[prop]);
+      break;
+      case "undefined":
+        throw "pickup_int not care 'undefined', check your code";
+      default:
+        throw "pickup_int not care type, error [" + o + "]";
+    }
+  };
   // }}}
 
   // player & betting point {{{ 

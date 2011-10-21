@@ -123,7 +123,7 @@ $(function() {
   // {{{ private
   var active_game = function(join_seat) {
     $('#hall').hide();
-    var cmd = {gid: cur_game, seat: join_seat};
+    var cmd = {pid: $(document).data("pid"), gid: cur_game, seat: join_seat};
 
     if ($.url.get("showall") != undefined) {
       cmd.show_all = true;

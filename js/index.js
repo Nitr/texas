@@ -201,7 +201,7 @@ $(function() {
 
   is_debug = $.url.get("debug") != undefined;
   if ($.url.get("debug") != undefined) {
-    $.ws.defaults.host = "127.0.0.1";
+    $.ws.defaults.host = "192.168.1.116";
   }
 
   $.ws.init();
