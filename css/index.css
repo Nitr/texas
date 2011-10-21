@@ -328,6 +328,7 @@ button {
   margin: 0px;
   border: 0px;
   text-align: center;
+  z-index: 500;
 }
 
 .empty_seat {
@@ -410,6 +411,7 @@ button {
 
 .card {
   position: absolute;
+  z-index: 50;
   /*border-radius: 4px;*/
   /*-webkit-box-shadow: 1px 1px 20px black;*/
 }
@@ -426,6 +428,7 @@ button {
 .bet, .pot {
   position: absolute;
   width: 13px;
+  z-index: 100;
 }
 
 .ps_fold {

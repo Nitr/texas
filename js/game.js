@@ -14,7 +14,7 @@ $(document).ready(function() {
 
   var cur_pid = 0, cur_gid = 0, cur_seat = 0, 
       watching = false, playing = false, 
-      pot = {}, positions = null, seats_size = 0;
+      pot = 0, positions = null, seats_size = 0;
   var seats = [], private_card_index = 0, share_card_index = 0;
   var show_all = false;
 
@@ -31,8 +31,6 @@ $(document).ready(function() {
 
     $("#game_table").setTemplateElement("game_table_template");
     $("#game_table").processTemplate({end: 10});
-
-    $('#cmd_stand').attr('disabled', 'false');
   }; 
 
   var init_seats = function(size) {
@@ -214,6 +212,7 @@ $(document).ready(function() {
 
   var set_betting = function(seat, bet) {
     seats[seat].betting = seats[seat].betting + bet;
+    pot += bet;
 
     var b = get_seat(seat).
       children(".betting_label").
@@ -250,12 +249,38 @@ $(document).ready(function() {
       return; 
 
     for (var i = 1; i < seats_size + 1; i ++) {
-      update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 10, state: PS_PLAY, betting: 0});
+      update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 1, state: PS_PLAY, betting: 0});
       get_seat(i).children('.betting_label').css(positions[i].betting_label).text("1000").show();
       get_seat(i).children('.card').css(positions[i].card).show();
     }
   };
   // }}}
+  //
+  
+  var share_pot = function(seats) {
+    var l = seats.length;
+    var c = Math.floor($(".pot").length / l);
+
+    var s = 0;
+    var tp = 100;
+    $(".pot").each(function(i, x) {
+      if ((i % c) == 0) {
+        var t = seats.shift();
+        s = (t == undefined) ? s : t;
+      }
+
+      var pp = $(this);
+      var ss = s;
+
+      $(document).oneTime(tp, function() {
+        $(pp).animate(positions[ss].betting_ori, 650, function() {
+          $(this).remove();
+        });
+      });
+
+      tp += 20;
+    });
+  };
 
   // event {{{
   $('#game').bind('active', function(event, args) {
@@ -269,11 +294,19 @@ $(document).ready(function() {
   });
 
   $('#cmd_stand').click(function() {
+    for (var i = 1; i <= seats_size; i++) {
+      set_betting(i, Math.floor(Math.random() * 100));
+    };
+
+    new_stage(1);
   });
 
   $('#cmd_hall').click(function() {
-    seats[get_seat_number(cur_pid)].state = PS_FOLD;
-    reload_seat(get_seat_number(cur_pid));
+    //seats[get_seat_number(cur_pid)].state = PS_FOLD;
+    //reload_seat(get_seat_number(cur_pid));
+    //
+    //
+    share_pot([1,2,3]);
   });
 
   $('#cmd_fold').click(function() {
@@ -391,7 +424,6 @@ $(document).ready(function() {
 
         // 根据当前玩家的座位号调整一次座位顺序
         trim_position(notify.seat - 1);
-        $('#cmd_stand').attr('disabled', 'true');
       }
 
       update_seat({
@@ -478,6 +510,8 @@ $(document).ready(function() {
   $.pp.reg("END", function(notify) { 
     $(".game_seat").children(".button").hide("slow");
     $(".game_seat").children(".card").hide("slow");
+
+    pot = 0;
 
     $(".private_card").hide("slow");
     console.log([tt(),'----------------------notify_end----------------------']);
