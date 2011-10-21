@@ -108,16 +108,16 @@ $(document).ready(function() {
   });
 
   $('#cmd_fold').click(function() {
-    $.ws.send($.pp.write({cmd: "FOLD", gid: get_gid()}));
+    send({cmd: "FOLD"});
   });
 
   $('#cmd_call').click(function() {
-    $.ws.send($.pp.write({cmd: "RAISE", gid: get_gid(), amount: 0}));
+    send({cmd: "RAISE", amount: 0});
   });
 
   $('#cmd_raise').click(function() {
-    a = parseInt($('#raise_range').val());
-    $.ws.send($.pp.write({cmd: "RAISE", gid: get_gid(), amount: a}));
+    amount = parseInt($('#raise_range').val());
+    send({cmd: "RAISE", amount: amount});
   });
 
   $('#raise_range').bind('change', function(event) {
@@ -252,7 +252,8 @@ $(document).ready(function() {
 
   // }}}
   
-  // protocol {{{
+  // game protocol {{{
+  // {{{ init detail protocol
   $.pp.reg("GAME_DETAIL", function(detail) { 
     log(["game_detail", detail]);
 
@@ -268,37 +269,9 @@ $(document).ready(function() {
     check_game(seat);
     update_seat({inplay: 1000, sn: seat.sn, nick: seat.nick, pid: seat.pid, state: seat.state});
   });
+  // }}}
 
-  $.pp.reg("SEAT_STATE", function(seat) { 
-    if (is_disable())
-      return;
-
-    check_game(seat);
-    update_seat({inplay: 1000, sn: seat.sn, nick: seat.nick, pid: seat.pid, state: seat.state});
-  }); 
-
-  $.pp.reg("PHOTO_INFO", function(player) { 
-    if (is_disable())
-      return;
-
-    var photo = $("#game_table div .photo:[player=" + player.id + "]");
-
-    if (player.photo.indexOf('def_face_') == 0)
-      $(photo).attr('src', $.rl.img[player.photo]);
-    else if (player.photo.indexOf('base64'))
-      $(photo).attr('src', player.photo);
-    else 
-      $(photo).attr('src', $.rl.img.def_face_0);
-  });
-
-  $.pp.reg("CANCEL", function(notify) { 
-    check_game(notify);
-  });
-
-  $.pp.reg("START", function(notify) { 
-    check_game(notify);
-  });
-
+  // {{{ player state notify 
   $.pp.reg("JOIN", function(notify) { 
     check_game(notify);
 
@@ -317,6 +290,58 @@ $(document).ready(function() {
 
   });
 
+  $.pp.reg("SEAT_STATE", function(seat) { 
+    if (is_disable())
+      return;
+
+    check_game(seat);
+    update_seat({inplay: 1000, sn: seat.sn, nick: seat.nick, pid: seat.pid, state: seat.state});
+  });
+
+  $.pp.reg("BET_REQ", function(req) { 
+    log(['notify_bet_request', 'call', req.call, 'min', req.min, 'max', req.max]);
+
+    $('#raise_range').
+      attr('min', req.min).
+      attr('max', req.max).
+      val(req.min);
+  });
+
+  $.pp.reg("RAISE", function(notify) { 
+    log(['notify_raise', 'pid', notify.pid, 'raise', notify.raise, 'call', notify.call]);
+
+    var sum = notify.call + notify.raise;
+    var sn = get_seat_number(notify.pid)
+    if (sum == 0) // CHECK
+      set_check(sn);
+    else
+      set_betting(sn, sum);
+  });
+
+  $.pp.reg("PHOTO_INFO", function(player) { 
+    if (is_disable())
+      return;
+
+    var photo = $("#game_table div .photo:[player=" + player.id + "]");
+
+    if (player.photo.indexOf('def_face_') == 0)
+      $(photo).attr('src', $.rl.img[player.photo]);
+    else if (player.photo.indexOf('base64'))
+      $(photo).attr('src', player.photo);
+    else 
+      $(photo).attr('src', $.rl.img.def_face_0);
+  });
+  // }}}
+
+  // {{{ game state notify
+  $.pp.reg("CANCEL", function(notify) { 
+    check_game(notify);
+  });
+
+  $.pp.reg("START", function(notify) { 
+    check_game(notify);
+  });
+
   $.pp.reg("BUTTON", function(notify) { 
     log(['notify_button', notify]);
 
@@ -332,15 +357,24 @@ $(document).ready(function() {
     log(['notify_bb', notify]);
   });
 
-  $.pp.reg("BET_REQ", function(req) { 
-    log(['notify_bet_request', 'call', req.call, 'min', req.min, 'max', req.max]);
-
-    $('#raise_range').
-      attr('min', req.min).
-      attr('max', req.max).
-      val(req.min);
+  $.pp.reg("STAGE", function(notify) { 
+    log(['notify_stage', 'stage', notify.stage]);
+    new_stage(notify.stage == 0);
   });
 
+  $.pp.reg("END", function(notify) { 
+    $(".game_seat").children(".button").hide("slow");
+    $(".game_seat").children(".card").hide("slow");
+
+    pot = 0;
+
+    $(".private_card").hide("slow");
+    log(['----------------------notify_end----------------------']);
+  });
+
+  // }}}
+
+  // {{{ card notify 
   $.pp.reg("PRIVATE", function(notify) { 
     log(['notify_private', 'pid', notify.pid, 'suit', notify.suit, 'face', notify.face]);
 
@@ -362,44 +396,20 @@ $(document).ready(function() {
     $("#share_card_" + share_card_index).attr('src', get_poker(notify.face, notify.suit)).show('normal');
   });
 
-  $.pp.reg("STAGE", function(notify) { 
-    log(['notify_stage', 'stage', notify.stage]);
-    new_stage(notify.stage == 0);
-  });
-
-  $.pp.reg("RAISE", function(notify) { 
-    log(['notify_raise', 'pid', notify.pid, 'raise', notify.raise, 'call', notify.call]);
-
-    var sum = notify.call + notify.raise;
-    var sn = get_seat_number(notify.pid)
-    if (sum == 0) // CHECK
-      set_check(sn);
-    else
-      set_betting(sn, sum);
-  });
-
   $.pp.reg("SHOW", function(notify) { 
     log(['notify_show', 'pid', notify.pid, 'card1', notify.face1, notify.suit1, 'card2', notify.face2, notify.suit2]);
   });
+  // }}}
 
+  // {{{ showdown notify
   $.pp.reg("HAND", function(notify) { 
     log(['notify_hand', 'pid', notify.pid, 'rank', notify.rank, 'face', notify.face1, notify.face2]);
-  });
-
-  $.pp.reg("END", function(notify) { 
-    $(".game_seat").children(".button").hide("slow");
-    $(".game_seat").children(".card").hide("slow");
-
-    pot = 0;
-
-    $(".private_card").hide("slow");
-    log(['----------------------notify_end----------------------']);
   });
 
   $.pp.reg("WIN", function(notify) { 
     log(['notify_win', 'pid', notify.pid, 'amount', notify.amount]);
   });
-
+  // }}}
   // }}}
 
   // utility {{{ 
