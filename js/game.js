@@ -112,8 +112,6 @@ $(document).ready(function() {
     else {
       e.hide();
 
-      console.log("seat.state", seat);
-
       if (seat.state == PS_FOLD) {
         ps_fold(sn);
       }
@@ -222,26 +220,51 @@ $(document).ready(function() {
 
     var bets = get_bets(bet);
 
+    play_sound("bet");
     $.each(bets, function(i, x) {
-      $('<img class="bet" />').attr("src", $.rl.img[x]).css(positions[seat].betting_ori).appendTo('#game_table').animate(random(positions[seat].betting, 7, 7), 450);
+      $('<img class="bet seat-bet-' + seat + '" />').attr("src", $.rl.img[x]).css(positions[seat].betting_ori).appendTo('#game_table').animate(random(positions[seat].betting, 7, 7), 450);
     });
   };
 
-  var new_stage = function() {
-    var sum = 0;
-
-    $('.bet').each(function() {
-      $(this).animate(random({left: 571, top: 227}, 20, 20), 350).removeClass('bet').addClass('pot');
+  var move_bet = function(bets, callback) {
+    // [{bet: $(bet), :endpoint: {left: xxx, right: xxx}}]
+    var time = 100;
+    $.each(bets, function(i, x) {
+      $(document).oneTime(time, function() {
+        $(x.bet).animate(x.endpoint, 650, function() {
+          if (callback != undefined)
+            callback($(this));
+        });
+      });
+      time += 20;
     });
+  }
 
-    for (var i = 1; i <= seats_size; i++) {
-      get_seat(i).children(".betting_label").text("").hide();
-      if (seats[i] != undefined) {
-        sum += seats[i].betting;
-      }
+  var new_stage = function(have_blinds) {
+
+    if (have_blinds)
+      return;
+
+    var sum = 0;
+    var bets = [];
+
+    for(var i = 1; i <= seats_size; i++) {
+      bets.push($('.seat-bet-' + i).map(function(n, x) {
+        $(x).addClass("pot").removeClass("bet").removeClass("seat-bet-" + i);
+        return {bet: $(x), endpoint: random({left: 571, top: 227}, 20, 20)};
+      }));
+
+      get_seat(i).children('.betting_label').hide();
     }
 
-    $('.pot_label').show().text(sum);
+    play_sound('move');
+    $.each(bets, function(i, x) {
+      move_bet(bets.shift());
+    });
+  }
+
+  var play_sound = function(x) {
+    $.rl.sounds[x].play();
   }
 
   var showall = function() {
@@ -255,33 +278,31 @@ $(document).ready(function() {
     }
   };
   // }}}
-  var audio = new Audio("css/sound/test.mp3");
   
-  var share_pot = function(seats) {
-    var l = seats.length;
-    var c = Math.floor($(".pot").length / l);
+  var share_pot = function(winners) {
+    var winpots = [], cur = undefined;
+    var all_size = $(".pot").length;
+    var size = Math.floor(all_size / winners.length);
 
-    var s = 0;
-    var tp = 100;
     $(".pot").each(function(i, x) {
-      if ((i % c) == 0) {
-        var t = seats.shift();
-        s = (t == undefined) ? s : t;
+      if (i % size == 0) {
+        cur = (cur == undefined) ? 0 : (cur + 1);
+        if (cur > winners.length - 1) {
+          cur -= 1;
+        }
       }
 
-      var pp = $(this);
-      var ss = s;
+      if (winpots[cur] == undefined) {
+        winpots[cur] = [];
+      }
 
-      $(document).oneTime(tp, function() {
-        $(pp).animate(positions[ss].betting_ori, 650, function() {
-          $(this).remove();
-        });
-      });
-
-      tp += 20;
+      winpots[cur].push({bet: $(this), endpoint: positions[winners[cur]].betting_ori});
     });
 
-    audio.play();
+    play_sound('move');
+    $.each(winpots, function(i, x) {
+      move_bet(x, function(bet) { $(bet).remove(); });
+    });
   };
 
   // event {{{
@@ -300,15 +321,14 @@ $(document).ready(function() {
       set_betting(i, Math.floor(Math.random() * 100));
     };
 
-    new_stage(1);
   });
 
   $('#cmd_hall').click(function() {
     //seats[get_seat_number(cur_pid)].state = PS_FOLD;
     //reload_seat(get_seat_number(cur_pid));
     //
-    //
-    share_pot([1,2,3]);
+    //share_pot([1,2,3]);
+    new_stage(true);
   });
 
   $('#cmd_fold').click(function() {
@@ -349,11 +369,11 @@ $(document).ready(function() {
     if (is_disable())
       return;
 
-    console.log(
-      [tt(),"init_seat", "seat_detail", "seat", seat.sn, "pid", 
-        seat.pid, "state", seat.state, "inplay", 
-        seat.inplay, "nick", seat.nick]
-    );
+    //console.log(
+      //[tt(),"init_seat", "seat_detail", "seat", seat.sn, "pid", 
+        //seat.pid, "state", seat.state, "inplay", 
+        //seat.inplay, "nick", seat.nick]
+    //);
 
     if (seat.gid == cur_gid) {
       update_seat({inplay: 1000, sn: seat.sn, nick: seat.nick, pid: seat.pid, state: seat.state});
@@ -440,8 +460,6 @@ $(document).ready(function() {
     throw 'error notify_join protocol';
   });
 
-  
-
   $.pp.reg("BUTTON", function(notify) { 
     console.log([tt(),'notify_button', notify]);
 
@@ -489,8 +507,7 @@ $(document).ready(function() {
 
   $.pp.reg("STAGE", function(notify) { 
     console.log([tt(),'notify_stage', 'stage', notify.stage]);
-    if (notify.stage != 0)
-      new_stage();
+    new_stage(notify.stage == 0);
   });
 
   $.pp.reg("RAISE", function(notify) { 

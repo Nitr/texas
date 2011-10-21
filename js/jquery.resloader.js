@@ -36,7 +36,8 @@
     },
 
     img: {},
-    poker: {}
+    poker: {},
+    sounds: {},
   }
 
   function handleJs(res) {

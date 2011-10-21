@@ -110,6 +110,12 @@ $(function() {
     // 加载后回调进行自动登陆
     // 如果不能自动登陆则启动手动登陆
     $.rl.load(resources, autoSingin);
+    $.each(
+      ["bet", "raise", "move", "card", "check", "fold", "turn"], 
+      function(i, x) {
+        $.rl.sounds[x] = new Audio("css/sound/" + x + ".mp3");
+      }
+    );
   } // }}}
 
   var onConnection = function() {
