@@ -17,13 +17,19 @@ $(document).ready(function() {
       PS_MUCK      = 512,
       PS_OUT       = 1024;
 
-  // some utility function 
-  var is_me = null, check_game = null, get_gid = null
-      display_debug = null, send = null;
+  var states = [];
+
+  // }}}
+
+  // {{{ generate function
+  var is_me = null, check_game = null,       
+      display_debug = null, send = null, 
+      get_gid = null, get_seat = null, get_state = null,
+      get_size = null, show_seats = null, get_seat_number = null;
   // }}}
 
   // {{{ initialization
-  var initialization = function(args, is_watching) { 
+  var initialization = function(args) { 
     // {{{ generate check me & game function
     is_me = function(o, is_callback, not_callback) {
       var pid = pickup_int(o, 'pid');
@@ -58,30 +64,107 @@ $(document).ready(function() {
         //get_seat(i).children('.card').css(positions[i].card).show();
       //}
     } : $.noop;
-
     // }}}
+
+    regenrate_seat_function(args.seat);
     
     // generate game table DOM
     $("#game_table").setTemplateElement("game_table_template");
     $("#game_table").processTemplate({end: 9});
   }; 
 
+  var regenrate_seat_function = function(seat) {
+    display_states = (seat == undefined) ? refresh_states : $.noop;
+
+    get_state = function(o) {
+      if (seat == undefined && o == undefined)
+        throw 'Can\'t call get_my_state before join game';
+
+      var sn = o != undefined ? pickup_int(o, 'seat') : seat;
+
+      if (states[sn] == undefined) {
+        console.log(o);
+        throw 'Not find seat state [' + o + ']';
+      }
+
+      return states[sn];
+    }
+
+    get_seat = function(o) {
+      return $(get_state(o).dom);
+    };
+
+    get_seat_number = function(pid) {
+      for(var i = 1; i < states.length; i++) {
+        if ((states[i].pid == pid) && (states[i].state != PS_EMPTY))
+          return states[i].seat;
+      }
+
+      throw 'Not our player id';
+    };
+  }
+
   var init_seats = function(size) {
-    seats_size = size;
+    get_size = function() {
+      return size;
+    };
 
-    if (positions == null) {
-      positions = size == 5 ? five_positions : nine_positions;
+    var positions = get_positions(size);
+    $(".game_seat, .empty_seat, .button, .card, .bet_label").hide();
+
+    states = []; // init empty states;
+    for (var i = 1; i < positions.length; i ++) {
+      states[i] = {
+        seat: i,
+        dom: $("#game_seat_" + i).css(positions[i].outer),
+        empty_dom: $("#empty_seat_" + i).css(positions[i].empty_outer),
+        position: positions[i],
+        photo: $.rl.img.def_face_0
+      };
     }
+  };
 
-    $(".game_seat, .empty_seat").hide();
-
-    // init seats outer position
-    for (var i = 1; i <= size ; i++) {
-      $("#game_seat_" + i).css(positions[i].outer);
-      $("#empty_seat_" + i).css(positions[i].empty_outer);
+  var init_state = function(detail) {
+    var st = update_state(detail);
+    if (st.state != PS_EMPTY) {
+      send({cmd: "PHOTO_QUERY", id: st.pid});
     }
+  };
 
-    log("init_seats");
+  var update_state = function(detail) {
+    var st = get_state(detail);
+    $.extend(st, detail);
+    return st;
+  }
+
+  var refresh_state = function(state) {
+    var x = get_state(state);
+    var show = function() { $(this).show(); };
+
+    console.log(x);
+
+    if (x.state != PS_EMPTY) {
+      $(x.empty_dom).hide().css(x.position.empty_outer);
+      $(x.dom).animate(x.position.outer, 'slow', show);
+
+      $(x.dom).
+        children('.inplay').text(x.inplay).parent().
+        children('.nick').text(x.nick).parent().
+        children('.photo').attr('src', x.photo);
+
+    } else {
+      $(x.dom).hide().css(x.position.empty_outer);
+      $(x.empty_dom).animate(x.position.empty_outer, 'slow', show);
+    }
+  }
+
+  var refresh_states = function() {
+    $.each(states, function(i, x) {
+      if (i == 0)
+        return;
+
+      refresh_state(x);
+    });
   };
 
   // }}}
@@ -91,7 +174,7 @@ $(document).ready(function() {
     initialization(args);
     send({cmd: "WATCH"});
   });
-
+http://localhost/~jack/texas/
   $('#game').bind('join', function(event, args) {
     initialization(args);
     send({cmd: "JOIN", seat: args.seat, buyin: 100});
@@ -205,8 +288,6 @@ $(document).ready(function() {
         children('.nick').text(seat.nick).parent().
         children('.photo').attr('player', seat.pid).parent().
         show(450);
-
-      $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: seat.pid}));
     }
   };
 
@@ -254,11 +335,11 @@ $(document).ready(function() {
   
   // game protocol {{{
   // {{{ init detail protocol
-  $.pp.reg("GAME_DETAIL", function(detail) { 
-    log(["game_detail", detail]);
+  $.pp.reg("GAME_DETAIL", function(game) { 
+    log(["game_detail", game]);
 
-    check_game(detail);
-    init_seats(detail.seats);
+    check_game(game);
+    init_seats(game.seats);
     display_debug();
   });
 
@@ -267,27 +348,32 @@ $(document).ready(function() {
       return;
 
     check_game(seat);
-    update_seat({inplay: 1000, sn: seat.sn, nick: seat.nick, pid: seat.pid, state: seat.state});
+    init_state(seat);
+
+    if (get_size() == seat.seat) {
+      // 如果初始化时制定了座位位置
+      // 则此时调用为noop
+      display_states();
+    }
   });
   // }}}
 
   // {{{ player state notify 
   $.pp.reg("JOIN", function(notify) { 
     check_game(notify);
+    notify.state = PS_FOLD;
+    init_state(notify);
 
     is_me(notify, function() {
-      playing = true;
-      watching = false;
+      regenrate_seat_function(notify.seat);
+      var positions = trim_positions(notify.seat)
 
-      // 根据当前玩家的座位号调整一次座位顺序
-      trim_position(notify.seat - 1);
+      for (var i = 1; i < positions.length; i++) {
+        update_state({seat: i, position: positions[i]});
+      };
     });
 
-    update_seat({
-      sn: notify.seat, pid: notify.pid, 
-      nick: notify.nick, inplay: notify.buyin
-    });
-
+    refresh_states();
   });
 
   $.pp.reg("SEAT_STATE", function(seat) { 
@@ -321,15 +407,15 @@ $(document).ready(function() {
   $.pp.reg("PHOTO_INFO", function(player) { 
     if (is_disable())
       return;
+    var photo = $.rl.img[player.photo]
 
-    var photo = $("#game_table div .photo:[player=" + player.id + "]");
-
-    if (player.photo.indexOf('def_face_') == 0)
-      $(photo).attr('src', $.rl.img[player.photo]);
-    else if (player.photo.indexOf('base64'))
-      $(photo).attr('src', player.photo);
-    else 
-      $(photo).attr('src', $.rl.img.def_face_0);
+    if (photo) {
+      player.seat = get_seat_number(player.pid);
+      player.photo = photo;
+      update_state(player);
+      console.log('UPDATE PHOTO');
+      refresh_state(player);
+    }
   });
   // }}}
 
@@ -438,26 +524,9 @@ $(document).ready(function() {
       move_bet(x, function(bet) { $(bet).remove(); });
     });
   };
-  var get_seat = function(sn) {
-    return $("#game_seat_" + sn);
-  };
 
   var get_empty_seat = function(sn) {
     return $("#empty_seat_" + sn);
-  };
-
-  var get_seat_number = function(pid) {
-    var sn = 0;
-    $.each(seats, function(i, s) {
-      if (s == undefined)
-        return;
-
-      if (s.pid == pid) {
-        sn = s.sn;
-      }
-    });
-
-    return sn;
   };
 
   var get_poker = function(face, suit) {
@@ -560,19 +629,20 @@ $(document).ready(function() {
   // }}}
 
   // player & betting point {{{ 
-  var trim_position = function(offset) {
-    var t = positions.shift();
-    for (var i = 1; i <= offset; i++) {
-      positions.unshift(positions.pop());
+  var trim_positions = function(offset) {
+    var size = get_size();
+    var positions = [];
+    var target = get_positions(size);
+    for (var i = 1, j = offset; i <= size; i++, j = j % size + 1) {
+      positions[j] = target[i];
     }
-    positions.unshift(t);
 
-
-    for(var i = 1; i <= seats_size; i++) {
-      $("#game_seat_" + i).css(positions[i].outer);
-      $("#empty_seat_" + i).css(positions[i].empty_outer);
-    }
+    return positions;
   };
+
+  var get_positions = function(size) {
+    return size == 5 ? five_positions : nine_positions;
+  }
 
   var convert_points = function(points) {
     return $.map(points, function(pos) {

@@ -94,14 +94,14 @@ $(function() {
         $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: seat.pid}));
 
         // 使用seat的序号与标签顺序对应
-        $('.seat:eq(' + (seat.sn - 1) + ')').show('normal').
+        $('.seat:eq(' + (seat.seat - 1) + ')').show('normal').
           children('.photo').attr('player', seat.pid).parent().
           children('.inplay').text(seat.inplay).parent().
           children('.nick').text(seat.nick);
       } else {
         // 没有人游戏的座位可以作为
         // 自动加入游戏的座位的位置
-        there_can_join(seat.sn);
+        there_can_join(seat.seat);
       }
     }
   }); // }}}
@@ -110,7 +110,7 @@ $(function() {
     if (is_disable())
       return;
 
-    var photo = $("#seats_wrapper div .photo:[player=" + player.id + "]");
+    var photo = $("#seats_wrapper div .photo:[player=" + player.pid + "]");
 
     if (player.photo.indexOf('def_face_') == 0)
       $(photo).attr('src', $.rl.img[player.photo]);
