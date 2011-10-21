@@ -255,11 +255,6 @@ $(document).ready(function() {
     }
   };
   // }}}
-  //
-  //
-  //
-  //
-  //
   var audio = new Audio("css/sound/test.mp3");
   
   var share_pot = function(seats) {
