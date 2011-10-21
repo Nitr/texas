@@ -199,9 +199,8 @@ $(function() {
   $.ws.defaults.onmessage = $.pp.onmessage;
   $.ws.defaults.onopen = onConnection;
 
-  is_debug = $.url.get("debug") != undefined;
-  if ($.url.get("debug") != undefined) {
-    $.ws.defaults.host = "192.168.1.116";
+  if ($.url.get("host") != undefined) {
+    $.ws.defaults.host = $.url.get("host");
   }
 
   $.ws.init();

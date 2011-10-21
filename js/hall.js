@@ -127,7 +127,11 @@ $(function() {
 
     cmd.debug = $.url.get("debug") != undefined;
 
-    $('#game').show("normal").trigger("active", cmd);
+    if (join_seat == undefined) {
+      $('#game').show("normal").trigger("watching", cmd);
+    } else {
+      $('#game').show("normal").trigger("join", cmd);
+    }
   };
 
   var gen_game_query = function(arr) {

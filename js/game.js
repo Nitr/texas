@@ -19,11 +19,11 @@ $(document).ready(function() {
 
   // some utility function 
   var is_me = null, check_game = null, get_gid = null
-      display_debug = null;
+      display_debug = null, send = null;
   // }}}
 
   // {{{ initialization
-  var initialization = function(args) { 
+  var initialization = function(args, is_watching) { 
     // {{{ generate check me & game function
     is_me = function(o, is_callback, not_callback) {
       var pid = pickup_int(o, 'pid');
@@ -44,24 +44,26 @@ $(document).ready(function() {
     };
 
     get_gid = function() { return args.gid; };
-    // }}}
-    
+
+    send = function(o) { 
+      o.gid = args.gid;
+      $.ws.send($.pp.write(o));
+    };
+
+    // generate display testing function
     display_debug = args.debug ? function() {
-      for (var i = 1; i < seats_size + 1; i ++) {
-        update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 1, state: PS_PLAY, betting: 0});
-        get_seat(i).children('.betting_label').css(positions[i].betting_label).text("1000").show();
-        get_seat(i).children('.card').css(positions[i].card).show();
-      }
+      //for (var i = 1; i < seats_size + 1; i ++) {
+        //update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 1, state: PS_PLAY, betting: 0});
+        //get_seat(i).children('.betting_label').css(positions[i].betting_label).text("1000").show();
+        //get_seat(i).children('.card').css(positions[i].card).show();
+      //}
     } : $.noop;
 
-    if (args.show_all == true)
-      show_all = true;
-
-    if (args.seat == undefined)
-      watching = true;
-
+    // }}}
+    
+    // generate game table DOM
     $("#game_table").setTemplateElement("game_table_template");
-    $("#game_table").processTemplate({end: 10});
+    $("#game_table").processTemplate({end: 9});
   }; 
 
   var init_seats = function(size) {
@@ -82,6 +84,51 @@ $(document).ready(function() {
     log("init_seats");
   };
 
+  // }}}
+
+  // game event {{{
+  $('#game').bind('watching', function(event, args) {
+    initialization(args);
+    send({cmd: "WATCH"});
+  });
+
+  $('#game').bind('join', function(event, args) {
+    initialization(args);
+    send({cmd: "JOIN", seat: args.seat, buyin: 100});
+  });
+
+  $('#cmd_stand').click(function() {
+    set_check(5);
+  });
+
+  $('#cmd_hall').click(function() {
+    ////
+    ////share_pot([1,2,3]);
+    //new_stage(true);
+  });
+
+  $('#cmd_fold').click(function() {
+    $.ws.send($.pp.write({cmd: "FOLD", gid: get_gid()}));
+  });
+
+  $('#cmd_call').click(function() {
+    $.ws.send($.pp.write({cmd: "RAISE", gid: get_gid(), amount: 0}));
+  });
+
+  $('#cmd_raise').click(function() {
+    a = parseInt($('#raise_range').val());
+    $.ws.send($.pp.write({cmd: "RAISE", gid: get_gid(), amount: a}));
+  });
+
+  $('#raise_range').bind('change', function(event) {
+    var v = parseInt($(this).val());
+    var max = parseInt($(this).attr("max"));
+
+    if (v == max)
+      $('#cmd_raise').text("ALL-IN " + v);
+    else 
+      $('#cmd_raise').text("加注 " + v);
+  });
   // }}}
 
   // seat & state  {{{
@@ -205,81 +252,13 @@ $(document).ready(function() {
 
   // }}}
   
-  // event {{{
-  var share_pot = function(winners) {
-    var winpots = [], cur = undefined;
-    var all_size = $(".pot").length;
-    var size = Math.floor(all_size / winners.length);
-
-    $(".pot").each(function(i, x) {
-      if (i % size == 0) {
-        cur = (cur == undefined) ? 0 : (cur + 1);
-        if (cur > winners.length - 1) {
-          cur -= 1;
-        }
-      }
-
-      if (winpots[cur] == undefined) {
-        winpots[cur] = [];
-      }
-
-      winpots[cur].push({bet: $(this), endpoint: positions[winners[cur]].betting_ori});
-    });
-
-    play_sound('move');
-    $.each(winpots, function(i, x) {
-      move_bet(x, function(bet) { $(bet).remove(); });
-    });
-  };
-  $('#game').bind('active', function(event, args) {
-    initialization(args);
-
-    // not setting seat is watch game
-    var cmd = watching == true ? {cmd: "WATCH", gid: get_gid()} : 
-      {cmd: "JOIN", gid: get_gid(), seat: args.seat, buyin: 100};
-    $.ws.send($.pp.write(cmd));
-  });
-
-  $('#cmd_stand').click(function() {
-    set_check(5);
-  });
-
-  $('#cmd_hall').click(function() {
-    ////
-    ////share_pot([1,2,3]);
-    //new_stage(true);
-  });
-
-  $('#cmd_fold').click(function() {
-    $.ws.send($.pp.write({cmd: "FOLD", gid: get_gid()}));
-  });
-
-  $('#cmd_call').click(function() {
-    $.ws.send($.pp.write({cmd: "RAISE", gid: get_gid(), amount: 0}));
-  });
-
-  $('#cmd_raise').click(function() {
-    a = parseInt($('#raise_range').val());
-    $.ws.send($.pp.write({cmd: "RAISE", gid: get_gid(), amount: a}));
-  });
-
-  $('#raise_range').bind('change', function(event) {
-    var v = parseInt($(this).val());
-    var max = parseInt($(this).attr("max"));
-
-    if (v == max)
-      $('#cmd_raise').text("ALL-IN " + v);
-    else 
-      $('#cmd_raise').text("加注 " + v);
-  });
-  // }}}
-
   // protocol {{{
   $.pp.reg("GAME_DETAIL", function(detail) { 
     log(["game_detail", detail]);
 
     check_game(detail);
     init_seats(detail.seats);
+    display_debug();
   });
 
   $.pp.reg("SEAT_DETAIL", function(seat) {
@@ -336,7 +315,6 @@ $(document).ready(function() {
       nick: notify.nick, inplay: notify.buyin
     });
 
-    display_debug();
   });
 
   $.pp.reg("BUTTON", function(notify) { 
@@ -425,6 +403,31 @@ $(document).ready(function() {
   // }}}
 
   // utility {{{ 
+  var share_pot = function(winners) {
+    var winpots = [], cur = undefined;
+    var all_size = $(".pot").length;
+    var size = Math.floor(all_size / winners.length);
+
+    $(".pot").each(function(i, x) {
+      if (i % size == 0) {
+        cur = (cur == undefined) ? 0 : (cur + 1);
+        if (cur > winners.length - 1) {
+          cur -= 1;
+        }
+      }
+
+      if (winpots[cur] == undefined) {
+        winpots[cur] = [];
+      }
+
+      winpots[cur].push({bet: $(this), endpoint: positions[winners[cur]].betting_ori});
+    });
+
+    play_sound('move');
+    $.each(winpots, function(i, x) {
+      move_bet(x, function(bet) { $(bet).remove(); });
+    });
+  };
   var get_seat = function(sn) {
     return $("#game_seat_" + sn);
   };
@@ -513,9 +516,8 @@ $(document).ready(function() {
   }
 
 
-  var log = function() {
-    a = new Date();
-    return a.getMinutes() + ":" + a.getSeconds();
+  var log = function(msg) {
+    console.log(msg);
   };
 
   var fan = function(i) {
@@ -544,6 +546,7 @@ $(document).ready(function() {
         throw "pickup_int not care type, error [" + o + "]";
     }
   };
+
   // }}}
 
   // player & betting point {{{ 
