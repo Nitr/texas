@@ -83,11 +83,14 @@ $(document).ready(function() {
     var s = get_seat(sn);
 
     s.addClass("ps_fold");
+
     if (seat.pid == cur_pid) {
       $(".private_card").addClass("ps_fold");
     } else {
       s.children(".card").hide("slow");
     }
+
+    play_sound('fold');
   };
 
   var ps_play = function(sn) {
@@ -208,6 +211,10 @@ $(document).ready(function() {
     return {left: left + "px", top: top + "px"};
   }
 
+  var set_check = function(seat) {
+    play_sound('check');
+  }
+
   var set_betting = function(seat, bet) {
     seats[seat].betting = seats[seat].betting + bet;
     pot += bet;
@@ -317,10 +324,7 @@ $(document).ready(function() {
   });
 
   $('#cmd_stand').click(function() {
-    for (var i = 1; i <= seats_size; i++) {
-      set_betting(i, Math.floor(Math.random() * 100));
-    };
-
+    set_check(5);
   });
 
   $('#cmd_hall').click(function() {
@@ -515,7 +519,10 @@ $(document).ready(function() {
 
     var sum = notify.call + notify.raise;
     var sn = get_seat_number(notify.pid)
-    set_betting(sn, sum);
+    if (sum == 0) // CHECK
+      set_check(sn);
+    else
+      set_betting(sn, sum);
   });
 
   $.pp.reg("SHOW", function(notify) { 
