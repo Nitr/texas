@@ -125,9 +125,7 @@ $(function() {
     $('#hall').hide();
     var cmd = {pid: $(document).data("pid"), gid: cur_game, seat: join_seat};
 
-    if ($.url.get("showall") != undefined) {
-      cmd.show_all = true;
-    }
+    cmd.debug = $.url.get("debug") != undefined;
 
     $('#game').show("normal").trigger("active", cmd);
   };

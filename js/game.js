@@ -18,7 +18,8 @@ $(document).ready(function() {
       PS_OUT       = 1024;
 
   // some utility function 
-  var is_me = null, check_game = null, get_gid = null;
+  var is_me = null, check_game = null, get_gid = null
+      display_debug = null;
   // }}}
 
   // {{{ initialization
@@ -45,6 +46,14 @@ $(document).ready(function() {
     get_gid = function() { return args.gid; };
     // }}}
     
+    display_debug = args.debug ? function() {
+      for (var i = 1; i < seats_size + 1; i ++) {
+        update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 1, state: PS_PLAY, betting: 0});
+        get_seat(i).children('.betting_label').css(positions[i].betting_label).text("1000").show();
+        get_seat(i).children('.card').css(positions[i].card).show();
+      }
+    } : $.noop;
+
     if (args.show_all == true)
       show_all = true;
 
@@ -327,7 +336,7 @@ $(document).ready(function() {
       nick: notify.nick, inplay: notify.buyin
     });
 
-    testing_show();
+    display_debug();
   });
 
   $.pp.reg("BUTTON", function(notify) { 
@@ -450,17 +459,6 @@ $(document).ready(function() {
   var play_sound = function(x) {
     $.rl.sounds[x].play();
   }
-
-  var testing_show = function() {
-    if (show_all == false)
-      return; 
-
-    for (var i = 1; i < seats_size + 1; i ++) {
-      update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 1, state: PS_PLAY, betting: 0});
-      get_seat(i).children('.betting_label').css(positions[i].betting_label).text("1000").show();
-      get_seat(i).children('.card').css(positions[i].card).show();
-    }
-  };
 
   var get_bets = function(bet) { // {{{
     // generate bet animation
