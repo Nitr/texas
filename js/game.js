@@ -1,5 +1,6 @@
 $(document).ready(function() {
-  var PS_EMPTY     = 0, // {{{
+  // {{{ variable
+  var PS_EMPTY     = 0, 
       PS_PLAY      = 1,
       PS_FOLD      = 2,
       PS_WAIT_BB   = 4,
@@ -10,13 +11,13 @@ $(document).ready(function() {
       PS_RESERVED  = 128,
       PS_AUTOPLAY  = 256,
       PS_MUCK      = 512,
-      PS_OUT       = 1024; // }}}
+      PS_OUT       = 1024;
 
   var cur_pid = 0, cur_gid = 0, cur_seat = 0, 
       watching = false, playing = false, 
       pot = 0, positions = null, seats_size = 0;
   var seats = [], private_card_index = 0, share_card_index = 0;
-  var show_all = false;
+  var show_all = false; // }}}
 
   // {{{ initialization
   var initialization = function(args) { 
@@ -48,36 +49,12 @@ $(document).ready(function() {
       $("#empty_seat_" + i).css(positions[i].empty_outer);
     }
 
-    console.log("init_seats");
+    log("init_seats");
   };
 
-  var get_seat = function(sn) {
-    return $("#game_seat_" + sn);
-  };
+  // }}}
 
-  var get_empty_seat = function(sn) {
-    return $("#empty_seat_" + sn);
-  };
-
-  var get_seat_number = function(pid) {
-    var sn = 0;
-    $.each(seats, function(i, s) {
-      if (s == undefined)
-        return;
-
-      if (s.pid == pid) {
-        sn = s.sn;
-      }
-    });
-
-    return sn;
-  };
-
-  var get_poker = function(face, suit) {
-    var a = new Number(face << 8 | suit);
-    return $.rl.poker[a.toString()];
-  };
-
+  // seat & state  {{{
   var ps_fold = function(sn) {
     var seat = seats[sn];
     var s = get_seat(sn);
@@ -100,6 +77,28 @@ $(document).ready(function() {
     if (seat.pid == cur_pid) {
       $(".private_card").removeClass("ps_fold");
     }
+  };
+
+  var set_check = function(seat) {
+    play_sound('check');
+  }
+
+  var set_betting = function(seat, bet) {
+    seats[seat].betting = seats[seat].betting + bet;
+    pot += bet;
+
+    var b = get_seat(seat).
+      children(".betting_label").
+      css(positions[seat].betting_label).
+      text(bet).
+      show();
+
+    var bets = get_bets(bet);
+
+    play_sound("bet");
+    $.each(bets, function(i, x) {
+      $('<img class="bet seat-bet-' + seat + '" />').attr("src", $.rl.img[x]).css(positions[seat].betting_ori).appendTo('#game_table').animate(random(positions[seat].betting, 7, 7), 450);
+    });
   };
 
   // 更新座位信息,需要参数中携带座位编号,昵称,带入金额.
@@ -150,103 +149,6 @@ $(document).ready(function() {
     reload_seat(seat.sn);
   };
 
-  var trim_position = function(offset) {
-    var t = positions.shift();
-    for (var i = 1; i <= offset; i++) {
-      positions.unshift(positions.pop());
-    }
-    positions.unshift(t);
-
-
-    for(var i = 1; i <= seats_size; i++) {
-      $("#game_seat_" + i).css(positions[i].outer);
-      $("#empty_seat_" + i).css(positions[i].empty_outer);
-    }
-  };
-
-  var fan = function(i) {
-    if (i == 0)
-      return i;
-    else if (i > 0)
-      return 0 - i;
-    else
-      return Math.abs(i);
-  };
-
-  var get_bets = function(bet) { // {{{
-    // generate bet animation
-    var bets = [];
-    var maxs = [
-      {key: 100, val: "betting_1"},
-      {key: 50, val: "betting_2"}, 
-      {key: 20, val: "betting_3"}, 
-      {key: 10, val: "betting_4"}, 
-      {key: 5, val: "betting_5"}
-    ];
-
-    while (true) {
-      var max = maxs.shift();
-      var l = Math.floor(bet / max.key);
-      for (var i = 1; i <= l; i++) {
-        bets.push(max.val);
-      }
-
-      bet = bet % max.key;
-
-      if (maxs.length == 0) {
-        if (bet != 0)
-          bets.push(max.val);
-
-        break;
-      }
-    }
-
-    return bets;
-  } // }}}
-
-  var random = function(ori, x, y) {
-    var left = new Number(Math.floor((Math.random() * 100)) % x + ori.left);
-    var top = new Number(Math.floor((Math.random() * 100)) % y + ori.top);
-    
-    return {left: left + "px", top: top + "px"};
-  }
-
-  var set_check = function(seat) {
-    play_sound('check');
-  }
-
-  var set_betting = function(seat, bet) {
-    seats[seat].betting = seats[seat].betting + bet;
-    pot += bet;
-
-    var b = get_seat(seat).
-      children(".betting_label").
-      css(positions[seat].betting_label).
-      text(bet).
-      show();
-
-    var bets = get_bets(bet);
-
-    play_sound("bet");
-    $.each(bets, function(i, x) {
-      $('<img class="bet seat-bet-' + seat + '" />').attr("src", $.rl.img[x]).css(positions[seat].betting_ori).appendTo('#game_table').animate(random(positions[seat].betting, 7, 7), 450);
-    });
-  };
-
-  var move_bet = function(bets, callback) {
-    // [{bet: $(bet), :endpoint: {left: xxx, right: xxx}}]
-    var time = 100;
-    $.each(bets, function(i, x) {
-      $(document).oneTime(time, function() {
-        $(x.bet).animate(x.endpoint, 650, function() {
-          if (callback != undefined)
-            callback($(this));
-        });
-      });
-      time += 20;
-    });
-  }
-
   var new_stage = function(have_blinds) {
 
     if (have_blinds)
@@ -270,22 +172,9 @@ $(document).ready(function() {
     });
   }
 
-  var play_sound = function(x) {
-    $.rl.sounds[x].play();
-  }
-
-  var showall = function() {
-    if (show_all == false)
-      return; 
-
-    for (var i = 1; i < seats_size + 1; i ++) {
-      update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 1, state: PS_PLAY, betting: 0});
-      get_seat(i).children('.betting_label').css(positions[i].betting_label).text("1000").show();
-      get_seat(i).children('.card').css(positions[i].card).show();
-    }
-  };
   // }}}
   
+  // event {{{
   var share_pot = function(winners) {
     var winpots = [], cur = undefined;
     var all_size = $(".pot").length;
@@ -311,15 +200,12 @@ $(document).ready(function() {
       move_bet(x, function(bet) { $(bet).remove(); });
     });
   };
-
-  // event {{{
   $('#game').bind('active', function(event, args) {
     initialization(args);
 
     // not setting seat is watch game
     var cmd = watching == true ? {cmd: "WATCH", gid: cur_gid} : 
       {cmd: "JOIN", gid: cur_gid, seat: args.seat, buyin: 100};
-    console.log(cmd);
     $.ws.send($.pp.write(cmd));
   });
 
@@ -361,7 +247,7 @@ $(document).ready(function() {
 
   // protocol {{{
   $.pp.reg("GAME_DETAIL", function(detail) { 
-    console.log([tt(), "game_detail", detail]);
+    log(["game_detail", detail]);
 
     if (detail.gid != cur_gid) 
       throw 'error notify_game_detail protocol';
@@ -373,8 +259,8 @@ $(document).ready(function() {
     if (is_disable())
       return;
 
-    //console.log(
-      //[tt(),"init_seat", "seat_detail", "seat", seat.sn, "pid", 
+    //log(
+      //["init_seat", "seat_detail", "seat", seat.sn, "pid", 
         //seat.pid, "state", seat.state, "inplay", 
         //seat.inplay, "nick", seat.nick]
     //);
@@ -391,8 +277,8 @@ $(document).ready(function() {
     if (is_disable())
       return;
 
-    console.log(
-      [tt(),"seat_state", "seat", seat.sn, "pid", 
+    log(
+      ["seat_state", "seat", seat.sn, "pid", 
         seat.pid, "state", seat.state, "inplay", 
         seat.inplay, "nick", seat.nick]
     );
@@ -421,7 +307,7 @@ $(document).ready(function() {
 
   $.pp.reg("CANCEL", function(notify) { 
     if (notify.gid == cur_gid) {
-      //console.log([tt(),'notify_cancel', notify]);
+      //log(['notify_cancel', notify]);
       return;
     }
 
@@ -430,7 +316,7 @@ $(document).ready(function() {
 
   $.pp.reg("START", function(notify) { 
     if (notify.gid == cur_gid) {
-      console.log([tt(),'notify_start', notify]);
+      log(['notify_start', notify]);
       return;
     }
 
@@ -438,8 +324,8 @@ $(document).ready(function() {
   });
 
   $.pp.reg("JOIN", function(notify) { 
-    console.log(
-      [tt(),'notify_join', "pid", notify.pid, "nick", notify.nick,
+    log(
+      ['notify_join', "pid", notify.pid, "nick", notify.nick,
        "buyin", notify.buyin, "seat", notify.seat, notify
     ]);
 
@@ -457,7 +343,7 @@ $(document).ready(function() {
         nick: notify.nick, inplay: notify.buyin
       });
 
-      showall();
+      testing_show();
       return;
     }
 
@@ -465,22 +351,22 @@ $(document).ready(function() {
   });
 
   $.pp.reg("BUTTON", function(notify) { 
-    console.log([tt(),'notify_button', notify]);
+    log(['notify_button', notify]);
 
     var s = get_seat(notify.seat);
     s.children('.button').show();
   });
 
   $.pp.reg("SBLIND", function(notify) { 
-    console.log([tt(),'notify_sb', notify]);
+    log(['notify_sb', notify]);
   });
 
   $.pp.reg("BBLIND", function(notify) { 
-    console.log([tt(),'notify_bb', notify]);
+    log(['notify_bb', notify]);
   });
 
   $.pp.reg("BET_REQ", function(req) { 
-    console.log([tt(),'notify_bet_request', 'call', req.call, 'min', req.min, 'max', req.max]);
+    log(['notify_bet_request', 'call', req.call, 'min', req.min, 'max', req.max]);
 
     $('#raise_range').
       attr('min', req.min).
@@ -489,14 +375,14 @@ $(document).ready(function() {
   });
 
   $.pp.reg("PRIVATE", function(notify) { 
-    console.log([tt(),'notify_private', 'pid', notify.pid, 'suit', notify.suit, 'face', notify.face]);
+    log(['notify_private', 'pid', notify.pid, 'suit', notify.suit, 'face', notify.face]);
 
     private_card_index += 1;
     $("#private_card_" + private_card_index).attr('src', get_poker(notify.face, notify.suit)).show('normal');
   });
 
   $.pp.reg("DRAW", function(notify) { 
-    //console.log([tt(),'notify_draw', 'pid', notify.pid, 'suit', notify.suit, 'face', notify.face]);
+    //log(['notify_draw', 'pid', notify.pid, 'suit', notify.suit, 'face', notify.face]);
     if (cur_pid != notify.pid) {
       var sn = get_seat_number(notify.pid)
       get_seat(sn).children('.card').css(positions[sn].card).show();
@@ -504,18 +390,18 @@ $(document).ready(function() {
   });
 
   $.pp.reg("SHARE", function(notify) { 
-    console.log([tt(),'notify_share', 'suit', notify.suit, 'face', notify.face]);
+    log(['notify_share', 'suit', notify.suit, 'face', notify.face]);
     share_card_index += 1;
     $("#share_card_" + share_card_index).attr('src', get_poker(notify.face, notify.suit)).show('normal');
   });
 
   $.pp.reg("STAGE", function(notify) { 
-    console.log([tt(),'notify_stage', 'stage', notify.stage]);
+    log(['notify_stage', 'stage', notify.stage]);
     new_stage(notify.stage == 0);
   });
 
   $.pp.reg("RAISE", function(notify) { 
-    console.log([tt(),'notify_raise', 'pid', notify.pid, 'raise', notify.raise, 'call', notify.call]);
+    log(['notify_raise', 'pid', notify.pid, 'raise', notify.raise, 'call', notify.call]);
 
     var sum = notify.call + notify.raise;
     var sn = get_seat_number(notify.pid)
@@ -526,11 +412,11 @@ $(document).ready(function() {
   });
 
   $.pp.reg("SHOW", function(notify) { 
-    console.log([tt(),'notify_show', 'pid', notify.pid, 'card1', notify.face1, notify.suit1, 'card2', notify.face2, notify.suit2]);
+    log(['notify_show', 'pid', notify.pid, 'card1', notify.face1, notify.suit1, 'card2', notify.face2, notify.suit2]);
   });
 
   $.pp.reg("HAND", function(notify) { 
-    console.log([tt(),'notify_hand', 'pid', notify.pid, 'rank', notify.rank, 'face', notify.face1, notify.face2]);
+    log(['notify_hand', 'pid', notify.pid, 'rank', notify.rank, 'face', notify.face1, notify.face2]);
   });
 
   $.pp.reg("END", function(notify) { 
@@ -540,26 +426,144 @@ $(document).ready(function() {
     pot = 0;
 
     $(".private_card").hide("slow");
-    console.log([tt(),'----------------------notify_end----------------------']);
+    log(['----------------------notify_end----------------------']);
   });
 
   $.pp.reg("WIN", function(notify) { 
-    console.log([tt(),'notify_win', 'pid', notify.pid, 'amount', notify.amount]);
+    log(['notify_win', 'pid', notify.pid, 'amount', notify.amount]);
   });
 
-  var return_hall = function() {
-    //$('#game').hide("normal");
-    //$('#hall').show("normal").trigger('active', cur_game);
-  };
   // }}}
 
-  var tt = function() {
-    a = new Date();
-    return a.getMinutes() + ":" + a.getSeconds();
+  // utility {{{ 
+  var get_seat = function(sn) {
+    return $("#game_seat_" + sn);
+  };
+
+  var get_empty_seat = function(sn) {
+    return $("#empty_seat_" + sn);
+  };
+
+  var get_seat_number = function(pid) {
+    var sn = 0;
+    $.each(seats, function(i, s) {
+      if (s == undefined)
+        return;
+
+      if (s.pid == pid) {
+        sn = s.sn;
+      }
+    });
+
+    return sn;
+  };
+
+  var get_poker = function(face, suit) {
+    var a = new Number(face << 8 | suit);
+    return $.rl.poker[a.toString()];
   };
 
   var is_disable = function() { 
     return $('#game').css('display') == 'none'; 
+  };
+
+  var play_sound = function(x) {
+    $.rl.sounds[x].play();
+  }
+
+  var testing_show = function() {
+    if (show_all == false)
+      return; 
+
+    for (var i = 1; i < seats_size + 1; i ++) {
+      update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 1, state: PS_PLAY, betting: 0});
+      get_seat(i).children('.betting_label').css(positions[i].betting_label).text("1000").show();
+      get_seat(i).children('.card').css(positions[i].card).show();
+    }
+  };
+
+  var get_bets = function(bet) { // {{{
+    // generate bet animation
+    var bets = [];
+    var maxs = [
+      {key: 100, val: "betting_1"},
+      {key: 50, val: "betting_2"}, 
+      {key: 20, val: "betting_3"}, 
+      {key: 10, val: "betting_4"}, 
+      {key: 5, val: "betting_5"}
+    ];
+
+    while (true) {
+      var max = maxs.shift();
+      var l = Math.floor(bet / max.key);
+      for (var i = 1; i <= l; i++) {
+        bets.push(max.val);
+      }
+
+      bet = bet % max.key;
+
+      if (maxs.length == 0) {
+        if (bet != 0)
+          bets.push(max.val);
+
+        break;
+      }
+    }
+
+    return bets;
+  } // }}}
+
+  var random = function(ori, x, y) {
+    var left = new Number(Math.floor((Math.random() * 100)) % x + ori.left);
+    var top = new Number(Math.floor((Math.random() * 100)) % y + ori.top);
+    
+    return {left: left + "px", top: top + "px"};
+  }
+
+  var move_bet = function(bets, callback) {
+    // [{bet: $(bet), :endpoint: {left: xxx, right: xxx}}]
+    var time = 100;
+    $.each(bets, function(i, x) {
+      $(document).oneTime(time, function() {
+        $(x.bet).animate(x.endpoint, 650, function() {
+          if (callback != undefined)
+            callback($(this));
+        });
+      });
+      time += 20;
+    });
+  }
+
+
+  var log = function() {
+    a = new Date();
+    return a.getMinutes() + ":" + a.getSeconds();
+  };
+
+  var fan = function(i) {
+    if (i == 0)
+      return i;
+    else if (i > 0)
+      return 0 - i;
+    else
+      return Math.abs(i);
+  };
+
+  // }}}
+
+  // player & betting point {{{ 
+  var trim_position = function(offset) {
+    var t = positions.shift();
+    for (var i = 1; i <= offset; i++) {
+      positions.unshift(positions.pop());
+    }
+    positions.unshift(t);
+
+
+    for(var i = 1; i <= seats_size; i++) {
+      $("#game_seat_" + i).css(positions[i].outer);
+      $("#empty_seat_" + i).css(positions[i].empty_outer);
+    }
   };
 
   var convert_points = function(points) {
@@ -601,6 +605,6 @@ $(document).ready(function() {
     {outer: "801,230,798,275", betting_label: "-63,5", betting: "832,290,749,208", card: "-51,30"},
     {outer: "680,350,640,363", betting_label: "20,-20", betting: "711,408,710,306", card: "-51,28"}
   ])
+  // }}}
 });
-
 // vim: fdm=marker
