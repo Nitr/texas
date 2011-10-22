@@ -1,7 +1,7 @@
 $(document).ready(function() {
   // {{{ variable
   var watching = false, playing = false, 
-      pot = 0, positions = null, seats_size = 0;
+      sum_pot = 0, positions = null, seats_size = 0;
   var seats = [], private_card_index = 0, share_card_index = 0;
   var show_all = false; 
   var PS_EMPTY     = 0, 
@@ -244,7 +244,7 @@ http://localhost/~jack/texas/
     for(var i = 1; i < states.length; i++) {
       var t = $('.seat-bet-' + states[i].seat).map(function(n, x) {
         $(x).addClass("pot").removeClass("bet").removeClass("seat-bet-" + states[i].seat);
-        return {bet: $(x), endpoint: random({left: 571, top: 227}, 20, 20)};
+        return {bet: $(x), endpoint: random({left: 671, top: 217}, 20, 20)};
       });
 
       if (t.length != 0) {
@@ -260,6 +260,11 @@ http://localhost/~jack/texas/
       $.each(bets, function(i, x) {
         move_bet(bets.shift());
       });
+    }
+
+    if (sum_pot != 0) {
+      console.log('pot_label');
+      $('.pot_label').text(sum_pot).show();
     }
 
     update_states('bet', 0);
@@ -376,6 +381,8 @@ http://localhost/~jack/texas/
         text(state.bet).
         show();
     }
+
+    sum_pot += sum;
   });
 
   $.pp.reg("PHOTO_INFO", function(player) { 
@@ -438,6 +445,7 @@ http://localhost/~jack/texas/
     $(".game_seat").children(".button").hide("slow");
     $(".game_seat").children(".card").hide("slow");
 
+    sum_pot = 0;
     share_card_index = 0;
     private_card_index = 0;
 
@@ -518,6 +526,7 @@ http://localhost/~jack/texas/
     });
 
     play_sound('move');
+    $('.pot_label').hide();
 
     $.each(winpots, function(i, x) {
       move_bet(x, function(bet) { $(bet).remove(); });

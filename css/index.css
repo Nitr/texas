@@ -315,8 +315,8 @@ button {
 
 #room_commands {
   position: absolute;
-  top: 60px;
-  left: 825px;
+  top: 25px;
+  left: 865px;
 }
 
 .game_seat {
