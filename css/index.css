@@ -395,7 +395,7 @@ button {
 #game_table {
 }
 
-.betting_label, .pot_label {
+.bet_label, .pot_label {
   background-color: #77B73E;
   position: absolute;
   font-size: 12px;
@@ -412,8 +412,13 @@ button {
 .card {
   position: absolute;
   z-index: 50;
-  /*border-radius: 4px;*/
-  /*-webkit-box-shadow: 1px 1px 20px black;*/
+}
+
+.share_card {
+  position: absolute;
+  z-index: 50;
+  border-radius: 4px;
+  -webkit-box-shadow: 1px 1px 20px black;
 }
 
 .private_card {
@@ -433,4 +438,19 @@ button {
 
 .ps_fold {
   opacity: 0.75;
+}
+
+.timer {
+  width: 6px;
+  position: absolute;
+  top: 0px;
+  left: -7px;
+  border-radius: 4px;
+  border: 1px solid gray;
+}
+
+.timer > div {
+  background-color: red;
+  height: 120px;
+  border-radius: 4px;
 }

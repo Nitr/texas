@@ -183,6 +183,10 @@
       {type: "decimal", prop: "min"},
       {type: "decimal", prop: "max"}
     ]),
+    notify_seat_state: generate_notify("ACTOR", [84,
+      {type: "integer", prop: "gid"},
+      {type: "byte", prop: "seat"}
+    ]),
     notify_seat_state: generate_notify("RAISE", [42,
       {type: "integer", prop: "gid"},
       {type: "integer", prop: "pid"},

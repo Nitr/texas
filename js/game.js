@@ -83,7 +83,6 @@ $(document).ready(function() {
       var sn = o != undefined ? pickup_int(o, 'seat') : seat;
 
       if (states[sn] == undefined) {
-        console.log(o);
         throw 'Not find seat state [' + o + ']';
       }
 
@@ -119,11 +118,23 @@ $(document).ready(function() {
         dom: $("#game_seat_" + i).css(positions[i].outer),
         empty_dom: $("#empty_seat_" + i).css(positions[i].empty_outer),
         position: positions[i],
-        photo: $.rl.img.def_face_0
+        photo: $.rl.img.def_face_0,
+        bet: 0
       };
     }
   };
 
+  var update_states = function(prop, val) {
+    $.each(states, function(i, x) {
+      if (i == 0)
+        return;
+
+      if (x.state != PS_EMPTY) {
+        x[prop] = val;
+      }
+    });
+    
+  }
   var init_state = function(detail) {
     var st = update_state(detail);
     if (st.state != PS_EMPTY) {
@@ -141,8 +152,6 @@ $(document).ready(function() {
     var x = get_state(state);
     var show = function() { $(this).show(); };
 
-    console.log(x);
-
     if (x.state != PS_EMPTY) {
       $(x.empty_dom).hide().css(x.position.empty_outer);
       $(x.dom).animate(x.position.outer, 'slow', show);
@@ -152,6 +161,19 @@ $(document).ready(function() {
         children('.nick').text(x.nick).parent().
         children('.photo').attr('src', x.photo);
 
+      if (x.state == PS_FOLD) {
+        $(x.dom).addClass("ps_fold");
+        is_me(x, function() {
+          $(".private_card").addClass("ps_fold");
+        }, function() {
+          $(x.dom).children(".card").hide("slow");
+        });
+      } else {
+        $(x.dom).removeClass("ps_fold");
+        is_me(x, function() {
+          $(".private_card").removeClass("ps_fold");
+        });
+      }
     } else {
       $(x.dom).hide().css(x.position.empty_outer);
       $(x.empty_dom).animate(x.position.empty_outer, 'slow', show);
@@ -181,26 +203,25 @@ http://localhost/~jack/texas/
   });
 
   $('#cmd_stand').click(function() {
-    set_check(5);
   });
 
   $('#cmd_hall').click(function() {
-    ////
-    ////share_pot([1,2,3]);
-    //new_stage(true);
   });
 
   $('#cmd_fold').click(function() {
     send({cmd: "FOLD"});
+    $('#game_commands > *').attr("disabled", true);
   });
 
-  $('#cmd_call').click(function() {
+  $('#cmd_call, #cmd_check').click(function() {
     send({cmd: "RAISE", amount: 0});
+    $('#game_commands > *').attr("disabled", true);
   });
 
   $('#cmd_raise').click(function() {
     amount = parseInt($('#raise_range').val());
     send({cmd: "RAISE", amount: amount});
+    $('#game_commands > *').attr("disabled", true);
   });
 
   $('#raise_range').bind('change', function(event) {
@@ -215,120 +236,33 @@ http://localhost/~jack/texas/
   // }}}
 
   // seat & state  {{{
-  var ps_fold = function(sn) {
-    var seat = seats[sn];
-    var s = get_seat(sn);
-
-    s.addClass("ps_fold");
-
-    is_me(seat, function() {
-      $(".private_card").addClass("ps_fold");
-    }, function() {
-      s.children(".card").hide("slow");
-    });
-
-    play_sound('fold');
-  };
-
-  var ps_play = function(sn) {
-    var seat = seats[sn];
-    var s = get_seat(sn);
-    s.removeClass("ps_fold");
-
-    is_me(seat, function() {
-      $(".private_card").removeClass("ps_fold");
-    });
-  };
-
-  var set_check = function(seat) {
-    play_sound('check');
-  }
-
-  var set_betting = function(seat, bet) {
-    seats[seat].betting = seats[seat].betting + bet;
-    pot += bet;
-
-    var b = get_seat(seat).
-      children(".betting_label").
-      css(positions[seat].betting_label).
-      text(bet).
-      show();
-
-    var bets = get_bets(bet);
-
-    play_sound("bet");
-    $.each(bets, function(i, x) {
-      $('<img class="bet seat-bet-' + seat + '" />').attr("src", $.rl.img[x]).css(positions[seat].betting_ori).appendTo('#game_table').animate(random(positions[seat].betting, 7, 7), 450);
-    });
-  };
-
-  // 更新座位信息,需要参数中携带座位编号,昵称,带入金额.
-  var reload_seat = function(sn) {
-    var seat = seats[sn];
-    var s = get_seat(sn);
-    var e = get_empty_seat(sn);
-
-    if (seat == undefined) {
-      s.hide();
-      e.show(450);
-    }
-    else {
-      e.hide();
-
-      if (seat.state == PS_FOLD) {
-        ps_fold(sn);
-      }
-
-      if (seat.state == PS_PLAY) {
-        ps_play(sn);
-      }
-
-      // 对玩家显示区进行基本设置
-      s.children('.inplay').text(seat.inplay).parent().
-        children('.nick').text(seat.nick).parent().
-        children('.photo').attr('player', seat.pid).parent().
-        show(450);
-    }
-  };
-
-  var update_seat = function(seat) {
-    if (seat.state == PS_EMPTY) {
-      seats[seat.sn] = undefined;
-    } else {
-      if (seats[seat.sn] == undefined) {
-        seat.betting = 0;
-        seats[seat.sn] = seat;
-      }
-      else {
-        seat.betting = seats[seat.sn].betting;
-        seats[seat.sn] = seat;
-      }
-    }
-
-    reload_seat(seat.sn);
-  };
-
   var new_stage = function(have_blinds) {
-
     if (have_blinds)
       return;
 
-    var sum = 0;
     var bets = [];
-
-    for(var i = 1; i <= seats_size; i++) {
-      bets.push($('.seat-bet-' + i).map(function(n, x) {
-        $(x).addClass("pot").removeClass("bet").removeClass("seat-bet-" + i);
+    for(var i = 1; i < states.length; i++) {
+      var t = $('.seat-bet-' + states[i].seat).map(function(n, x) {
+        $(x).addClass("pot").removeClass("bet").removeClass("seat-bet-" + states[i].seat);
         return {bet: $(x), endpoint: random({left: 571, top: 227}, 20, 20)};
-      }));
+      });
 
-      get_seat(i).children('.betting_label').hide();
+      if (t.length != 0) {
+        bets.push(t);
+      }
+
+      $(states[i].dom).children('.bet_label').hide();
     }
 
-    play_sound('move');
-    $.each(bets, function(i, x) {
-      move_bet(bets.shift());
-    });
+    if (bets.length != 0) {
+      play_sound('move');
+
+      $.each(bets, function(i, x) {
+        move_bet(bets.shift());
+      });
+    }
+
+    update_states('bet', 0);
   }
 
   // }}}
@@ -373,35 +307,75 @@ http://localhost/~jack/texas/
       };
     });
 
+    console.log(states);
     refresh_states();
   });
 
-  $.pp.reg("SEAT_STATE", function(seat) { 
+  $.pp.reg("SEAT_STATE", function(state) { 
     if (is_disable())
       return;
 
-    check_game(seat);
-    update_seat({inplay: 1000, sn: seat.sn, nick: seat.nick, pid: seat.pid, state: seat.state});
+    check_game(state);
+    cancel_timer();
+    update_state(state);
+    refresh_state(state);
+  });
+
+  $.pp.reg("ACTOR", function(actor) { 
+    log(["---actor---", actor.seat]);
+    start_timer(actor.seat);
+    is_me(get_state(actor.seat), function() {
+      $('#game_commands > *').attr("disabled", false);
+    }, function() {
+      $('#game_commands > *').attr("disabled", true);
+    });
   });
 
   $.pp.reg("BET_REQ", function(req) { 
-    log(['notify_bet_request', 'call', req.call, 'min', req.min, 'max', req.max]);
-
-    $('#raise_range').
+    $('#raise_range').val(req.min).
       attr('min', req.min).
-      attr('max', req.max).
-      val(req.min);
+      attr('max', req.max);
+
+    $("#cmd_raise").text('加注 ' + req.min);
+
+    if (req.call == 0) {
+      $("#cmd_check").attr("disabled", false);
+      $("#cmd_call").attr("disabled", true);
+    }
+    else {
+      $("#cmd_check").attr("disabled", true);
+      $("#cmd_call").attr("disabled", false);
+    }
+      
+
+    log(["---bet request---", req.call, req.max, req.min]);
   });
 
   $.pp.reg("RAISE", function(notify) { 
-    log(['notify_raise', 'pid', notify.pid, 'raise', notify.raise, 'call', notify.call]);
-
     var sum = notify.call + notify.raise;
-    var sn = get_seat_number(notify.pid)
-    if (sum == 0) // CHECK
-      set_check(sn);
-    else
-      set_betting(sn, sum);
+    var state = get_state(get_seat_number(notify.pid));
+    state.bet += sum;
+
+    if (sum == 0) { // Player Check
+      play_sound('check'); 
+    } else {
+      play_sound("bet");
+
+      var bets = get_bets(sum);
+      $.each(bets, function(i, x) {
+        $('<img class="bet seat-bet-' + state.seat + '" />').
+          attr("src", $.rl.img[x]).
+          css(state.position.betting_ori).
+          appendTo('#game_table').
+          animate(random(state.position.betting, 7, 7), 450);
+      });
+
+      $(state.dom).
+        children(".bet_label").
+        css(state.position.betting_label).
+        text(state.bet).
+        show();
+    }
   });
 
   $.pp.reg("PHOTO_INFO", function(player) { 
@@ -413,7 +387,6 @@ http://localhost/~jack/texas/
       player.seat = get_seat_number(player.pid);
       player.photo = photo;
       update_state(player);
-      console.log('UPDATE PHOTO');
       refresh_state(player);
     }
   });
@@ -421,26 +394,39 @@ http://localhost/~jack/texas/
 
   // {{{ game state notify
   $.pp.reg("CANCEL", function(notify) { 
+    log('---cancel game---');
     check_game(notify);
   });
 
   $.pp.reg("START", function(notify) { 
+    log('---start game---');
+
+    $(".card").hide("slow");
+    $(".private_card").hide("slow");
+
     check_game(notify);
   });
 
   $.pp.reg("BUTTON", function(notify) { 
-    log(['notify_button', notify]);
+    log(['---notify button---', notify.seat]);
 
-    var s = get_seat(notify.seat);
-    s.children('.button').show();
+    notify.button = true;
+    update_state(notify)
+    $(get_state(notify).dom).children('.button').show();
   });
 
   $.pp.reg("SBLIND", function(notify) { 
-    log(['notify_sb', notify]);
+    log(['---notify sb---', notify.seat]);
+
+    notify.sb = true;
+    update_state(notify)
   });
 
   $.pp.reg("BBLIND", function(notify) { 
-    log(['notify_bb', notify]);
+    log(['---notify bb---', notify.seat]);
+
+    notify.bb = true;
+    update_state(notify)
   });
 
   $.pp.reg("STAGE", function(notify) { 
@@ -452,48 +438,58 @@ http://localhost/~jack/texas/
     $(".game_seat").children(".button").hide("slow");
     $(".game_seat").children(".card").hide("slow");
 
-    pot = 0;
+    share_card_index = 0;
+    private_card_index = 0;
 
-    $(".private_card").hide("slow");
+    update_states('bet', 0);
+    update_states('state', PS_FOLD);
+    refresh_states();
+
     log(['----------------------notify_end----------------------']);
   });
-
   // }}}
 
   // {{{ card notify 
   $.pp.reg("PRIVATE", function(notify) { 
     log(['notify_private', 'pid', notify.pid, 'suit', notify.suit, 'face', notify.face]);
 
+    play_sound('card');
     private_card_index += 1;
     $("#private_card_" + private_card_index).attr('src', get_poker(notify.face, notify.suit)).show('normal');
   });
 
   $.pp.reg("DRAW", function(notify) { 
-    //log(['notify_draw', 'pid', notify.pid, 'suit', notify.suit, 'face', notify.face]);
     is_me(notify, $.noop, function() {
-      var sn = get_seat_number(notify.pid)
-      get_seat(sn).children('.card').css(positions[sn].card).show();
+      play_sound('card');
+      var state = get_state(get_seat_number(notify.pid));
+      $(state.dom).children('.card').css(state.position.card).show();
     });
   });
 
   $.pp.reg("SHARE", function(notify) { 
-    log(['notify_share', 'suit', notify.suit, 'face', notify.face]);
+    play_sound('card');
     share_card_index += 1;
-    $("#share_card_" + share_card_index).attr('src', get_poker(notify.face, notify.suit)).show('normal');
+    $("#share_card_" + share_card_index).
+      attr('src', get_poker(notify.face, notify.suit)).
+      show('slow');
   });
 
   $.pp.reg("SHOW", function(notify) { 
-    log(['notify_show', 'pid', notify.pid, 'card1', notify.face1, notify.suit1, 'card2', notify.face2, notify.suit2]);
+    // TODO
+    log(['show', notify]);
   });
   // }}}
 
   // {{{ showdown notify
   $.pp.reg("HAND", function(notify) { 
-    log(['notify_hand', 'pid', notify.pid, 'rank', notify.rank, 'face', notify.face1, notify.face2]);
+    // TODO
+    log(['hand', notify]);
   });
 
   $.pp.reg("WIN", function(notify) { 
-    log(['notify_win', 'pid', notify.pid, 'amount', notify.amount]);
+    // TODO
+    new_stage();
+    share_pot([get_seat_number(notify.pid)]);
   });
   // }}}
   // }}}
@@ -516,17 +512,16 @@ http://localhost/~jack/texas/
         winpots[cur] = [];
       }
 
-      winpots[cur].push({bet: $(this), endpoint: positions[winners[cur]].betting_ori});
+      var state = get_state(winners[cur]);
+
+      winpots[cur].push({bet: $(this), endpoint: state.position.betting_ori});
     });
 
     play_sound('move');
+
     $.each(winpots, function(i, x) {
       move_bet(x, function(bet) { $(bet).remove(); });
     });
-  };
-
-  var get_empty_seat = function(sn) {
-    return $("#empty_seat_" + sn);
   };
 
   var get_poker = function(face, suit) {
@@ -539,10 +534,13 @@ http://localhost/~jack/texas/
   };
 
   var play_sound = function(x) {
+    if (x == 'move')
+      console.log('play-sound', x);
+
     $.rl.sounds[x].play();
   }
 
-  var get_bets = function(bet) { // {{{
+  var get_bets = function(bet) {
     // generate bet animation
     var bets = [];
     var maxs = [
@@ -571,7 +569,7 @@ http://localhost/~jack/texas/
     }
 
     return bets;
-  } // }}}
+  };
 
   var random = function(ori, x, y) {
     var left = new Number(Math.floor((Math.random() * 100)) % x + ori.left);
@@ -594,6 +592,27 @@ http://localhost/~jack/texas/
     });
   }
 
+  var start_timer = function(seat) {
+    var s = get_state(seat);
+    $('<div class="timer" style="height: 120px;"><div /></div>').
+      appendTo($(s.dom));
+
+    var height = 120;
+    var top = 0;
+
+    $(".timer").everyTime(500, function(i) {
+      height -= 4;
+      top += 4;
+      $(".timer").children("div").css('height', height + 'px').css('margin-top', top + 'px');
+      if (height == 0) {
+        cancel_timer();
+      }
+    }, 30);
+  }
+
+  var cancel_timer = function() {
+    $(".timer").stopTime().remove();
+  };
 
   var log = function(msg) {
     console.log(msg);
