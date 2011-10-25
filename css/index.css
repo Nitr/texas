@@ -409,25 +409,25 @@ button {
   background-color: #a5a6a6;
 }
 
-.card {
+.background_card {
   position: absolute;
   z-index: 50;
+}
+
+.card {
+  width: 45px;
+  height: 65px;
+  display: none;
+  position: absolute;
+  z-index: 50;
+  border-radius: 4px;
+  -webkit-box-shadow: 1px 1px 5px black;
 }
 
 .share_card {
-  position: absolute;
-  z-index: 50;
-  border-radius: 4px;
-  -webkit-box-shadow: 1px 1px 20px black;
 }
 
 .private_card {
-  position: absolute;
-  width: 45px;
-  height: 65px;
-  border-radius: 4px;
-  -webkit-box-shadow: 1px 1px 20px black;
-  display: none;
 }
 
 .bet, .pot {

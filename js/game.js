@@ -438,6 +438,8 @@ http://localhost/~jack/texas/
 
     $(".card").hide("slow");
     $(".private_card").hide("slow");
+    $(".private_card").removeClass().addClass('private_card').addClass('card');
+    $(".share_card").removeClass().addClass('share_card').addClass('card');
 
     check_game(notify);
   });
@@ -487,11 +489,11 @@ http://localhost/~jack/texas/
 
   // {{{ card notify 
   $.pp.reg("PRIVATE", function(notify) { 
+    play_sound('card');
     log(['notify_private', 'pid', notify.pid, 'suit', notify.suit, 'face', notify.face]);
 
-    play_sound('card');
     private_card_index += 1;
-    $("#private_card_" + private_card_index).attr('src', get_poker(notify.face, notify.suit)).show('normal');
+    set_card('#private_card_' + private_card_index, notify.face, notify.suit);
   });
 
   $.pp.reg("DRAW", function(notify) { 
@@ -505,9 +507,7 @@ http://localhost/~jack/texas/
   $.pp.reg("SHARE", function(notify) { 
     play_sound('card');
     share_card_index += 1;
-    $("#share_card_" + share_card_index).
-      attr('src', get_poker(notify.face, notify.suit)).
-      show('slow');
+    set_card('#share_card_' + share_card_index, notify.face, notify.suit);
   });
 
   $.pp.reg("SHOW", function(notify) { 
@@ -519,7 +519,27 @@ http://localhost/~jack/texas/
   // {{{ showdown notify
   $.pp.reg("HAND", function(notify) { 
     log(['-------------------------hand-----------------------', notify]);
-    log([notify.rank, notify.high1, notify.high2, notify.suit]);
+    log(['rank', notify.rank, notify.high1, notify.high2, 'suit', notify.suit]);
+
+    clear_high();
+
+    switch (notify.rank) {
+      case HC_PAIR:
+        set_high(notify.high1);
+        break;
+      case HC_TWO_PAIR:
+        set_high(notify.high1);
+        set_high(notify.high2);
+        break;
+      case HC_THREE_KIND:
+        set_high(notify.high1);
+        break;
+      case HC_FOUR_KIND:
+        set_high(notify.high1);
+        break;
+      default:
+        break;
+    }
   });
 
   $.pp.reg("WIN", function(notify) { 
@@ -682,8 +702,25 @@ http://localhost/~jack/texas/
     }
   };
 
-  // }}}
+  var set_card = function(id, face, suit) {
+    var sn = new Number(face << 8 | suit);
+    $(id).attr('src', $.rl.poker[sn.toString()]).
+      addClass("suit_" + suit + "_face_" + face).addClass("face_" + face).
+      show('slow');
+  };
 
+  var clear_high = function() {
+    $('.card').css('-webkit-box-shadow', '1px 1px 5px black');
+  };
+
+  var set_high = function(face, suit) {
+    (suit == undefined ? 
+     $(".face_" + face) : 
+     $(".suit_" + suit + "_face_" + face)
+    ).css('-webkit-box-shadow', '1px 1px 3px 3px gold');
+  };
+
+  // }}}
   // player & betting point {{{ 
   var trim_positions = function(offset) {
     var size = get_size();
