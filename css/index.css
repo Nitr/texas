@@ -454,3 +454,13 @@ button {
   height: 120px;
   border-radius: 4px;
 }
+
+.rank_label {
+  top: 447px; 
+  left: 530px;
+  width: 100px;
+  height: 25px;
+  position: absolute;
+  border-radius: 4px;
+  -webkit-box-shadow: 1px 1px 3px 3px gold;
+}

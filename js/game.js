@@ -47,6 +47,8 @@ $(document).ready(function() {
       HC_FULL_HOUSE     = 6,
       HC_FOUR_KIND      = 7,
       HC_STRAIGHT_FLUSH = 8;
+
+  var ranks = [null, "一對", "兩對", "三條", "順子", "同花", "葫蘆", "四條", "同花順"];
   // }}}
 
   // {{{ generate function
@@ -147,7 +149,8 @@ $(document).ready(function() {
         empty_dom: $("#empty_seat_" + i).css(positions[i].empty_outer),
         position: positions[i],
         photo: $.rl.img.def_face_0,
-        bet: 0
+        bet: 0,
+        rank: HC_HIGH_CARD
       };
     }
   };
@@ -176,6 +179,19 @@ $(document).ready(function() {
     return st;
   }
 
+  var refresh_rank_nick = function(state) {
+    var x = get_state(state);
+    
+    if (x.rank != HC_HIGH_CARD) {
+      $(x.dom).
+        children('.nick').text(ranks[x.rank]).css({color: 'yellow'});
+    }
+    else {
+      $(x.dom).
+        children('.nick').text(x.nick).css({color: 'black'});
+    }
+  };
+
   var refresh_state = function(state) {
     var x = get_state(state);
     var show = function() { $(this).show(); };
@@ -186,8 +202,9 @@ $(document).ready(function() {
 
       $(x.dom).
         children('.inplay').text(x.inplay).parent().
-        children('.nick').text(x.nick).parent().
         children('.photo').attr('src', x.photo);
+
+      refresh_rank_nick(state);
 
       if (x.state == PS_FOLD) {
         $(x.dom).addClass("ps_fold");
@@ -202,6 +219,7 @@ $(document).ready(function() {
           $(".private_card").removeClass("ps_fold");
         });
       }
+
     } else {
       $(x.dom).hide().css(x.position.empty_outer);
       $(x.empty_dom).animate(x.position.empty_outer, 'slow', show);
@@ -234,6 +252,12 @@ http://localhost/~jack/texas/
   });
 
   $('#cmd_hall').click(function() {
+    $("[suit=3]").
+      sort(compare_card).
+      slice(0, 5).
+      each(function() {
+        console.log($(this).attr('face'), $(this).attr('suit'));
+    });
   });
 
   $('#cmd_fold').click(function() {
@@ -291,7 +315,6 @@ http://localhost/~jack/texas/
     }
 
     if (sum_pot != 0) {
-      console.log('pot_label');
       $('.pot_label').text(sum_pot).show();
     }
 
@@ -518,6 +541,8 @@ http://localhost/~jack/texas/
 
   // {{{ showdown notify
   $.pp.reg("HAND", function(notify) { 
+    check_game(notify);
+
     log(['-------------------------hand-----------------------', notify]);
     log(['rank', notify.rank, notify.high1, notify.high2, 'suit', notify.suit]);
 
@@ -531,15 +556,55 @@ http://localhost/~jack/texas/
         set_high(notify.high1);
         set_high(notify.high2);
         break;
+      case HC_FULL_HOUSE:
+        set_high(notify.high1);
+        set_high(notify.high2);
+        break;
       case HC_THREE_KIND:
         set_high(notify.high1);
         break;
       case HC_FOUR_KIND:
         set_high(notify.high1);
         break;
+      case HC_FLUSH:
+        $("[suit=" + notify.suit + "]").
+          sort(compare_card).
+          slice(0, 5).
+          each(function() {
+            set_high_css($(this));
+          });
+        break;
+      case HC_STRAIGHT:
+        set_hight(notify.hight1);
+        set_hight(notify.hight1 - 1);
+        set_hight(notify.hight1 - 2);
+        set_hight(notify.hight1 - 3);
+        if (notify.hight1 == CF_FIVE) {
+          set_hight(CF_ACE);
+        } else {
+          set_hight(notify.hight1 - 4)
+        }
+        break;
+      case HC_STRAIGHT_FLUSH:
+        set_hight(notify.hight1, notify.suit);
+        set_hight(notify.hight1 - 1, notify.suit);
+        set_hight(notify.hight1 - 2, notify.suit);
+        set_hight(notify.hight1 - 3, notify.suit);
+        if (notify.hight1 == CF_FIVE) {
+          set_hight(CF_ACE, notify.suit);
+        } else {
+          set_hight(notify.hight1 - 4, notify.suit)
+        }
+        break;
       default:
         break;
     }
+
+    is_me(notify, function() {
+      var state = get_state(get_seat_number(notify.pid))
+      state.rank = notify.rank;
+      refresh_rank_nick(state);
+    });
   });
 
   $.pp.reg("WIN", function(notify) { 
@@ -705,7 +770,7 @@ http://localhost/~jack/texas/
   var set_card = function(id, face, suit) {
     var sn = new Number(face << 8 | suit);
     $(id).attr('src', $.rl.poker[sn.toString()]).
-      addClass("suit_" + suit + "_face_" + face).addClass("face_" + face).
+      attr("face", face).attr("suit", suit).
       show('slow');
   };
 
@@ -714,12 +779,35 @@ http://localhost/~jack/texas/
   };
 
   var set_high = function(face, suit) {
-    (suit == undefined ? 
-     $(".face_" + face) : 
-     $(".suit_" + suit + "_face_" + face)
-    ).css('-webkit-box-shadow', '1px 1px 3px 3px gold');
+    if (face == undefined && suit == undefined)
+      throw 'unknown high face or suit';
+
+    if (face == undefined)
+      set_high_css($("[suit=" + suit + "]"));
+
+    if (suit == undefined)
+      set_high_css($("[face=" + face + "]"));
+
+    if (face != undefined && suit != undefined)
+      set_high_css($("[suit=" + suit + "]").
+                   filter("[face=" + face + "]"));
   };
 
+  var set_high_css = function(card) {
+    $(card).css('-webkit-box-shadow', '1px 1px 3px 3px gold');
+  };
+
+  var compare_card = function(a, b) {
+    var a1 = new Number($(a).attr('face'));
+    var b1 = new Number($(b).attr('face'));
+
+    if (a1 > b1)
+      return -1;
+    else if (a1 < b1)
+      return 1;
+    else
+      return 0;
+  };
   // }}}
   // player & betting point {{{ 
   var trim_positions = function(offset) {
