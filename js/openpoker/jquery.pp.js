@@ -206,8 +206,9 @@
       {type: "integer", prop: "gid"},
       {type: "integer", prop: "pid"},
       {type: "byte", prop: "rank"},
-      {type: "byte", prop: "face1"},
-      {type: "byte", prop: "face2"}
+      {type: "byte", prop: "high1"},
+      {type: "byte", prop: "high2"},
+      {type: "byte", prop: "suit"}
     ]),
     notify_seat_state: generate_notify("WIN", [26,
       {type: "integer", prop: "gid"},

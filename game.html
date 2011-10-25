@@ -7,13 +7,13 @@
 <img id=share_card_5 class='card share_card' style="display:none;top:200px;left:540px;" />
 
 <div id=room_commands>
-  <button type=command id=cmd_hall >大厅</button><br />
-  <button type=command id=cmd_stand >起身</button><br />
+  <button type=command id=cmd_hall >大廳</button><br />
+  <button type=command id=cmd_stand >離開</button><br />
 </div>
 
 <div id=game_commands>
-  <button type=command id=cmd_fold>盖牌</button>
-  <button type=command id=cmd_check>过牌</button>
+  <button type=command id=cmd_fold>蓋牌</button>
+  <button type=command id=cmd_check>過牌</button>
   <button type=command id=cmd_call>跟注</button>
   <button type=command id=cmd_raise>加注</button>
   <input type=range value=0 max=50 min=0 id=raise_range></input>
@@ -21,7 +21,7 @@
 
 <textarea id="game_table_template" style="display:none;">
   {#for index = 1 to $T.end}
-  <div id=empty_seat_{$T.index} seat={$T.index} class=empty_seat>落座</div>
+  <div id=empty_seat_{$T.index} seat={$T.index} class=empty_seat>加入</div>
   <div id=game_seat_{$T.index} seat={$T.index} class=game_seat style='display: none'>
     <div class=nick></div>
     <img class=photo />

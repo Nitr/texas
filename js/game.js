@@ -2,8 +2,8 @@ $(document).ready(function() {
   // {{{ variable
   var watching = false, playing = false, 
       sum_pot = 0, positions = null, seats_size = 0;
-  var seats = [], private_card_index = 0, share_card_index = 0;
-  var show_all = false; 
+  var states = [];
+  var private_card_index = 0, share_card_index = 0;
   var PS_EMPTY     = 0, 
       PS_PLAY      = 1,
       PS_FOLD      = 2,
@@ -16,9 +16,37 @@ $(document).ready(function() {
       PS_AUTOPLAY  = 256,
       PS_MUCK      = 512,
       PS_OUT       = 1024;
+ 
+  var CF_ACE    = 13,
+      CF_KING   = 12,
+      CF_QUEEN  = 11,
+      CF_JACK   = 10,
+      CF_TEN    = 9,
+      CF_NINE   = 8,
+      CF_EIGHT  = 7,
+      CF_SEVEN  = 6,
+      CF_SIX    = 5,
+      CF_FIVE   = 4,
+      CF_FOUR   = 3,
+      CF_THREE  = 2,
+      CF_TWO    = 1,
+      CF_NONE   = 0;
 
-  var states = [];
+  var CS_SPADES   = 4,
+      CS_HEARTS   = 3,
+      CS_DIAMONDS = 2,
+      CS_CLUBS    = 1,
+      CS_NONE     = 0;
 
+  var HC_HIGH_CARD      = 0,
+      HC_PAIR           = 1,
+      HC_TWO_PAIR       = 2,
+      HC_THREE_KIND     = 3,
+      HC_STRAIGHT       = 4,
+      HC_FLUSH          = 5,
+      HC_FULL_HOUSE     = 6,
+      HC_FOUR_KIND      = 7,
+      HC_STRAIGHT_FLUSH = 8;
   // }}}
 
   // {{{ generate function
@@ -490,8 +518,8 @@ http://localhost/~jack/texas/
 
   // {{{ showdown notify
   $.pp.reg("HAND", function(notify) { 
-    // TODO
-    log(['hand', notify]);
+    log(['-------------------------hand-----------------------', notify]);
+    log([notify.rank, notify.high1, notify.high2, notify.suit]);
   });
 
   $.pp.reg("WIN", function(notify) { 
