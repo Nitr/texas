@@ -322,13 +322,18 @@ button {
 .game_seat {
   position: absolute;
   width: 84px;
-  height: 100px;
+  height: 120px;
   font-size: 14px;
   padding: 0px
   margin: 0px;
   border: 0px;
   text-align: center;
   z-index: 500;
+  border-radius: 3px;
+}
+
+.actor_seat {
+  -webkit-box-shadow: 0px 0px 6px 6px silver;
 }
 
 .empty_seat {

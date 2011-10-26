@@ -380,11 +380,16 @@ http://localhost/~jack/texas/
   $.pp.reg("ACTOR", function(actor) { 
     log(["---actor---", actor.seat]);
     start_timer(actor.seat);
+
     is_me(get_state(actor.seat), function() {
       $('#game_commands > *').attr("disabled", false);
     }, function() {
       $('#game_commands > *').attr("disabled", true);
     });
+
+    var s = get_state(actor.seat);
+    $('.actor_seat').removeClass('actor_seat');
+    $(s.dom).addClass('actor_seat');
   });
 
   $.pp.reg("BET_REQ", function(req) { 
@@ -718,6 +723,7 @@ http://localhost/~jack/texas/
     var s = get_state(seat);
     $('<div class="timer" style="height: 120px;"><div /></div>').
       appendTo($(s.dom));
+
 
     var height = 120;
     var top = 0;
