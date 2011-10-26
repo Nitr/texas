@@ -1,7 +1,7 @@
-var ERR_NETWORK = {message: '<h3 id=err_network>抱歉，网络连接错误，请稍后再试。</h3>', id: '#err_network', generate: false};
-var STA_CONNECT = {message: '<h3 id=sta_connect>连接中...</h3>', id: '#sta_connect', generate: true};
-var STA_LOADING = {message: '<h3 id=sta_loading>加载中...</h3>', id: '#sta_loading', generate: true};
-var STA_SINGIN = {message: '<h3 id=sta_singin>登陆中...</h3>', id: '#sta_singin', generate: true};
+var ERR_NETWORK = {message: '<h3 id=err_network>抱歉，網絡連線錯誤，請稍後再試。</h3>', id: '#err_network', generate: false};
+var STA_CONNECT = {message: '<h3 id=sta_connect>連線種连接中...</h3>', id: '#sta_connect', generate: true};
+var STA_LOADING = {message: '<h3 id=sta_loading>加載中...</h3>', id: '#sta_loading', generate: true};
+var STA_SINGIN = {message: '<h3 id=sta_singin>登陸中...</h3>', id: '#sta_singin', generate: true};
 
 $(function() {
   $.ajaxSetup ({
@@ -170,8 +170,8 @@ $(function() {
     else 
       $("#photo").attr('src', $.rl.img.def_face_0);
 
-    $("#nick").text("昵称: " + player.nick);
-    $("#money").text("游戏币: " + player.inplay);
+    $("#nick").text("昵稱: " + player.nick);
+    $("#money").text("游戏幣: " + player.inplay);
     $("#usr").show();
   });
 
