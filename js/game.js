@@ -139,7 +139,7 @@ $(document).ready(function() {
     };
 
     var positions = get_positions(size);
-    $(".game_seat, .empty_seat, .button, .card, .bet_label").hide();
+    $(".game_seat, .empty_seat, .dealer, .card, .bet_label").hide();
 
     states = []; // init empty states;
     for (var i = 1; i < positions.length; i ++) {
@@ -188,7 +188,7 @@ $(document).ready(function() {
     }
     else {
       $(x.dom).
-        children('.nick').text(x.nick).css({color: 'black'});
+        children('.nick').text(x.nick).css({color: 'white'});
     }
   };
 
@@ -260,29 +260,29 @@ http://localhost/~jack/texas/
   });
 
   $('#cmd_fold').click(function() {
+    closebtn();
     send({cmd: "FOLD"});
-    $('#game_commands > *').attr("disabled", true);
   });
 
   $('#cmd_call, #cmd_check').click(function() {
+    closebtn();
     send({cmd: "RAISE", amount: 0});
-    $('#game_commands > *').attr("disabled", true);
   });
 
   $('#cmd_raise').click(function() {
+    closebtn();
     amount = parseInt($('#raise_range').val());
     send({cmd: "RAISE", amount: amount});
-    $('#game_commands > *').attr("disabled", true);
   });
 
   $('#raise_range').bind('change', function(event) {
     var v = parseInt($(this).val());
     var max = parseInt($(this).attr("max"));
 
-    if (v == max)
-      $('#cmd_raise').text("ALL-IN " + v);
-    else 
-      $('#cmd_raise').text("加注 " + v);
+    //if (v == max)
+      //$('#cmd_raise').text("ALL-IN " + v);
+    //else 
+      //$('#cmd_raise').text("加注 " + v);
   });
   // }}}
 
@@ -336,6 +336,7 @@ http://localhost/~jack/texas/
       $('#wait_player').show();
     }
 
+    closebtn();
     display_debug();
   });
 
@@ -388,9 +389,9 @@ http://localhost/~jack/texas/
     start_timer(actor.seat);
 
     is_me(get_state(actor.seat), function() {
-      $('#game_commands > *').attr("disabled", false);
+      openbtn();
     }, function() {
-      $('#game_commands > *').attr("disabled", true);
+      closebtn();
     });
 
     var s = get_state(actor.seat);
@@ -403,17 +404,14 @@ http://localhost/~jack/texas/
       attr('min', req.min).
       attr('max', req.max);
 
-    $("#cmd_raise").text('加注 ' + req.min);
+    openbtn();
 
     if (req.call == 0) {
-      $("#cmd_check").attr("disabled", false);
-      $("#cmd_call").attr("disabled", true);
+      colsebtn("#cmd_check");
     }
     else {
-      $("#cmd_check").attr("disabled", true);
-      $("#cmd_call").attr("disabled", false);
+      colsebtn("#cmd_call");
     }
-      
 
     log(["---bet request---", req.call, req.max, req.min]);
   });
@@ -479,12 +477,12 @@ http://localhost/~jack/texas/
     check_game(notify);
   });
 
-  $.pp.reg("BUTTON", function(notify) { 
-    log(['---notify button---', notify.seat]);
+  $.pp.reg("DEALER", function(notify) { 
+    log(['---notify dealer---', notify.seat]);
 
-    notify.button = true;
+    notify.dealer = true;
     update_state(notify)
-    $(get_state(notify).dom).children('.button').show();
+    $(get_state(notify).dom).children('.dealer').show();
   });
 
   $.pp.reg("SBLIND", function(notify) { 
@@ -507,7 +505,7 @@ http://localhost/~jack/texas/
   });
 
   $.pp.reg("END", function(notify) { 
-    $(".game_seat").children(".button").hide("slow");
+    $(".game_seat").children(".dealer").hide("slow");
     $(".game_seat").children(".card").hide("slow");
 
     sum_pot = 0;
@@ -828,6 +826,20 @@ http://localhost/~jack/texas/
       return 1;
     else
       return 0;
+  };
+
+  var openbtn = function(key) {
+    if (key == undefined)
+      key = '#raise_number, #raise_range, #cmd_call, #cmd_raise, #cmd_fold, #cmd_check';
+
+    $(key).removeClass('disabled').attr("disabled", false);
+  };
+
+  var closebtn = function(key) {
+    if (key == undefined)
+      key = '#raise_number, #raise_range, #cmd_call, #cmd_raise, #cmd_fold, #cmd_check';
+
+    $(key).addClass('disabled').attr("disabled", "disabled");
   };
   // }}}
   // player & betting point {{{ 

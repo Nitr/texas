@@ -130,7 +130,7 @@
       {type: "decimal", prop: "pot"},
       {type: "byte",    prop: "players"},
       {type: "byte",    prop: "seats"},
-      {type: "byte",    prop: "button"},
+      {type: "byte",    prop: "dealer"},
       {type: "byte",    prop: "sblind"},
       {type: "byte",    prop: "bblind"},
       {type: "byte",    prop: "stage"}
@@ -165,7 +165,7 @@
       {type: "byte", prop: "face"},
       {type: "byte", prop: "suit"}
     ]),
-    notify_seat_state: generate_notify("BUTTON", [35,
+    notify_seat_state: generate_notify("DEALER", [35,
       {type: "integer", prop: "gid"},
       {type: "byte", prop: "seat"}
     ]),

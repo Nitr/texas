@@ -17,11 +17,12 @@
 </div>
 
 <div id=game_commands>
-  <button type=command id=cmd_fold>蓋牌</button>
-  <button type=command id=cmd_check>過牌</button>
-  <button type=command id=cmd_call>跟注</button>
-  <button type=command id=cmd_raise>加注</button>
+  <a class='button' id=cmd_fold>蓋牌</a>
+  <a class='button' id=cmd_check>過牌</a>
+  <a class='button' id=cmd_call>跟注</a>
+  <a class='button' id=cmd_raise>加注</a>
   <input type=range value=0 max=50 min=0 id=raise_range></input>
+  <input type=number value=0 max=50 min=0 id=raise_number></input>
 </div>
 
 <textarea id="game_table_template" style="display:none;">
@@ -31,7 +32,7 @@
     <div class=nick></div>
     <img class=photo />
     <div class=inplay></div>
-    <img class=button src='css/button.png' style='display: none;' />
+    <img class=dealer src='css/dealer.png' style='display: none;' />
     <img class=background_card src='css/poker_back.png' style='display: none;' />
     <div class=bet_label style='display: none;'></div>
   </div>
