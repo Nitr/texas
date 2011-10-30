@@ -219,7 +219,6 @@ $(document).ready(function() {
           $(".private_card").removeClass("ps_fold");
         });
       }
-
     } else {
       $(x.dom).hide().css(x.position.empty_outer);
       $(x.empty_dom).animate(x.position.empty_outer, 'slow', show);
@@ -330,6 +329,13 @@ http://localhost/~jack/texas/
 
     check_game(game);
     init_seats(game.seats);
+
+    if (game.players > 1) {
+      $('#wait_next').show();
+    } else {
+      $('#wait_player').show();
+    }
+
     display_debug();
   });
 
@@ -468,6 +474,7 @@ http://localhost/~jack/texas/
     $(".private_card").hide("slow");
     $(".private_card").removeClass().addClass('private_card').addClass('card');
     $(".share_card").removeClass().addClass('share_card').addClass('card');
+    $("#tips").hide();
 
     check_game(notify);
   });
@@ -621,6 +628,14 @@ http://localhost/~jack/texas/
   // }}}
 
   // utility {{{ 
+  var block = function(msg) {
+    $('#game').block({message: msg});
+  };
+
+  var unblock = function() {
+    $('#game').unblock();
+  };
+
   var share_pot = function(winners) {
     var winpots = [], cur = undefined;
     var all_size = $(".pot").length;

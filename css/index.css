@@ -469,3 +469,17 @@ button {
   border-radius: 4px;
   -webkit-box-shadow: 1px 1px 3px 3px gold;
 }
+
+#tips {
+  color: white;
+  border: 2px solid silver;
+  border-radius: 6px;
+  width: 180px;
+  height: 25px;
+  padding-top: 8px;
+  padding-left: 20px;
+  background-color: gray;
+  position: absolute;
+  top: 490px;
+  left: 370px;
+}
