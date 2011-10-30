@@ -2,7 +2,7 @@ $(document).ready(function() {
   // {{{ variable
   var watching = false, playing = false, 
       sum_pot = 0, positions = null, seats_size = 0;
-  var states = [];
+  var states = [], game_state = {actor: null};
   var private_card_index = 0, share_card_index = 0;
   var PS_EMPTY     = 0, 
       PS_PLAY      = 1,
@@ -260,29 +260,43 @@ http://localhost/~jack/texas/
   });
 
   $('#cmd_fold').click(function() {
-    closebtn();
-    send({cmd: "FOLD"});
+    if (is_actor() && is_enabled(this)) {
+      closebtn();
+      send({cmd: "FOLD"});
+    }
   });
 
   $('#cmd_call, #cmd_check').click(function() {
-    closebtn();
-    send({cmd: "RAISE", amount: 0});
+    if (is_actor() && is_enabled(this)) {
+      closebtn();
+      send({cmd: "RAISE", amount: 0});
+    }
   });
 
   $('#cmd_raise').click(function() {
-    closebtn();
-    amount = parseInt($('#raise_range').val());
-    send({cmd: "RAISE", amount: amount});
+    if (is_actor() && is_enabled(this)) {
+      closebtn();
+      $('#raise_range').trigger('change');
+      amount = parseInt($('#raise_range').val());
+
+      console.log("RAISE", amount);
+
+      send({cmd: "RAISE", amount: amount});
+    }
   });
 
-  $('#raise_range').bind('change', function(event) {
+  $('#raise_range, #raise_number').bind('change', function(event) {
     var v = parseInt($(this).val());
+    var min = parseInt($(this).attr("min"));
     var max = parseInt($(this).attr("max"));
 
-    //if (v == max)
-      //$('#cmd_raise').text("ALL-IN " + v);
-    //else 
-      //$('#cmd_raise').text("加注 " + v);
+    if (v < min) 
+      v = min;
+
+    if (v > max)
+      v = max;
+
+    $('#raise_range, #raise_number').val(v.toString());
   });
   // }}}
 
@@ -388,29 +402,32 @@ http://localhost/~jack/texas/
     log(["---actor---", actor.seat]);
     start_timer(actor.seat);
 
-    is_me(get_state(actor.seat), function() {
+    var state = get_state(actor.seat);
+    
+    is_me(state, function() {
       openbtn();
     }, function() {
       closebtn();
     });
 
-    var s = get_state(actor.seat);
+    game_state.actor = state.seat;
+
     $('.actor_seat').removeClass('actor_seat');
-    $(s.dom).addClass('actor_seat');
+    $(state.dom).addClass('actor_seat');
   });
 
   $.pp.reg("BET_REQ", function(req) { 
-    $('#raise_range').val(req.min).
+    $('#raise_range, #raise_number').val(req.min).
       attr('min', req.min).
       attr('max', req.max);
 
     openbtn();
 
     if (req.call == 0) {
-      colsebtn("#cmd_check");
+      closebtn("#cmd_call");
     }
     else {
-      colsebtn("#cmd_call");
+      closebtn("#cmd_check");
     }
 
     log(["---bet request---", req.call, req.max, req.min]);
@@ -440,7 +457,7 @@ http://localhost/~jack/texas/
         css(state.position.betting_label).
         text(state.bet).
         show();
-    }
+    }http://localhost/~jack/texas/index.html?usr=1010&pwd=pass&host=127.0.0.1
 
     sum_pot += sum;
   });
@@ -841,6 +858,14 @@ http://localhost/~jack/texas/
 
     $(key).addClass('disabled').attr("disabled", "disabled");
   };
+    
+  var is_enabled = function(o) {
+    return !$(o).hasClass("disabled");
+  }
+  var is_actor = function() {
+    return get_state().seat == game_state.actor;
+  };
+
   // }}}
   // player & betting point {{{ 
   var trim_positions = function(offset) {
