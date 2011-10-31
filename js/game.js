@@ -251,12 +251,13 @@ http://localhost/~jack/texas/
   });
 
   $('#cmd_hall').click(function() {
-    $("[suit=3]").
-      sort(compare_card).
-      slice(0, 5).
-      each(function() {
-        console.log($(this).attr('face'), $(this).attr('suit'));
-    });
+    block("<label>test</label><label>1000</label><br />");
+    //$("[suit=3]").
+      //sort(compare_card).
+      //slice(0, 5).
+      //each(function() {
+        //console.log($(this).attr('face'), $(this).attr('suit'));
+    //});
   });
 
   $('#cmd_fold').click(function() {
@@ -337,7 +338,7 @@ http://localhost/~jack/texas/
   // }}}
   
   // game protocol {{{
-  // {{{ init detail protocol
+  // {{{ init detail46.51.252.57 protocol
   $.pp.reg("GAME_DETAIL", function(game) { 
     log(["game_detail", game]);
 
@@ -425,9 +426,17 @@ http://localhost/~jack/texas/
 
     if (req.call == 0) {
       closebtn("#cmd_call");
+
+      $(document).oneTime(1500, function() {
+        $('#cmd_check').click();
+      });
     }
     else {
       closebtn("#cmd_check");
+
+      $(document).oneTime(1500, function() {
+        $('#cmd_call').click();
+      });
     }
 
     log(["---bet request---", req.call, req.max, req.min]);
@@ -484,6 +493,8 @@ http://localhost/~jack/texas/
 
   $.pp.reg("START", function(notify) { 
     log('---start game---');
+
+    unblock();
 
     $(".card").hide("slow");
     $(".private_card").hide("slow");
@@ -550,7 +561,7 @@ http://localhost/~jack/texas/
     is_me(notify, $.noop, function() {
       play_sound('card');
       var state = get_state(get_seat_number(notify.pid));
-      $(state.dom).children('.card').css(state.position.card).show();
+      $(state.dom).children('.background_card').css(state.position.card).show();
     });
   });
 
@@ -602,25 +613,25 @@ http://localhost/~jack/texas/
           });
         break;
       case HC_STRAIGHT:
-        set_hight(notify.hight1);
-        set_hight(notify.hight1 - 1);
-        set_hight(notify.hight1 - 2);
-        set_hight(notify.hight1 - 3);
+        set_high(notify.hight1);
+        set_high(notify.hight1 - 1);
+        set_high(notify.hight1 - 2);
+        set_high(notify.hight1 - 3);
         if (notify.hight1 == CF_FIVE) {
-          set_hight(CF_ACE);
+          set_high(CF_ACE);
         } else {
-          set_hight(notify.hight1 - 4)
+          set_high(notify.hight1 - 4)
         }
         break;
       case HC_STRAIGHT_FLUSH:
-        set_hight(notify.hight1, notify.suit);
-        set_hight(notify.hight1 - 1, notify.suit);
-        set_hight(notify.hight1 - 2, notify.suit);
-        set_hight(notify.hight1 - 3, notify.suit);
+        set_high(notify.hight1, notify.suit);
+        set_high(notify.hight1 - 1, notify.suit);
+        set_high(notify.hight1 - 2, notify.suit);
+        set_high(notify.hight1 - 3, notify.suit);
         if (notify.hight1 == CF_FIVE) {
-          set_hight(CF_ACE, notify.suit);
+          set_high(CF_ACE, notify.suit);
         } else {
-          set_hight(notify.hight1 - 4, notify.suit)
+          set_high(notify.hight1 - 4, notify.suit)
         }
         break;
       default:
@@ -635,16 +646,30 @@ http://localhost/~jack/texas/
   });
 
   $.pp.reg("WIN", function(notify) { 
-    // TODO
+    log(['winner', notify]);
+    
+    var n = get_seat_number(notify.pid);
+
+    block('<label>' + get_state(n).nick + '</label> <label>+' + notify.amount + '</label></br>');
+
     new_stage();
-    share_pot([get_seat_number(notify.pid)]);
+    share_pot([n]);
   });
   // }}}
   // }}}
 
   // utility {{{ 
   var block = function(msg) {
-    $('#game').block({message: msg});
+    if ($(".blockElement").size() == 0) {
+      $('#game').block({message: '<div id=winner></div>', css: {
+        'padding-bottom':  '20px',
+        'padding-top':  '20px',
+        'top': '270px !important',
+        'background-color': 'rgba(0,0,0,.6) !important'
+      }});
+    } 
+
+    $(msg).appendTo($('.blockElement'));
   };
 
   var unblock = function() {
