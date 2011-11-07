@@ -171,7 +171,6 @@ $(function() {
       $("#photo").attr('src', $.rl.img.def_face_0);
 
     $("#nick").text("昵稱: " + player.nick);
-    $("#money").text("游戏幣: " + player.inplay);
     $("#usr").show();
   });
 

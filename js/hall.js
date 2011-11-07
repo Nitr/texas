@@ -32,6 +32,7 @@ $(function() {
   $('#hall').bind('active', function(event) {
     // TODO: 保存每次搜索过的条件并在激活的时候重新读取
     $.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
+    $.ws.send($.pp.write({cmd: "BALANCE_QUERY"}));
   });
 
   $('#cmd_watch').click(function() {
@@ -40,6 +41,14 @@ $(function() {
 
   $('#cmd_join').click(function() {
     active_game(get_auto_join_seat());
+  });
+
+  $.pp.reg("BALANCE_INFO", function(o) {
+    if (is_disable())
+      return;
+
+    console.log(["balance_info", o.amount, o.inplay]);
+    $("#money").text("游戏幣: " + o.amount);
   });
 
   $.pp.reg("GAME_INFO", function(game_info) { // {{{

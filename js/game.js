@@ -164,8 +164,8 @@ $(document).ready(function() {
         x[prop] = val;
       }
     });
-    
   }
+
   var init_state = function(detail) {
     var st = update_state(detail);
     if (st.state != PS_EMPTY) {
@@ -234,6 +234,10 @@ $(document).ready(function() {
     });
   };
 
+  var update_balance = function() {
+    send({cmd: "BALANCE_QUERY"});
+  };
+
   // }}}
 
   // game event {{{
@@ -241,23 +245,16 @@ $(document).ready(function() {
     initialization(args);
     send({cmd: "WATCH"});
   });
-http://localhost/~jack/texas/
+
   $('#game').bind('join', function(event, args) {
     initialization(args);
-    send({cmd: "JOIN", seat: args.seat, buyin: 100});
+    send({cmd: "JOIN", seat: args.seat, buyin: 50});
   });
 
   $('#cmd_stand').click(function() {
   });
 
   $('#cmd_hall').click(function() {
-    block("<label>test</label><label>1000</label><br />");
-    //$("[suit=3]").
-      //sort(compare_card).
-      //slice(0, 5).
-      //each(function() {
-        //console.log($(this).attr('face'), $(this).attr('suit'));
-    //});
   });
 
   $('#cmd_fold').click(function() {
@@ -383,15 +380,27 @@ http://localhost/~jack/texas/
       for (var i = 1; i < positions.length; i++) {
         update_state({seat: i, position: positions[i]});
       };
+
+      update_balance();
     });
 
     console.log(states);
     refresh_states();
   });
 
+  $.pp.reg("BALANCE_INFO", function(o) {
+    if (is_disable())
+      return;
+
+    console.log(["balance_info in game", o.amount, o.inplay]);
+    $("#money").text("游戏幣: " + o.amount);
+  });
+
   $.pp.reg("SEAT_STATE", function(state) { 
     if (is_disable())
       return;
+
+    log(['-------------------PS--------------------', state.state]);
 
     check_game(state);
     cancel_timer();
@@ -427,14 +436,14 @@ http://localhost/~jack/texas/
     if (req.call == 0) {
       closebtn("#cmd_call");
 
-      $(document).oneTime(1500, function() {
+      $(document).oneTime(500, function() {
         $('#cmd_check').click();
       });
     }
     else {
       closebtn("#cmd_check");
 
-      $(document).oneTime(1500, function() {
+      $(document).oneTime(500, function() {
         $('#cmd_call').click();
       });
     }
@@ -487,8 +496,20 @@ http://localhost/~jack/texas/
 
   // {{{ game state notify
   $.pp.reg("CANCEL", function(notify) { 
-    log('---cancel game---');
     check_game(notify);
+
+    $(".game_seat").children(".dealer").hide("slow");
+    $(".game_seat").children(".card").hide("slow");
+
+    sum_pot = 0;
+    share_card_index = 0;
+    private_card_index = 0;
+
+    update_states('bet', 0);
+    update_states('state', PS_FOLD);
+    refresh_states();
+
+    log(['----------------------notify_cancel----------------------']);
   });
 
   $.pp.reg("START", function(notify) { 
