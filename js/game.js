@@ -56,6 +56,7 @@ $(document).ready(function() {
       display_debug = null, send = null, 
       get_gid = null, get_seat = null, get_state = null,
       get_size = null, show_seats = null, get_seat_number = null;
+  var update_inplay = null;
   // }}}
 
   // {{{ initialization
@@ -96,15 +97,22 @@ $(document).ready(function() {
     } : $.noop;
     // }}}
 
-    regenrate_seat_function(args.seat);
+    regenrate_seat_function(args);
     
     // generate game table DOM
     $("#game_table").setTemplateElement("game_table_template");
     $("#game_table").processTemplate({end: 9});
   }; 
 
-  var regenrate_seat_function = function(seat) {
+  var regenrate_seat_function = function(o) {
+    var seat = o.seat;
+    var amount = o.buyin;
+
     display_states = (seat == undefined) ? refresh_states : $.noop;
+
+    update_inplay = function(inplay) {
+      get_state().inplay = inplay == undefined ? amount : inplay;
+    };
 
     get_state = function(o) {
       if (seat == undefined && o == undefined)
@@ -374,7 +382,7 @@ $(document).ready(function() {
     init_state(notify);
 
     is_me(notify, function() {
-      regenrate_seat_function(notify.seat);
+      regenrate_seat_function(notify);
       var positions = trim_positions(notify.seat)
 
       for (var i = 1; i < positions.length; i++) {
@@ -384,7 +392,6 @@ $(document).ready(function() {
       update_balance();
     });
 
-    console.log(states);
     refresh_states();
   });
 
@@ -392,8 +399,9 @@ $(document).ready(function() {
     if (is_disable())
       return;
 
-    console.log(["balance_info in game", o.amount, o.inplay]);
     $("#money").text("游戏幣: " + o.amount);
+    update_inplay();
+    refresh_state();
   });
 
   $.pp.reg("SEAT_STATE", function(state) { 
