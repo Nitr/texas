@@ -89,9 +89,12 @@ $(function() {
       input_usr = $.url.get("usr");
       input_usr = input_usr == null ? 
         localStorage.getItem("save_usr") : input_usr;
+
       input_pwd = $.url.get("pwd"); 
       input_pwd = input_pwd == null ? 
         localStorage.getItem("save_pwd") : input_pwd;
+
+      $('#txt_usr').val(input_usr);
 
       $("#singin").bind("submit", function() {
         input_usr = $('#txt_usr').val();
@@ -138,7 +141,6 @@ $(function() {
   var saveAccountInfo = function(pid) {
     if ($("#ckb_save").attr('checked')) {
       localStorage.setItem("save_usr", input_usr);
-      localStorage.setItem("save_pwd", input_pwd);
     }
 
     $(document).data("pid", pid);
@@ -147,7 +149,9 @@ $(function() {
   // PROTOTYPE REGISTER {{{
   $.pp.reg("ERROR", function(obj) {
     console.log("ERROR - " + $.pp.err(obj.command));
-    blockUI({message: $("#login"), id: '#login', generate: false});
+    blockUI({message: $("#singin"), id: '#singin', generate: false});
+
+    $("#txt_pwd").val("");
     $("#lab_err_singin").show();
   });
 
