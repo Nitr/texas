@@ -56,7 +56,7 @@ $(document).ready(function() {
       display_debug = null, send = null, 
       get_gid = null, get_seat = null, get_state = null,
       get_size = null, show_seats = null, get_seat_number = null;
-  var update_inplay = null;
+  var update_inplay = null, auto_call = null, auto_check = null;
   // }}}
 
   // {{{ initialization
@@ -94,6 +94,18 @@ $(document).ready(function() {
         //get_seat(i).children('.betting_label').css(positions[i].betting_label).text("1000").show();
         //get_seat(i).children('.card').css(positions[i].card).show();
       //}
+    } : $.noop;
+
+    auto_call = args.auto ? function() {
+      $(document).oneTime(500, function() {
+        $('#cmd_call').click();
+      });
+    } : $.noop;
+
+    auto_check = args.auto ? function() {
+      $(document).oneTime(500, function() {
+        $('#cmd_check').click();
+      });
     } : $.noop;
     // }}}
 
@@ -443,17 +455,11 @@ $(document).ready(function() {
 
     if (req.call == 0) {
       closebtn("#cmd_call");
-
-      $(document).oneTime(500, function() {
-        $('#cmd_check').click();
-      });
+      auto_check();
     }
     else {
       closebtn("#cmd_check");
-
-      $(document).oneTime(500, function() {
-        $('#cmd_call').click();
-      });
+      auto_call();
     }
 
     log(["---bet request---", req.call, req.max, req.min]);

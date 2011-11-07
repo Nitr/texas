@@ -135,6 +135,7 @@ $(function() {
     var cmd = {pid: $(document).data("pid"), gid: cur_game, seat: join_seat};
 
     cmd.debug = $.url.get("debug") != undefined;
+    cmd.auto = $.url.get("auto") != undefined;
 
     if (join_seat == undefined) {
       $('#game').show("normal").trigger("watching", cmd);
