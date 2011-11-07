@@ -221,7 +221,7 @@ $(document).ready(function() {
       $(x.dom).animate(x.position.outer, 'slow', show);
 
       $(x.dom).
-        children('.inplay').text(x.inplay).parent().
+        children('.inplay').text("$" + x.inplay).parent().
         children('.photo').attr('src', x.photo);
 
       refresh_rank_nick(state);
@@ -411,7 +411,7 @@ $(document).ready(function() {
     if (is_disable())
       return;
 
-    $("#money").text("游戏幣: " + o.amount);
+    $("#money").text("游戏幣: $" + o.amount);
     update_inplay();
     refresh_state();
   });
@@ -684,6 +684,9 @@ $(document).ready(function() {
     log(['winner', notify]);
     
     var n = get_seat_number(notify.pid);
+
+    get_state(n).inplay += notify.amount;
+    refresh_state(n);
 
     block('<label>' + get_state(n).nick + '</label> <label>+' + notify.amount + '</label></br>');
 
