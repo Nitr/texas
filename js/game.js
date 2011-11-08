@@ -144,6 +144,9 @@ $(document).ready(function() {
     };
 
     get_seat_number = function(pid) {
+      if (pid == undefined)
+        return seat;
+
       for(var i = 1; i < states.length; i++) {
         if ((states[i].pid == pid) && (states[i].state != PS_EMPTY))
           return states[i].seat;
@@ -252,6 +255,10 @@ $(document).ready(function() {
 
       refresh_state(x);
     });
+  };
+
+  var refresh_private_card = function() {
+    var seat_number = get_seat_number();
   };
 
   var update_balance = function() {
@@ -522,8 +529,6 @@ $(document).ready(function() {
     update_states('bet', 0);
     update_states('state', PS_FOLD);
     refresh_states();
-
-    log(['----------------------notify_cancel----------------------']);
   });
 
   $.pp.reg("START", function(notify) { 
@@ -584,19 +589,36 @@ $(document).ready(function() {
   // }}}
 
   // {{{ card notify 
-  $.pp.reg("PRIVATE", function(notify) { 
-    play_sound('card');
-    log(['notify_private', 'pid', notify.pid, 'suit', notify.suit, 'face', notify.face]);
+  var private_card_positions = [{}, 
+    {left: '100px', top: '30px'},
+    {left: '120px', top: '25px'}];
 
+  $.pp.reg("PRIVATE", function(notify) { 
     private_card_index += 1;
-    set_card('#private_card_' + private_card_index, notify.face, notify.suit);
+    var seat_number = get_seat_number(notify.pid);
+
+    $(get_private_card(seat_number, private_card_index)).
+      css(private_card_positions[private_card_index]);
+
+    set_card(get_private_card(seat_number, private_card_index),
+             notify.face, notify.suit);
+
+    play_sound('card');
   });
 
   $.pp.reg("DRAW", function(notify) { 
     is_me(notify, $.noop, function() {
-      play_sound('card');
       var state = get_state(get_seat_number(notify.pid));
-      $(state.dom).children('.background_card').css(state.position.card).show();
+
+      $(state.dom).children('.background_card').
+        css(state.position.card).show();
+
+      $(state.dom).children('.private_card[sn=1]').
+        css({left: '0px', top: '25px'});
+      $(state.dom).children('.private_card[sn=2]').
+        css({left: '20px', top: '25px'});
+
+      play_sound('card');
     });
   });
 
@@ -697,6 +719,10 @@ $(document).ready(function() {
   // }}}
 
   // utility {{{ 
+  var get_private_card = function(seat, sn) {
+    return "#game_seat_" + seat + 
+      " > .private_card[sn=" + sn + "]";
+  };
   var block = function(msg) {
     if ($(".blockElement").size() == 0) {
       $('#game').block({message: '<div id=winner></div>', css: {
