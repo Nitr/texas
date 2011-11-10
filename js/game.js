@@ -4,7 +4,7 @@ $(document).ready(function() {
       sum_pot = 0, positions = null, seats_size = 0;
   var states = [], game_state = {actor: null};
   var private_card_index = 0, share_card_index = 0, show_card = false;
-  var BUY_IN       = 100;
+  var BUY_IN       = 300;
   var PS_EMPTY     = 0, 
       PS_PLAY      = 1,
       PS_FOLD      = 2,
@@ -520,37 +520,42 @@ $(document).ready(function() {
   $.pp.reg("CANCEL", function(notify) { 
     check_game(notify);
 
-    $(".game_seat").children(".dealer").hide("slow");
-    $(".game_seat").children(".card").hide("slow");
-
-    show_card = false;
-
-    sum_pot = 0;
-    share_card_index = 0;
-    private_card_index = 0;
+    clear_table();
+    $("#tips").show();
 
     update_states('bet', 0);
     update_states('state', PS_FOLD);
+    update_states('rank', HC_HIGH_CARD);
     refresh_states();
   });
 
   $.pp.reg("START", function(notify) { 
     check_game(notify);
 
-    unblock();
+    clear_table();
+    $("#tips").hide();
+
+    update_states('rank', HC_HIGH_CARD);
+  });
+
+  var clear_table = function() {
+    show_card = false;
+    sum_pot = 0;
+    share_card_index = 0;
+    private_card_index = 0;
 
     $(".game_seat").children(".dealer").hide("slow");
     $(".game_seat").children(".card").hide("slow");
 
-    show_card = false;
+
     $(".card").hide("slow");
     $(".private_card").hide("slow");
     $(".private_card").removeClass().addClass('private_card').addClass('card');
     $(".share_card").removeClass().addClass('share_card').addClass('card');
-    $("#tips").hide();
+    $('.actor_seat').removeClass('actor_seat');
 
-    check_game(notify);
-  });
+    unblock();
+  };
 
   $.pp.reg("DEALER", function(notify) { 
     log(['---notify dealer---', notify.seat]);
