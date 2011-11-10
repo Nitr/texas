@@ -732,7 +732,7 @@ $(document).ready(function() {
     get_state(n).inplay += notify.amount;
     refresh_state(n);
 
-    block('<label>' + get_state(n).nick + '</label> <label>+' + notify.amount + '</label></br>');
+    block('<label>' + get_state(n).nick + '</label> <label>' + notify.amount + ' - ' + notify.cost + ' = ' + (notify.amount - notify.cost) + '</label></br>');
 
     new_stage();
     share_pot([n]);

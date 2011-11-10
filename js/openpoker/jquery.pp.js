@@ -217,7 +217,8 @@
     notify_seat_state: generate_notify("WIN", [26,
       {type: "integer", prop: "gid"},
       {type: "integer", prop: "pid"},
-      {type: "decimal", prop: "amount"}
+      {type: "decimal", prop: "amount"},
+      {type: "decimal", prop: "cost"},
     ]),
     notify_seat_state: generate_notify("JOIN", [44,
       {type: "integer", prop: "gid"},
