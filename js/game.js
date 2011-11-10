@@ -645,23 +645,29 @@ $(document).ready(function() {
 
     switch (notify.rank) {
       case HC_PAIR:
+        log(['HC_PAIR', notify]);
         set_high(notify.high1);
         break;
       case HC_TWO_PAIR:
+        log(['HC_TWO_PAIR', notify]);
         set_high(notify.high1);
         set_high(notify.high2);
         break;
       case HC_FULL_HOUSE:
+        log(['HC_FULL_HOUSE', notify]);
         set_high(notify.high1);
         set_high(notify.high2);
         break;
       case HC_THREE_KIND:
+        log(['HC_THREE_KIND', notify]);
         set_high(notify.high1);
         break;
       case HC_FOUR_KIND:
+        log(['HC_FOUR_KIND', notify]);
         set_high(notify.high1);
         break;
       case HC_FLUSH:
+        log(['HC_FLUSH_KIND', notify]);
         $("[suit=" + notify.suit + "]").
           sort(compare_card).
           slice(0, 5).
@@ -670,6 +676,7 @@ $(document).ready(function() {
           });
         break;
       case HC_STRAIGHT:
+        log(['HC_STRAIGHT', notify]);
         set_high(notify.hight1);
         set_high(notify.hight1 - 1);
         set_high(notify.hight1 - 2);
@@ -681,6 +688,7 @@ $(document).ready(function() {
         }
         break;
       case HC_STRAIGHT_FLUSH:
+        log(['HC_STRAIGHT_FLUSH', notify]);
         set_high(notify.hight1, notify.suit);
         set_high(notify.hight1 - 1, notify.suit);
         set_high(notify.hight1 - 2, notify.suit);
@@ -692,6 +700,7 @@ $(document).ready(function() {
         }
         break;
       default:
+        log(['HC_DEFAULT', notify]);
         break;
     }
 
