@@ -3,7 +3,8 @@ $(document).ready(function() {
   var watching = false, playing = false, 
       sum_pot = 0, positions = null, seats_size = 0;
   var states = [], game_state = {actor: null};
-  var private_card_index = 0, share_card_index = 0;
+  var private_card_index = 0, share_card_index = 0, show_card = false;
+  var BUY_IN       = 100;
   var PS_EMPTY     = 0, 
       PS_PLAY      = 1,
       PS_FOLD      = 2,
@@ -231,11 +232,11 @@ $(document).ready(function() {
 
       if (x.state == PS_FOLD) {
         $(x.dom).addClass("ps_fold");
-        is_me(x, function() {
-          $(".private_card").addClass("ps_fold");
-        }, function() {
-          $(x.dom).children(".card").hide("slow");
-        });
+        //is_me(x, function() {
+          //$(".private_card").addClass("ps_fold");
+        //}, function() {
+          //$(x.dom).children(".card").hide("slow");
+        //});
       } else {
         $(x.dom).removeClass("ps_fold");
         is_me(x, function() {
@@ -275,7 +276,7 @@ $(document).ready(function() {
 
   $('#game').bind('join', function(event, args) {
     initialization(args);
-    send({cmd: "JOIN", seat: args.seat, buyin: 50});
+    send({cmd: "JOIN", seat: args.seat, buyin: BUY_IN});
   });
 
   $('#cmd_stand').click(function() {
@@ -522,6 +523,8 @@ $(document).ready(function() {
     $(".game_seat").children(".dealer").hide("slow");
     $(".game_seat").children(".card").hide("slow");
 
+    show_card = false;
+
     sum_pot = 0;
     share_card_index = 0;
     private_card_index = 0;
@@ -532,10 +535,14 @@ $(document).ready(function() {
   });
 
   $.pp.reg("START", function(notify) { 
-    log('---start game---');
+    check_game(notify);
 
     unblock();
 
+    $(".game_seat").children(".dealer").hide("slow");
+    $(".game_seat").children(".card").hide("slow");
+
+    show_card = false;
     $(".card").hide("slow");
     $(".private_card").hide("slow");
     $(".private_card").removeClass().addClass('private_card').addClass('card');
@@ -573,9 +580,6 @@ $(document).ready(function() {
   });
 
   $.pp.reg("END", function(notify) { 
-    $(".game_seat").children(".dealer").hide("slow");
-    $(".game_seat").children(".card").hide("slow");
-
     sum_pot = 0;
     share_card_index = 0;
     private_card_index = 0;
@@ -629,8 +633,17 @@ $(document).ready(function() {
   });
 
   $.pp.reg("SHOW", function(notify) { 
-    // TODO
-    log(['show', notify]);
+    log(["show", notify]);
+
+    var seat_number = get_seat_number(notify.pid);
+
+    $(get_background_card(seat_number)).hide('slow');
+    set_card(get_private_card(seat_number, 1), notify.face1, notify.suit1);
+    set_card(get_private_card(seat_number, 2), notify.face2, notify.suit2);
+
+    clear_high();
+    show_card = true;
+    play_sound('card');
   });
   // }}}
 
@@ -641,7 +654,9 @@ $(document).ready(function() {
     log(['-------------------------hand-----------------------', notify]);
     log(['rank', notify.rank, notify.high1, notify.high2, 'suit', notify.suit]);
 
-    clear_high();
+    if (show_card == false) {
+      clear_high();
+    }
 
     switch (notify.rank) {
       case HC_PAIR:
@@ -677,26 +692,26 @@ $(document).ready(function() {
         break;
       case HC_STRAIGHT:
         log(['HC_STRAIGHT', notify]);
-        set_high(notify.hight1);
-        set_high(notify.hight1 - 1);
-        set_high(notify.hight1 - 2);
-        set_high(notify.hight1 - 3);
-        if (notify.hight1 == CF_FIVE) {
+        set_high(notify.high1);
+        set_high(notify.high1 - 1);
+        set_high(notify.high1 - 2);
+        set_high(notify.high1 - 3);
+        if (notify.high1 == CF_FIVE) {
           set_high(CF_ACE);
         } else {
-          set_high(notify.hight1 - 4)
+          set_high(notify.high1 - 4)
         }
         break;
       case HC_STRAIGHT_FLUSH:
         log(['HC_STRAIGHT_FLUSH', notify]);
-        set_high(notify.hight1, notify.suit);
-        set_high(notify.hight1 - 1, notify.suit);
-        set_high(notify.hight1 - 2, notify.suit);
-        set_high(notify.hight1 - 3, notify.suit);
-        if (notify.hight1 == CF_FIVE) {
+        set_high(notify.high1, notify.suit);
+        set_high(notify.high1 - 1, notify.suit);
+        set_high(notify.high1 - 2, notify.suit);
+        set_high(notify.high1 - 3, notify.suit);
+        if (notify.high1 == CF_FIVE) {
           set_high(CF_ACE, notify.suit);
         } else {
-          set_high(notify.hight1 - 4, notify.suit)
+          set_high(notify.high1 - 4, notify.suit)
         }
         break;
       default:
@@ -704,11 +719,9 @@ $(document).ready(function() {
         break;
     }
 
-    is_me(notify, function() {
-      var state = get_state(get_seat_number(notify.pid))
+      var state = get_state(get_seat_number(notify.pid));
       state.rank = notify.rank;
       refresh_rank_nick(state);
-    });
   });
 
   $.pp.reg("WIN", function(notify) { 
@@ -732,6 +745,11 @@ $(document).ready(function() {
     return "#game_seat_" + seat + 
       " > .private_card[sn=" + sn + "]";
   };
+
+  var get_background_card = function(seat) {
+    return "#game_seat_" + seat + " > .background_card";
+  };
+
   var block = function(msg) {
     if ($(".blockElement").size() == 0) {
       $('#game').block({message: '<div id=winner></div>', css: {
