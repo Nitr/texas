@@ -729,7 +729,7 @@ $(document).ready(function() {
     
     var n = get_seat_number(notify.pid);
 
-    get_state(n).inplay += notify.amount;
+    get_state(n).inplay += (notify.amount - notify.cost);
     refresh_state(n);
 
     block('<label>' + get_state(n).nick + '</label> <label>' + notify.amount + ' - ' + notify.cost + ' = ' + (notify.amount - notify.cost) + '</label></br>');
