@@ -30,24 +30,7 @@ $(function() {
   var loading = function() { // {{{
     blockUI(STA_LOADING);
 
-    var resources = [{ 
-      url: 'singin.html', 
-      callback: function(h) {
-        $('#singin').html(h);
-      }
-    }, {
-      url: 'hall.html', 
-      callback: function(h) {
-        $('#hall').html(h);
-        $.rl.load([{ url: 'js/hall.js' }]);
-      }
-    }, {
-      url: 'game.html', 
-      callback: function(h) {
-        $('#game').html(h);
-        $.rl.load([{ url: 'js/game.js' }]);
-      }
-    }, {
+    var resources = [{
       url: 'css/heads.png', 
       callback: function(img) {
         for (var i = 0; i < img.width / 80; i++) {
