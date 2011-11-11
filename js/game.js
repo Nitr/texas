@@ -4,7 +4,7 @@ $(document).ready(function() {
       sum_pot = 0, positions = null, seats_size = 0;
   var states = [], game_state = {actor: null};
   var private_card_index = 0, share_card_index = 0, show_card = false;
-  var BUY_IN       = 500;
+  var BUY_IN       = 30;
   var PS_EMPTY     = 0, 
       PS_PLAY      = 1,
       PS_FOLD      = 2,
@@ -233,7 +233,8 @@ $(document).ready(function() {
 
       refresh_rank_nick(state);
 
-      if (x.state == PS_FOLD) {
+      if ((x.state == PS_FOLD) ||
+          (x.state == PS_OUT)) {
         $(x.dom).addClass("ps_fold");
         //is_me(x, function() {
           //$(".private_card").addClass("ps_fold");
@@ -428,8 +429,16 @@ $(document).ready(function() {
       return;
 
     $("#money").text("游戏幣: $" + o.amount);
-    update_inplay();
+    update_inplay(o.inplay);
     refresh_state();
+
+    // 出局
+    if (get_state().state == PS_OUT) {
+      $(document).oneTime(2000, function() {
+        hide_winner();
+        show_buyin();
+      });
+    }
   });
 
   $.pp.reg("SEAT_STATE", function(state) { 
@@ -443,6 +452,9 @@ $(document).ready(function() {
     refresh_state(state);
 
     is_me(state, function() {
+      if (state.state == PS_OUT) {
+        update_balance();
+      }
     }, $.noop);
   });
 
@@ -534,7 +546,6 @@ $(document).ready(function() {
     $("#tips").show();
 
     update_states('bet', 0);
-    update_states('state', PS_FOLD);
     update_states('rank', HC_HIGH_CARD);
     refresh_states();
   });
@@ -564,7 +575,7 @@ $(document).ready(function() {
     $(".share_card").removeClass().addClass('share_card').addClass('card');
     $('.actor_seat').removeClass('actor_seat');
 
-    unblock();
+    hide_winner();
   };
 
   $.pp.reg("DEALER", function(notify) { 
@@ -600,7 +611,6 @@ $(document).ready(function() {
     private_card_index = 0;
 
     update_states('bet', 0);
-    update_states('state', PS_FOLD);
     refresh_states();
 
     log(['----------------------notify_end----------------------']);
@@ -744,10 +754,11 @@ $(document).ready(function() {
     
     var n = get_seat_number(notify.pid);
 
-    get_state(n).inplay += (notify.amount - notify.cost);
-    refresh_state(n);
+    var state = get_state(n)
+    show_winner(state.nick, notify.amount, notify.cost);
 
-    block('<label>' + get_state(n).nick + '</label> <label>' + notify.amount + ' - ' + notify.cost + ' = ' + (notify.amount - notify.cost) + '</label></br>');
+    state.inplay += (notify.amount - notify.cost);
+    refresh_state(n);
 
     new_stage();
     share_pot([n]);
@@ -765,21 +776,36 @@ $(document).ready(function() {
     return "#game_seat_" + seat + " > .background_card";
   };
 
-  var block = function(msg) {
+  var show_buyin = function() {
+    $('#game').block({message: '<div class=buyin>BUY-IN</div>', css: {
+      'width': '500px',
+      'height': '300px',
+      'padding-bottom':  '20px',
+      'padding-top':  '20px',
+      'top': '270px !important',
+      'background-color': 'rgba(0,0,0,.6) !important'
+    }});
+  };
+
+  var show_winner = function(nick, amount, cost) {
     if ($(".blockElement").size() == 0) {
+      // 初始化一个胜利者显示BLOCK
       $('#game').block({message: '<div id=winner></div>', css: {
         'padding-bottom':  '20px',
         'padding-top':  '20px',
-        'top': '270px !important',
+        'top': '70px !important',
         'background-color': 'rgba(0,0,0,.6) !important'
       }});
     } 
 
-    $(msg).appendTo($('.blockElement'));
+    // 显示多个胜利者, 将胜利者信息添加到blockElement中
+    $('<label>' + nick + '</label><label>' + amount + ' - ' + cost + ' = ' + (amount - cost) + '</label></br>').appendTo($('.blockElement'));
   };
 
-  var unblock = function() {
-    $('#game').unblock();
+  var hide_winner = function() {
+    if ($('.buyin').size() == 0) {
+      $('#game').unblock();
+    }
   };
 
   var share_pot = function(winners) {
