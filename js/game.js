@@ -4,7 +4,7 @@ $(document).ready(function() {
       sum_pot = 0, positions = null, seats_size = 0;
   var states = [], game_state = {actor: null};
   var private_card_index = 0, share_card_index = 0, show_card = false;
-  var BUY_IN       = 300;
+  var BUY_IN       = 500;
   var PS_EMPTY     = 0, 
       PS_PLAY      = 1,
       PS_FOLD      = 2,
@@ -53,7 +53,7 @@ $(document).ready(function() {
   // }}}
 
   // {{{ generate function
-  var is_me = null, check_game = null,       
+  var is_me = null, check_game = null, is_join = false;       
       display_debug = null, send = null, 
       get_gid = null, get_seat = null, get_state = null,
       get_size = null, show_seats = null, get_seat_number = null;
@@ -120,6 +120,9 @@ $(document).ready(function() {
   var regenrate_seat_function = function(o) {
     var seat = o.seat;
     var amount = o.buyin;
+
+
+    is_join = (seat == undefined) ? false : true;
 
     display_states = (seat == undefined) ? refresh_states : $.noop;
 
@@ -245,7 +248,12 @@ $(document).ready(function() {
       }
     } else {
       $(x.dom).hide().css(x.position.empty_outer);
-      $(x.empty_dom).animate(x.position.empty_outer, 'slow', show);
+
+      if (is_join) {
+        $(x.empty_dom).hide();
+      } else {
+        $(x.empty_dom).animate(x.position.empty_outer, 'slow', show);
+      }
     }
   }
 
@@ -428,12 +436,14 @@ $(document).ready(function() {
     if (is_disable())
       return;
 
-    log(['-------------------PS--------------------', state.state]);
-
     check_game(state);
+
     cancel_timer();
     update_state(state);
     refresh_state(state);
+
+    is_me(state, function() {
+    }, $.noop);
   });
 
   $.pp.reg("ACTOR", function(actor) { 
