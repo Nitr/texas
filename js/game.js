@@ -4,7 +4,7 @@ $(document).ready(function() {
       sum_pot = 0, positions = null, seats_size = 0;
   var states = [], game_state = {actor: null};
   var private_card_index = 0, share_card_index = 0, show_card = false;
-  var BUY_IN       = 30;
+  var buy_in = 0;
   var PS_EMPTY     = 0, 
       PS_PLAY      = 1,
       PS_FOLD      = 2,
@@ -74,6 +74,8 @@ $(document).ready(function() {
       else if (not_callback != undefined)
         not_callback();
     };
+
+    buy_in = args.buyin;
 
     check_game = function(o) {
       var gid = pickup_int(o, 'gid');
@@ -285,7 +287,7 @@ $(document).ready(function() {
 
   $('#game').bind('join', function(event, args) {
     initialization(args);
-    send({cmd: "JOIN", seat: args.seat, buyin: BUY_IN});
+    send({cmd: "JOIN", seat: args.seat, buyin: buy_in});
   });
 
   $('#cmd_stand').click(function() {

@@ -137,6 +137,12 @@ $(function() {
     cmd.debug = $.url.get("debug") != undefined;
     cmd.auto = $.url.get("auto") != undefined;
 
+    if ($.url.get("buyin") == undefined) {
+      cmd.buyin = 500;
+    } else {
+      cmd.buyin = new Number($.url.get("buyin"));
+    }
+
     if (join_seat == undefined) {
       $('#game').show("normal").trigger("watching", cmd);
     } else {
