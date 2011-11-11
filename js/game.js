@@ -784,18 +784,22 @@ $(document).ready(function() {
       'height': '300px',
       'padding-bottom':  '20px',
       'padding-top':  '20px',
-      'top': '270px !important',
+      'top': '70px !important',
       'background-color': 'rgba(0,0,0,.6) !important'
     }});
   };
 
   var show_winner = function(nick, amount, cost) {
+    if ($('.buyin').size() != 0) {
+      return;
+    }
+
     if ($(".blockElement").size() == 0) {
       // 初始化一个胜利者显示BLOCK
       $('#game').block({message: '<div id=winner></div>', css: {
         'padding-bottom':  '20px',
         'padding-top':  '20px',
-        'top': '70px !important',
+        'top': '270px !important',
         'background-color': 'rgba(0,0,0,.6) !important'
       }});
     } 
