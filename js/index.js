@@ -1,5 +1,5 @@
 var ERR_NETWORK = {message: '<h3 id=err_network>抱歉，網絡連線錯誤，請稍後再試。</h3>', id: '#err_network', generate: false};
-var STA_CONNECT = {message: '<h3 id=sta_connect>連線種连接中...</h3>', id: '#sta_connect', generate: true};
+var STA_CONNECT = {message: '<h3 id=sta_connect>連線中...</h3>', id: '#sta_connect', generate: true};
 var STA_LOADING = {message: '<h3 id=sta_loading>加載中...</h3>', id: '#sta_loading', generate: true};
 var STA_SINGIN = {message: '<h3 id=sta_singin>登陸中...</h3>', id: '#sta_singin', generate: true};
 
