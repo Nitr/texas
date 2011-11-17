@@ -138,7 +138,7 @@ $(function() {
     cmd.auto = $.url.get("auto") != undefined;
 
     if ($.url.get("buyin") == undefined) {
-      cmd.buyin = 500;
+      cmd.buyin = 900;
     } else {
       cmd.buyin = new Number($.url.get("buyin"));
     }

@@ -100,14 +100,14 @@ $(document).ready(function() {
     } : $.noop;
 
     auto_call = args.auto ? function() {
-      $(document).oneTime(500, function() {
+      $(document).oneTime(1000, function() {
         $('#cmd_call').click();
       });
     } : $.noop;
 
     auto_check = args.auto ? function() {
-      $(document).oneTime(500, function() {
-        $('#cmd_check').click();
+      $(document).oneTime(1000, function() {
+        $('#cmd_raise').click();
       });
     } : $.noop;
     // }}}
@@ -854,10 +854,7 @@ $(document).ready(function() {
   };
 
   var play_sound = function(x) {
-    if (x == 'move')
-      console.log('play-sound', x);
-
-    $.rl.sounds[x].play();
+    //$.rl.sounds[x].play();
   }
 
   var get_bets = function(bet) {
@@ -932,6 +929,7 @@ $(document).ready(function() {
   }
 
   var cancel_timer = function() {
+    closebtn();
     $(".timer").stopTime().remove();
   };
 
