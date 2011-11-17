@@ -365,6 +365,7 @@ button {
   color: gray;
   padding-top: 30px;
   cursor: pointer;
+  display: none;
 }
 
 .game_seat > .photo {

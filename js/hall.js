@@ -40,7 +40,7 @@ $(function() {
   });
 
   $('#cmd_join').click(function() {
-    active_game(get_auto_join_seat());
+    active_game(0); // auto select seat position.
   });
 
   $.pp.reg("BALANCE_INFO", function(o) {
@@ -130,9 +130,9 @@ $(function() {
   }); // }}}
 
   // {{{ private
-  var active_game = function(join_seat) {
+  var active_game = function(seat) {
     $('#hall').hide();
-    var cmd = {pid: $(document).data("pid"), gid: cur_game, seat: join_seat};
+    var cmd = {pid: $(document).data("pid"), gid: cur_game};
 
     cmd.debug = $.url.get("debug") != undefined;
     cmd.auto = $.url.get("auto") != undefined;
@@ -143,7 +143,7 @@ $(function() {
       cmd.buyin = new Number($.url.get("buyin"));
     }
 
-    if (join_seat == undefined) {
+    if (seat == undefined) {
       $('#game').show("normal").trigger("watching", cmd);
     } else {
       $('#game').show("normal").trigger("join", cmd);

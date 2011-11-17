@@ -123,7 +123,6 @@ $(document).ready(function() {
     var seat = o.seat;
     var amount = o.buyin;
 
-
     is_join = (seat == undefined) ? false : true;
 
     display_states = (seat == undefined) ? refresh_states : $.noop;
@@ -252,6 +251,7 @@ $(document).ready(function() {
     } else {
       $(x.dom).hide().css(x.position.empty_outer);
 
+      log(['refresh_state', is_join]);
       if (is_join) {
         $(x.empty_dom).hide();
       } else {
@@ -287,7 +287,7 @@ $(document).ready(function() {
 
   $('#game').bind('join', function(event, args) {
     initialization(args);
-    send({cmd: "JOIN", seat: args.seat, buyin: buy_in});
+    send({cmd: "JOIN", seat: 0, buyin: buy_in});
   });
 
   $('#cmd_stand').click(function() {
@@ -421,8 +421,10 @@ $(document).ready(function() {
       };
 
       update_balance();
+      log(["join_me"]);
     });
 
+    log(["join_refresh_states"]);
     refresh_states();
   });
 
@@ -1028,6 +1030,7 @@ $(document).ready(function() {
   };
 
   // }}}
+  
   // player & betting point {{{ 
   var trim_positions = function(offset) {
     var size = get_size();
