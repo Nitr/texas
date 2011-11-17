@@ -132,7 +132,7 @@ $(function() {
   // {{{ private
   var active_game = function(seat) {
     $('#hall').hide();
-    var cmd = {pid: $(document).data("pid"), gid: cur_game};
+    var cmd = {pid: $(document).data("pid"), gid: cur_game, seat: seat};
 
     cmd.debug = $.url.get("debug") != undefined;
     cmd.auto = $.url.get("auto") != undefined;
