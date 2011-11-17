@@ -49,7 +49,7 @@ $(document).ready(function() {
       HC_FOUR_KIND      = 7,
       HC_STRAIGHT_FLUSH = 8;
 
-  var ranks = [null, "一對", "兩對", "三條", "順子", "同花", "葫蘆", "四條", "同花順"];
+  var ranks = ["高牌", "一對", "兩對", "三條", "順子", "同花", "葫蘆", "四條", "同花順"];
   // }}}
 
   // {{{ generate function
@@ -746,9 +746,9 @@ $(document).ready(function() {
         break;
     }
 
-      var state = get_state(get_seat_number(notify.pid));
-      state.rank = notify.rank;
-      refresh_rank_nick(state);
+    var state = get_state(get_seat_number(notify.pid));
+    state.rank = notify.rank;
+    refresh_rank_nick(state);
   });
 
   $.pp.reg("WIN", function(notify) { 
@@ -757,7 +757,7 @@ $(document).ready(function() {
     var n = get_seat_number(notify.pid);
 
     var state = get_state(n)
-    show_winner(state.nick, notify.amount, notify.cost);
+    show_winner(state, notify.amount, notify.cost);
 
     state.inplay += (notify.amount - notify.cost);
     refresh_state(n);
@@ -789,7 +789,7 @@ $(document).ready(function() {
     }});
   };
 
-  var show_winner = function(nick, amount, cost) {
+  var show_winner = function(state, amount, cost) {
     if ($('.buyin').size() != 0) {
       return;
     }
@@ -805,7 +805,7 @@ $(document).ready(function() {
     } 
 
     // 显示多个胜利者, 将胜利者信息添加到blockElement中
-    $('<label>' + nick + '</label><label>' + amount + ' - ' + cost + ' = ' + (amount - cost) + '</label></br>').appendTo($('.blockElement'));
+    $('<label>' + state.nick + '</label> <label>' + ranks[state.rank] + '</label> <label>$' + (amount - cost) + '</label></br>').appendTo($('.blockElement'));
   };
 
   var hide_winner = function() {
