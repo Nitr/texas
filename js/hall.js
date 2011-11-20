@@ -47,7 +47,6 @@ $(function() {
     if (is_disable())
       return;
 
-    console.log(["balance_info", o.amount, o.inplay]);
     $("#money").text("游戏幣: $" + o.amount);
   });
 
