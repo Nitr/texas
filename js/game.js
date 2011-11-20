@@ -60,7 +60,9 @@ $(document).ready(function() {
 
   // {{{ initialization
   var initialization = function(args) { 
-    // {{{ generate check me & game function
+    disabled_button();
+    $(".game_seat, .empty_seat, .dealer, .card, .bet_label").hide();
+
     is_me = function(o, is_callback, not_callback) {
       var pid = pickup_int(o, 'pid');
 
@@ -88,14 +90,14 @@ $(document).ready(function() {
       $.ws.send($.pp.write(o));
     };
 
-    // generate display testing function
+    // generate testing function {{{
     display_debug = args.debug ? function() {
       //for (var i = 1; i < seats_size + 1; i ++) {
         //update_seat({inplay: 123456, sn: i, nick: '玩家昵称', pid: 1, state: PS_PLAY, betting: 0});
         //get_seat(i).children('.betting_label').css(positions[i].betting_label).text("1000").show();
         //get_seat(i).children('.card').css(positions[i].card).show();
       //}
-    } : $.noop;
+    } : $.noop; 
 
     auto_call = args.auto ? function() {
       $(document).oneTime(1000, function() {
@@ -107,8 +109,8 @@ $(document).ready(function() {
       $(document).oneTime(1000, function() {
         $('#cmd_raise').click();
       });
-    } : $.noop;
-    // }}}
+    } : $.noop; // }}}
+
     regenrate_seat_function(args);
   }; 
 
@@ -154,23 +156,23 @@ $(document).ready(function() {
     };
   }
 
-  var init_seats = function(size) {
+  var init_states = function(game) {
+    states = []; // clear empty states;
+
     get_size = function() {
-      return size;
+      return game.seats;
     };
 
-    var positions = get_positions(size);
-    $(".game_seat, .empty_seat, .dealer, .card, .bet_label").hide();
+    var positions = get_positions(game.seats);
 
-    states = []; // init empty states;
     for (var i = 1; i < positions.length; i ++) {
       states[i] = {
+        bet: 0,
         seat: i,
         dom: $("#game_seat_" + i).css(positions[i].outer),
         empty_dom: $("#empty_seat_" + i).css(positions[i].empty_outer),
         position: positions[i],
         photo: $.rl.img.def_face_0,
-        bet: 0,
         rank: HC_HIGH_CARD
       };
     }
@@ -268,6 +270,303 @@ $(document).ready(function() {
   var update_balance = function() {
     send({cmd: "BALANCE_QUERY"});
   };
+  // }}}
+  
+  // utility {{{ 
+  var new_stage = function(have_blinds) {
+    if (have_blinds)
+      return;
+
+    var bets = [];
+    for(var i = 1; i < states.length; i++) {
+      var t = $('.seat-bet-' + states[i].seat).map(function(n, x) {
+        $(x).addClass("pot").removeClass("bet").removeClass("seat-bet-" + states[i].seat);
+        return {bet: $(x), endpoint: random({left: 671, top: 217}, 20, 20)};
+      });
+
+      if (t.length != 0) {
+        bets.push(t);
+      }
+
+      $(states[i].dom).children('.bet_label').hide();
+    }
+
+    if (bets.length != 0) {
+      play_sound('move');
+
+      $.each(bets, function(i, x) {
+        move_bet(bets.shift());
+      });
+    }
+
+    if (sum_pot != 0) {
+      $('.pot_label').text(sum_pot).show();
+    }
+
+    update_states('bet', 0);
+  }
+
+  var get_private_card = function(seat, sn) {
+    return "#game_seat_" + seat + 
+      " > .private_card[sn=" + sn + "]";
+  };
+
+  var get_background_card = function(seat) {
+    return "#game_seat_" + seat + " > .background_card";
+  };
+
+  var show_buyin = function() {
+    $('#game').block({message: '<div class=buyin>BUY-IN</div>', css: {
+      'width': '500px',
+      'height': '300px',
+      'padding-bottom':  '20px',
+      'padding-top':  '20px',
+      'top': '70px !important',
+      'background-color': 'rgba(0,0,0,.6) !important'
+    }});
+  };
+
+  var show_winner = function(state, amount, cost) {
+    if ($('.buyin').size() != 0) {
+      return;
+    }
+
+    if ($(".blockElement").size() == 0) {
+      // 初始化一个胜利者显示BLOCK
+      $('#game').block({message: '<div id=winner></div>', css: {
+        'padding-bottom':  '20px',
+        'padding-top':  '20px',
+        'top': '270px !important',
+        'background-color': 'rgba(0,0,0,.6) !important'
+      }});
+    } 
+
+    // 显示多个胜利者, 将胜利者信息添加到blockElement中
+    $('<label>' + state.nick + '</label> <label>' + ranks[state.rank] + '</label> <label>$' + (amount - cost) + '</label></br>').appendTo($('.blockElement'));
+  };
+
+  var hide_winner = function() {
+    if ($('.buyin').size() == 0) {
+      $('#game').unblock();
+    }
+  };
+
+  var share_pot = function(winners) {
+    var winpots = [], cur = undefined;
+    var all_size = $(".pot").length;
+    var size = Math.floor(all_size / winners.length);
+
+    $(".pot").each(function(i, x) {
+      if (i % size == 0) {
+        cur = (cur == undefined) ? 0 : (cur + 1);
+        if (cur > winners.length - 1) {
+          cur -= 1;
+        }
+      }
+
+      if (winpots[cur] == undefined) {
+        winpots[cur] = [];
+      }
+
+      var state = get_state(winners[cur]);
+
+      winpots[cur].push({bet: $(this), endpoint: state.position.betting_ori});
+    });
+
+    play_sound('move');
+    $('.pot_label').hide();
+
+    $.each(winpots, function(i, x) {
+      move_bet(x, function(bet) { $(bet).remove(); });
+    });
+  };
+
+  var get_poker = function(face, suit) {
+    var a = new Number(face << 8 | suit);
+    return $.rl.poker[a.toString()];
+  };
+
+  var is_disable = function() { 
+    return $('#game').css('display') == 'none'; 
+  };
+
+  var play_sound = function(x) {
+    //$.rl.sounds[x].play();
+  }
+
+  var get_bets = function(bet) {
+    // generate bet animation
+    var bets = [];
+    var maxs = [
+      {key: 100, val: "betting_1"},
+      {key: 50, val: "betting_2"}, 
+      {key: 20, val: "betting_3"}, 
+      {key: 10, val: "betting_4"}, 
+      {key: 5, val: "betting_5"}
+    ];
+
+    while (true) {
+      var max = maxs.shift();
+      var l = Math.floor(bet / max.key);
+      for (var i = 1; i <= l; i++) {
+        bets.push(max.val);
+      }
+
+      bet = bet % max.key;
+
+      if (maxs.length == 0) {
+        if (bet != 0)
+          bets.push(max.val);
+
+        break;
+      }
+    }
+
+    return bets;
+  };
+
+  var random = function(ori, x, y) {
+    var left = new Number(Math.floor((Math.random() * 100)) % x + ori.left);
+    var top = new Number(Math.floor((Math.random() * 100)) % y + ori.top);
+    
+    return {left: left + "px", top: top + "px"};
+  }
+
+  var move_bet = function(bets, callback) {
+    // [{bet: $(bet), :endpoint: {left: xxx, right: xxx}}]
+    var time = 100;
+    $.each(bets, function(i, x) {
+      $(document).oneTime(time, function() {
+        $(x.bet).animate(x.endpoint, 650, function() {
+          if (callback != undefined)
+            callback($(this));
+        });
+      });
+      time += 20;
+    });
+  }
+
+  var start_timer = function(seat) {
+    var s = get_state(seat);
+    $('<div class="timer" style="height: 120px;"><div /></div>').
+      appendTo($(s.dom));
+
+
+    var height = 120;
+    var top = 0;
+
+    $(".timer").everyTime(500, function(i) {
+      height -= 4;
+      top += 4;
+      $(".timer").children("div").css('height', height + 'px').css('margin-top', top + 'px');
+      if (height == 0) {
+        cancel_timer();
+      }
+    }, 30);
+  }
+
+  var cancel_timer = function() {
+    disabled_button();
+    $(".timer").stopTime().remove();
+  };
+
+  var log = function(msg) {
+    console.log(msg);
+  };
+
+  var debug = function(msg) {
+  };
+
+  var fan = function(i) {
+    if (i == 0)
+      return i;
+    else if (i > 0)
+      return 0 - i;
+    else
+      return Math.abs(i);
+  };
+
+  var pickup_int = function(o, prop) {
+    switch(typeof(o)) {
+      case "string":
+        return new Number(o);
+      break;
+      case "number":
+        return o;
+      break;
+      case "object":
+        return pickup_int(o[prop]);
+      break;
+      case "undefined":
+        throw "pickup_int not care 'undefined', check your code";
+      default:
+        throw "pickup_int not care type, error [" + o + "]";
+    }
+  };
+
+  var set_card = function(id, face, suit) {
+    var sn = new Number(face << 8 | suit);
+    $(id).attr('src', $.rl.poker[sn.toString()]).
+      attr("face", face).attr("suit", suit).
+      show('slow');
+  };
+
+  var clear_high = function() {
+    $('.card').css('-webkit-box-shadow', '1px 1px 5px black');
+  };
+
+  var set_high = function(face, suit) {
+    if (face == undefined && suit == undefined)
+      throw 'unknown high face or suit';
+
+    if (face == undefined)
+      set_high_css($("[suit=" + suit + "]"));
+
+    if (suit == undefined)
+      set_high_css($("[face=" + face + "]"));
+
+    if (face != undefined && suit != undefined)
+      set_high_css($("[suit=" + suit + "]").
+                   filter("[face=" + face + "]"));
+  };
+
+  var set_high_css = function(card) {
+    $(card).css('-webkit-box-shadow', '1px 1px 3px 3px gold');
+  };
+
+  var compare_card = function(a, b) {
+    var a1 = new Number($(a).attr('face'));
+    var b1 = new Number($(b).attr('face'));
+
+    if (a1 > b1)
+      return -1;
+    else if (a1 < b1)
+      return 1;
+    else
+      return 0;
+  };
+
+  var openbtn = function(key) {
+    if (key == undefined)
+      key = '#raise_number, #raise_range, #cmd_call, #cmd_raise, #cmd_fold, #cmd_check';
+
+    $(key).removeClass('disabled').attr("disabled", false);
+  };
+
+  var disabled_button = function(key) {
+    if (key == undefined)
+      key = '#raise_number, #raise_range, #cmd_call, #cmd_raise, #cmd_fold, #cmd_check';
+
+    $(key).addClass('disabled').attr("disabled", "disabled");
+  };
+    
+  var is_enabled = function(o) {
+    return !$(o).hasClass("disabled");
+  }
+
+  var is_actor = function() {
+    return get_state().seat == game_state.actor;
+  };
 
   var reg = function(protocol, callback) {
     $.pp.reg(protocol, function(o) {
@@ -289,9 +588,16 @@ $(document).ready(function() {
 
       callback(o);
     });
-  }
-  // }}}
+  };
 
+  var show_hint = function(o) {
+    if ('players' in o) {
+      $(game.players > 1 ? '#wait_next' : '#wait_player').
+        show();
+    }
+  };
+  // }}}
+  
   // game event {{{
   $('#game').bind('watching', function(event, args) {
     initialization(args);
@@ -319,21 +625,21 @@ $(document).ready(function() {
 
   $('#cmd_fold').click(function() {
     if (is_actor() && is_enabled(this)) {
-      closebtn();
+      disabled_button();
       send({cmd: "FOLD"});
     }
   });
 
   $('#cmd_call, #cmd_check').click(function() {
     if (is_actor() && is_enabled(this)) {
-      closebtn();
+      disabled_button();
       send({cmd: "RAISE", amount: 0});
     }
   });
 
   $('#cmd_raise').click(function() {
     if (is_actor() && is_enabled(this)) {
-      closebtn();
+      disabled_button();
       $('#raise_range').trigger('change');
       amount = parseInt($('#raise_range').val());
       send({cmd: "RAISE", amount: amount});
@@ -358,16 +664,8 @@ $(document).ready(function() {
   
   // game protocol {{{
   reg("GAME_DETAIL", function(game) { 
-    init_seats(game.seats);
-
-    if (game.players > 1) {
-      $('#wait_next').show();
-    } else {
-      $('#wait_player').show();
-    }
-
-    closebtn();
-    display_debug();
+    show_hint(game);
+    init_states(game);
   });
 
   reg("SEAT_DETAIL", function(seat) {
@@ -433,7 +731,7 @@ $(document).ready(function() {
     is_me(state, function() {
       openbtn();
     }, function() {
-      closebtn();
+      disabled_button();
     });
 
     game_state.actor = state.seat;
@@ -450,11 +748,11 @@ $(document).ready(function() {
     openbtn();
 
     if (req.call == 0) {
-      closebtn("#cmd_call");
+      disabled_button("#cmd_call");
       auto_check();
     }
     else {
-      closebtn("#cmd_check");
+      disabled_button("#cmd_check");
       auto_call();
     }
   });
@@ -705,305 +1003,6 @@ $(document).ready(function() {
     share_pot([n]);
   });
   // }}}
-  // }}}
-
-  // utility {{{ 
-  var new_stage = function(have_blinds) {
-    if (have_blinds)
-      return;
-
-    var bets = [];
-    for(var i = 1; i < states.length; i++) {
-      var t = $('.seat-bet-' + states[i].seat).map(function(n, x) {
-        $(x).addClass("pot").removeClass("bet").removeClass("seat-bet-" + states[i].seat);
-        return {bet: $(x), endpoint: random({left: 671, top: 217}, 20, 20)};
-      });
-
-      if (t.length != 0) {
-        bets.push(t);
-      }
-
-      $(states[i].dom).children('.bet_label').hide();
-    }
-
-    if (bets.length != 0) {
-      play_sound('move');
-
-      $.each(bets, function(i, x) {
-        move_bet(bets.shift());
-      });
-    }
-
-    if (sum_pot != 0) {
-      $('.pot_label').text(sum_pot).show();
-    }
-
-    update_states('bet', 0);
-  }
-
-  var get_private_card = function(seat, sn) {
-    return "#game_seat_" + seat + 
-      " > .private_card[sn=" + sn + "]";
-  };
-
-  var get_background_card = function(seat) {
-    return "#game_seat_" + seat + " > .background_card";
-  };
-
-  var show_buyin = function() {
-    $('#game').block({message: '<div class=buyin>BUY-IN</div>', css: {
-      'width': '500px',
-      'height': '300px',
-      'padding-bottom':  '20px',
-      'padding-top':  '20px',
-      'top': '70px !important',
-      'background-color': 'rgba(0,0,0,.6) !important'
-    }});
-  };
-
-  var show_winner = function(state, amount, cost) {
-    if ($('.buyin').size() != 0) {
-      return;
-    }
-
-    if ($(".blockElement").size() == 0) {
-      // 初始化一个胜利者显示BLOCK
-      $('#game').block({message: '<div id=winner></div>', css: {
-        'padding-bottom':  '20px',
-        'padding-top':  '20px',
-        'top': '270px !important',
-        'background-color': 'rgba(0,0,0,.6) !important'
-      }});
-    } 
-
-    // 显示多个胜利者, 将胜利者信息添加到blockElement中
-    $('<label>' + state.nick + '</label> <label>' + ranks[state.rank] + '</label> <label>$' + (amount - cost) + '</label></br>').appendTo($('.blockElement'));
-  };
-
-  var hide_winner = function() {
-    if ($('.buyin').size() == 0) {
-      $('#game').unblock();
-    }
-  };
-
-  var share_pot = function(winners) {
-    var winpots = [], cur = undefined;
-    var all_size = $(".pot").length;
-    var size = Math.floor(all_size / winners.length);
-
-    $(".pot").each(function(i, x) {
-      if (i % size == 0) {
-        cur = (cur == undefined) ? 0 : (cur + 1);
-        if (cur > winners.length - 1) {
-          cur -= 1;
-        }
-      }
-
-      if (winpots[cur] == undefined) {
-        winpots[cur] = [];
-      }
-
-      var state = get_state(winners[cur]);
-
-      winpots[cur].push({bet: $(this), endpoint: state.position.betting_ori});
-    });
-
-    play_sound('move');
-    $('.pot_label').hide();
-
-    $.each(winpots, function(i, x) {
-      move_bet(x, function(bet) { $(bet).remove(); });
-    });
-  };
-
-  var get_poker = function(face, suit) {
-    var a = new Number(face << 8 | suit);
-    return $.rl.poker[a.toString()];
-  };
-
-  var is_disable = function() { 
-    return $('#game').css('display') == 'none'; 
-  };
-
-  var play_sound = function(x) {
-    //$.rl.sounds[x].play();
-  }
-
-  var get_bets = function(bet) {
-    // generate bet animation
-    var bets = [];
-    var maxs = [
-      {key: 100, val: "betting_1"},
-      {key: 50, val: "betting_2"}, 
-      {key: 20, val: "betting_3"}, 
-      {key: 10, val: "betting_4"}, 
-      {key: 5, val: "betting_5"}
-    ];
-
-    while (true) {
-      var max = maxs.shift();
-      var l = Math.floor(bet / max.key);
-      for (var i = 1; i <= l; i++) {
-        bets.push(max.val);
-      }
-
-      bet = bet % max.key;
-
-      if (maxs.length == 0) {
-        if (bet != 0)
-          bets.push(max.val);
-
-        break;
-      }
-    }
-
-    return bets;
-  };
-
-  var random = function(ori, x, y) {
-    var left = new Number(Math.floor((Math.random() * 100)) % x + ori.left);
-    var top = new Number(Math.floor((Math.random() * 100)) % y + ori.top);
-    
-    return {left: left + "px", top: top + "px"};
-  }
-
-  var move_bet = function(bets, callback) {
-    // [{bet: $(bet), :endpoint: {left: xxx, right: xxx}}]
-    var time = 100;
-    $.each(bets, function(i, x) {
-      $(document).oneTime(time, function() {
-        $(x.bet).animate(x.endpoint, 650, function() {
-          if (callback != undefined)
-            callback($(this));
-        });
-      });
-      time += 20;
-    });
-  }
-
-  var start_timer = function(seat) {
-    var s = get_state(seat);
-    $('<div class="timer" style="height: 120px;"><div /></div>').
-      appendTo($(s.dom));
-
-
-    var height = 120;
-    var top = 0;
-
-    $(".timer").everyTime(500, function(i) {
-      height -= 4;
-      top += 4;
-      $(".timer").children("div").css('height', height + 'px').css('margin-top', top + 'px');
-      if (height == 0) {
-        cancel_timer();
-      }
-    }, 30);
-  }
-
-  var cancel_timer = function() {
-    closebtn();
-    $(".timer").stopTime().remove();
-  };
-
-  var log = function(msg) {
-    console.log(msg);
-  };
-
-  var debug = function(msg) {
-  };
-
-  var fan = function(i) {
-    if (i == 0)
-      return i;
-    else if (i > 0)
-      return 0 - i;
-    else
-      return Math.abs(i);
-  };
-
-  var pickup_int = function(o, prop) {
-    switch(typeof(o)) {
-      case "string":
-        return new Number(o);
-      break;
-      case "number":
-        return o;
-      break;
-      case "object":
-        return pickup_int(o[prop]);
-      break;
-      case "undefined":
-        throw "pickup_int not care 'undefined', check your code";
-      default:
-        throw "pickup_int not care type, error [" + o + "]";
-    }
-  };
-
-  var set_card = function(id, face, suit) {
-    var sn = new Number(face << 8 | suit);
-    $(id).attr('src', $.rl.poker[sn.toString()]).
-      attr("face", face).attr("suit", suit).
-      show('slow');
-  };
-
-  var clear_high = function() {
-    $('.card').css('-webkit-box-shadow', '1px 1px 5px black');
-  };
-
-  var set_high = function(face, suit) {
-    if (face == undefined && suit == undefined)
-      throw 'unknown high face or suit';
-
-    if (face == undefined)
-      set_high_css($("[suit=" + suit + "]"));
-
-    if (suit == undefined)
-      set_high_css($("[face=" + face + "]"));
-
-    if (face != undefined && suit != undefined)
-      set_high_css($("[suit=" + suit + "]").
-                   filter("[face=" + face + "]"));
-  };
-
-  var set_high_css = function(card) {
-    $(card).css('-webkit-box-shadow', '1px 1px 3px 3px gold');
-  };
-
-  var compare_card = function(a, b) {
-    var a1 = new Number($(a).attr('face'));
-    var b1 = new Number($(b).attr('face'));
-
-    if (a1 > b1)
-      return -1;
-    else if (a1 < b1)
-      return 1;
-    else
-      return 0;
-  };
-
-  var openbtn = function(key) {
-    if (key == undefined)
-      key = '#raise_number, #raise_range, #cmd_call, #cmd_raise, #cmd_fold, #cmd_check';
-
-    $(key).removeClass('disabled').attr("disabled", false);
-  };
-
-  var closebtn = function(key) {
-    if (key == undefined)
-      key = '#raise_number, #raise_range, #cmd_call, #cmd_raise, #cmd_fold, #cmd_check';
-
-    $(key).addClass('disabled').attr("disabled", "disabled");
-  };
-    
-  var is_enabled = function(o) {
-    return !$(o).hasClass("disabled");
-  }
-
-  var is_actor = function() {
-    return get_state().seat == game_state.actor;
-  };
-
-
   // }}}
   
   // player & betting point {{{ 
