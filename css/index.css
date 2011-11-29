@@ -446,3 +446,35 @@ button {
   position: absolute;
   top: -35px;
   left: -20px; }
+
+button {
+  font: 1.2em;
+  width: 80px;
+  height: 30px; }
+
+label {
+  font: 0.8em; }
+
+#singin {
+  display: none;
+  margin-top: 30px;
+  margin-bottom: 30px; }
+  #singin form {
+    height: 120px;
+    font-size: 1.2em; }
+    #singin form > input {
+      width: 200px;
+      height: 20px; }
+    #singin form > div > #ckb_save {
+      margin-top: 20px; }
+    #singin form > div > #lab_err_singin {
+      display: none; }
+
+h3[id^="msg"] {
+  display: none;
+  font: 1.5em;
+  /*background: #0F263D url('ajax-loader.gif') no-repeat;*/ }
+
+h3[id^="err"] {
+  display: none;
+  font: 1.5em; }

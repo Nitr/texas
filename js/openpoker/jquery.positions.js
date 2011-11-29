@@ -50,7 +50,7 @@
       }
 
       return positions;
-    };
+    },
 
     get_positions: function(size) {
       return size == 5 ? five_positions : nine_positions;

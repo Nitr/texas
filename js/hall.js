@@ -166,10 +166,6 @@ $(function() {
   }
 
   var initialization = function() {
-    $("#games_wrapper tbody").setTemplateElement("games_temp");
-    $("#seats_wrapper").setTemplateElement("seats_temp");
-    $("#seats_wrapper").processTemplate({end: 10});
-
     var generate_style = function(points) {
       return $.map(points, function(p) {
         return {left: p.x + 'px', top: p.y + 'px'};

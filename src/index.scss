@@ -530,3 +530,97 @@ button {
 
 .buyin {
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@mixin auto-hide {
+  display: none;
+}
+
+@mixin top-bottom-margin {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+@mixin auto-margin {
+  margin-top: 20px;
+}
+
+@mixin m-font {
+  font: 1.2em;
+}
+
+@mixin s-font {
+  font: 0.8em;
+}
+
+@mixin x-font {
+  font: 1.5em;
+}
+
+button {
+  @include m-font;
+  width: 80px;
+  height: 30px;
+}
+
+label {
+  @include s-font;
+}
+
+#singin {
+  @include auto-hide;
+  @include top-bottom-margin;
+
+  form {
+    height: 120px; 
+    font-size: 1.2em; 
+
+    > input {
+      width: 200px; 
+      height: 20px; 
+    }
+
+    > div {
+      > #ckb_save {
+        @include auto-margin;
+      }
+
+      > #lab_err_singin {
+        @include auto-hide;
+      }
+    }
+  }
+}
+
+h3[id^="msg"] {
+  @include auto-hide;
+  @include x-font;
+  /*background: #0F263D url('ajax-loader.gif') no-repeat;*/
+}
+
+h3[id^="err"] {
+  @include auto-hide;
+  @include x-font;
+}
