@@ -13,6 +13,8 @@
           handleHtml(r);
         else if (/\.js$/.test(r.url))
           handleJs(r);
+        else if (/\.mp3$/.test(r.url))
+          handleMp3(r);
         else
           throw 'UNKNOW RESOURCE TYPE ' + r.url;
       });
@@ -70,6 +72,12 @@
     };
 
     imageObj.src = res.url;
+  }
+
+  function handleMp3(res) {
+    var audio = new Audio(res.url);
+    $.rl.sounds[res.key] = audio;
+    sub();
   }
 
   function sub() {
