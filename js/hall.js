@@ -29,6 +29,10 @@ $(function() {
     $('#games_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, fixedColumn: false, themeClass: 'games-table', height: '248px'});
   });
 
+  $('#hall').bind('return', function(event) {
+    
+  });
+
   $('#hall').bind('active', function(event) {
     // TODO: 保存每次搜索过的条件并在激活的时候重新读取
     $.ws.send($.pp.write(gen_game_query([1, 0, 0, 0, 0, 0, 0])));
@@ -86,9 +90,9 @@ $(function() {
         $(this).trigger('update');
       }).eq(0).click();
 
-      //$(document).oneTime(2000, function() {
-        //$('#cmd_join').click();
-      //});
+      $(document).oneTime(1000, function() {
+        $('#cmd_join').click();
+      });
     }
   }); // }}}
 
