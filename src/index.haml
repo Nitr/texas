@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+    <title>創世紀-德州撲克</title>  
+    <script src="js/jquery.js" type="text/javascript"></script>
+    <script src="js/jquery.plugins.js" type="text/javascript"></script>  
+    <script src="js/jquery.resloader.js" type="text/javascript"></script>  
+    <script src="js/openpoker/jquery.pp.js" type="text/javascript"></script>  
+    <script src="js/openpoker/jquery.ws.js" type="text/javascript"></script>  
+    <script src="js/openpoker/jquery.game.js" type="text/javascript"></script>  
+    <script src="js/openpoker/jquery.seat.js" type="text/javascript"></script>  
+    <script src="js/index.js" type="text/javascript"></script>  
+    <script src="js/hall.js" type="text/javascript"></script>  
+    <script src="js/game.js" type="text/javascript"></script>  
+    <link rel=stylesheet type="text/css" href="css/index.css"/>
+  </head>
+  <body>
+    <div id=page>
+      <nav id=toolbar>
+        <div id=title></div>
+        <img id=logo src='css/logo.png' />
+        <div id=usr>
+          <img id=photo />
+          <label id=nick class=msg ></label>
+          <label id=money class=msg ></label>
+          <div id=pong />
+        </div>
+        <div id=tools>
+          <div id=settings>設置</div>
+          <div class=split></div>
+          <div id=helps>幫助</div>
+          <div class=split></div>
+          <div id=logout>登出</div>
+        </div>
+      </nav>
+
+      <article id=content>
+        <article id=singin style="display:none;">
+          <form id=singin method=post style="font-size: 2em; height: 200px; margin-top: 60px;">
+            <label>帳號<input id=txt_usr style="margin-left: 12px; width: 200px; height: 26px; font-size: 24px;" placeholder=請輸入您的帳號 required autofocus ></label><br />
+            <label>密碼<input id=txt_pwd type=password style="margin-left: 12px; width: 200px; height: 26px; font-size: 24px;" placeholder=請輸入您的密碼 required ></label><br />
+            <div style="padding-top: 24px; -webkit-box-align: left;">
+              <button type=submit id=cmd_singin style="font-size: 28px; margin-left: -70px;">登陸</button>
+              <input type=checkbox id=ckb_save checked /><label style="font-size: 18px;">存儲帳號信息</label><br />
+              <label id=lab_err_singin style="color: red; display: none;">帳號密碼有誤</label>
+            </div>
+          </form>
+        </article>
+
+        <article id=hall style="display:none;">
+
+          <div id=seats_wrapper></div>
+
+          <div id=games_wrapper> 
+            <table id=games_table>
+              <thead>
+                <tr>
+                  <th class=col_longest>房間</th>
+                  <th class=col_short>大/小盲注</th>
+                  <th class=col_short>人數</th>
+                  <th class=col_short>旁觀</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+
+          <div id=hall_commands>
+            <button type=command id=cmd_join class=cmdred>加入</button><br />
+            <button type=command id=cmd_watch class=cmdblue>觀戰</button>
+          </div>
+
+          <textarea id=seats_temp style="display:none;">
+            {#for index = 1 to $T.end}
+            <div id=seat-{$T.index} seat={$T.index} class=seat style='display: none;'>
+              <div class=nick></div>
+              <img class=photo />
+              <div class=inplay></div>
+            </div>
+            {#/for}
+          </textarea>
+
+          <textarea id=games_temp style="display:none;">
+            {#foreach $T.datas as record}
+            <tr gid="{$T.record.id}" seats="{$T.record.seats}">
+              <td class=col_longest>{#if $T.record.type == 0} Texas hold 'em {#else} {$T.record.type} {#/if} </td>
+              <td class=col_short>{$T.record.low} / {$T.record.height}</td>
+              <td class=col_short>{$T.record.joined} / {$T.record.seats}</td>
+              <td class=col_short>{$T.record.waiting}</td>
+            </tr>
+            {#/for}
+          </textarea>
+        </article>
+
+        <article id=game>
+          <img id=background src='css/gametable.png' />
+          <div id=table></div>
+          <img id=share_card_1 class='card share_card' style="top:200px;left:300px;" />
+          <img id=share_card_2 class='card share_card' style="top:200px;left:355px;" />
+          <img id=share_card_3 class='card share_card' style="top:200px;left:410px;" />
+          <img id=share_card_4 class='card share_card' style="top:200px;left:475px;" />
+          <img id=share_card_5 class='card share_card' style="top:200px;left:540px;" />
+
+          <div id=tips>
+            <label id=wait_next>請等待參與下局游戏。</label>
+            <label id=wait_player>請等待其他玩家參與。</label>
+          </div>
+
+          <div id=game_actions>
+            <a class=action type=command id=cmd_hall >大廳</a><br />
+            <a class=action type=command id=cmd_stand >離開</a><br />
+          </div>
+
+          <div id=player_actions>
+            <a class=action id=cmd_fold>蓋牌</a>
+            <a class=action id=cmd_check>過牌</a>
+            <a class=action id=cmd_call>跟注</a>
+            <a class=action id=cmd_raise>加注</a>
+            <input type=range value=0 max=50 min=0 id=raise_range></input>
+            <input type=number value=0 max=50 min=0 step=1 id=raise_number></input>
+          </div>
+
+          <textarea id="game_table_template" style="display:none;">
+            {#for index = 1 to $T.end}
+            <div id=seat seat={$T.index} class=empty_seat>加入</div>
+            <div id=game_seat_{$T.index} seat={$T.index} class=game_seat style='display: none'>
+              <div class=nick></div>
+              <img class=photo />
+              <div class=inplay></div>
+              <img class=dealer src='css/dealer.png' style='display: none;' />
+              <img class=background_card src='css/poker_back.png' style='display: none;' />
+              <div class=bet_label style='display: none;'></div>
+              <img class="card private_card" sn=1 />
+              <img class="card private_card" sn=2 />
+            </div>
+            {#/for}
+            <div class=pot_label style="left: 671px; top: 260px; display: none;"></div>
+          </textarea>
+        </article>
+      </article>
+    </div>
+  </body>
+</html>
