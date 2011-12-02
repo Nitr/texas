@@ -8,7 +8,7 @@ $(function() {
     $.blockUI({message: $(id)});
   } 
 
-  // first block ui and show Connecting...
+  // block ui and first show Connecting...
   blockUI("#msg_connect");
 
   $(this).oneTime('5s', function() {
@@ -17,8 +17,25 @@ $(function() {
     }
   });
 
-  $.ws.defaults.onmessage = $.pp.onmessage;
-  $.ws.defaults.onopen = function() {
+  var on_load = function() {
+    var identity, password;
+
+    identity = $.url.get("usr") == null ? // url hack (default identity)
+      localStorage.getItem("player#identity") : $.url.get("usr");
+    password = $.url.get("pwd"); // url hack (default password)
+
+    $('#txt_identity').val(identity);
+    $('#txt_password').val(password);
+
+    if (!$.isEmpty(identity) && !$.isEmpty(password)) {
+      $("#singin > form").trigger('submit');
+    } else {
+      // show singin form
+      blockUI('#singin');
+    }
+  };
+
+  var on_open = function() {
     $(this).stopTime(); // stop #err_network error timer
 
     $(document).oneTime('1s', function() {
@@ -34,38 +51,50 @@ $(function() {
         resources.push({url: 'css/sound/' + x + '.mp3', key: x});
       });
 
-      $.rl.load(resources, function() {
-        var identity, password;
-
-        identity = $.url.get("usr") == null ? // url hack (default identity)
-          localStorage.getItem("player#identity") : $.url.get("usr");
-        password = $.url.get("pwd"); // url hack (default password)
-
-        $('#txt_identity').val(identity);
-        $('#txt_password').val(password);
-
-        $("#singin > form").bind("submit", function() {
-          blockUI('#msg_singin');
-
-          $.ws.send($.pp.write({
-            cmd: "LOGIN",
-            usr: $('#txt_identity').val(),
-            pass: $('#txt_password').val()
-          }));
-
-          return false;
-        });
-
-        if (!$.isEmpty(identity) && !$.isEmpty(password)) {
-          $("#singin > form").trigger('submit');
-        } else {
-          // show singin form
-          blockUI('#singin');
-        }
-      });
+      $.rl.load(resources, on_load);
     });
-  }
+  };
 
+  $("#singin > form").bind("submit", function() {
+    blockUI('#msg_singin');
+
+    $.ws.send($.pp.write({cmd: "LOGIN",
+      usr: $('#txt_identity').val(),
+      pass: $('#txt_password').val()
+    }));
+
+    $('#singin').oneTime('3s', function() {
+      blockUI('#singin'); // singin timeout
+    });
+
+    return false;
+  });
+
+  $($.player).bind('singin', function() {
+    $('#singin').stopTime();
+
+    if ($("#ckb_save").attr('checked'))
+      localStorage.setItem("player#identity", $('#txt_identity').val());
+
+    $('#toolbar > #usr > #nick').text(this.nick);
+    $('#toolbar > #usr > #photo').attr('src', this.photo);
+
+    $('#toolbar > *').show();
+    $.unblockUI();
+  });
+
+  $($.player).bind('error', function() {
+    $('#singin').stopTime();
+
+    $("#txt_password").val(""); // clear password
+    $("#lab_err_singin").show(); // show error
+  });
+
+  if ($.url.get("host") != null)
+    $.ws.defaults.host = $.url.get('host');
+    
+  $.ws.defaults.onmessage = $.pp.onmessage;
+  $.ws.defaults.onopen = on_open;
   $.ws.init();
 
   // {{{ utility 
@@ -92,18 +121,6 @@ $(function() {
         $.rl.getImgDataUrl(img, i * 13, 0, 13, 14);
     }
   }
-
-  var singinFinish = function() {
-    $(document).stopTime();
-    $("#singin").hide();
-    $.unblockUI();
-    $("#hall").show('slow').trigger('setup').trigger('active', 0);
-  }
-
-  var cache_player = function() {
-    if ($("#ckb_save").attr('checked')) {
-      localStorage.setItem("player#identity", player.identity);
-    }
-  }
   // }}}
 });
+// vim: fdm=marker

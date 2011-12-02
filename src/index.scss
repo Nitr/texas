@@ -47,14 +47,6 @@ body {
   -webkit-border-top-right-radius: 8px;
 }
 
-#tools {
-  position: relative; 
-  padding: 0px;
-  top: -72px;
-  left: 698px;
-  width: 215px;
-}
-
 #tools > * {
   background: url(icon.png);
   background-repeat: no-repeat;
@@ -623,4 +615,13 @@ h3[id^="msg"] {
 h3[id^="err"] {
   @include auto-hide;
   @include x-font;
+}
+
+#tools {
+  @include auto-hide;
+  top: 5px;
+  left: 710px;
+  width: 215px;
+  padding: 0px;
+  position: absolute;
 }
