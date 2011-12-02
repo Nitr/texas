@@ -29,6 +29,7 @@
           <img id='photo' />
           <label class='msg' id='nick'></label>
           <label class='msg' id='money'></label>
+          <div id='pong'></div>
         </div>
         <div id='tools'>
           <div id='settings'>設置</div>
@@ -58,19 +59,28 @@
         </div>
         <div id='hall'>
           <div id='seats_wrapper'></div>
-          <div id='games_wrapper'>
-            <table id='games_table'>
-              <thead>
-                <tr>
-                  <th class='col_longest'>房間</th>
-                  <th class='col_short'>大/小盲注</th>
-                  <th class='col_short'>人數</th>
-                  <th class='col_short'>旁觀</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
+          <table cellspacing='0px' id='table_list'>
+            <thead>
+              <tr>
+                <th class='col_longest'>房間</th>
+                <th class='col_short'>大/小盲注</th>
+                <th class='col_short'>人數</th>
+                <th class='col_short'>旁觀</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr></tr>
+              <tr></tr>
+              <tr></tr>
+              <tr></tr>
+              <tr></tr>
+              <tr></tr>
+              <tr></tr>
+              <tr></tr>
+              <tr></tr>
+              <tr></tr>
+            </tbody>
+          </table>
           <div id='hall_commands'>
             <button class='cmdred' id='cmd_join' type='command'>加入</button>
             <br />

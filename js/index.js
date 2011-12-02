@@ -37,6 +37,14 @@ $(function() {
       // show singin form
       blockUI('#singin');
     }
+
+    //$('#games_table').fixedHeaderTable({
+      //footer: false, 
+      //cloneHeadToFoot: false, 
+      //fixedColumn: false, 
+      //themeClass: 'games-table', 
+      //height: '248px'
+    //});
   };
 
   var on_open = function() {
@@ -91,6 +99,8 @@ $(function() {
 
     $('#toolbar > *').show();
     $.unblockUI();
+
+    $('#hall').trigger('setup');
   });
 
   $($.player).bind('error', function() {

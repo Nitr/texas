@@ -41,15 +41,6 @@ body {
   -webkit-border-top-left-radius: 8px;
   -webkit-border-top-right-radius: 8px; }
 
-#tools {
-  position: absolute;
-  display: none;
-  padding: 0px;
-  top: 5px;
-  left: 710px;
-  width: 215px;
-}
-
 #tools > * {
   background: url(icon.png);
   background-repeat: no-repeat;
@@ -186,32 +177,6 @@ div.fht-tbody {
 
 /* @end */
 /* GAME_TABLE */
-#games_wrapper {
-  position: absolute;
-  width: 680px;
-  top: 320px;
-  left: 80px; }
-
-.games-table {
-  -webkit-box-shadow: 1px 3px 3px black;
-  border: 2px solid black;
-  font-size: 20px; }
-
-.games-table th {
-  background: -webkit-gradient(linear, left top, left bottom, from(#e8e8ee), to(#bdbfc2));
-  text-shadow: 1px 1px 2px #000000;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid black; }
-
-.games-table td {
-  text-align: center;
-  padding-top: 5px;
-  padding-bottom: 5px; }
-
-.games-table {
-  background-color: #d0d2d3; }
-
 .col_longest {
   width: 180px; }
 
@@ -229,18 +194,8 @@ div.fht-tbody {
 .selected {
   background-color: #bab1c6 !important; }
 
-#hall {
-  position: absolute; }
-
 button {
   font-family: 'Microsoft Yahei','simhei',sans-serif; }
-
-#hall button {
-  font-size: 17px;
-  display: block;
-  background-image: url(btn.png);
-  width: 138px;
-  height: 48px; }
 
 .cmdred {
   background-position: 138px 0px; }
@@ -449,13 +404,53 @@ button {
   top: -35px;
   left: -20px; }
 
+#tools {
+  display: none;
+  top: 5px;
+  left: 710px;
+  width: 215px;
+  padding: 0px;
+  position: absolute; }
+
+#hall {
+  display: none;
+  position: absolute; }
+  #hall button {
+    width: 138px;
+    height: 48px;
+    display: block;
+    background-image: url(btn.png);
+    font-size: 0.8em; }
+
+#table_list {
+  top: 320px;
+  left: 80px;
+  width: 680px;
+  height: 278px;
+  -webkit-box-shadow: 1px 3px 3px black;
+  border: 2px solid black;
+  background-color: #d0d2d3;
+  position: absolute;
+  font-size: 1.2em; }
+  #table_list th {
+    background: -webkit-gradient(linear, left top, left bottom, from(#e8e8ee), to(#bdbfc2));
+    text-shadow: 1px 1px 2px #000000;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid black; }
+  #table_list tr {
+    height: 22px; }
+  #table_list td {
+    padding: 5px 0px 5px 0px;
+    text-align: center; }
+
 button {
-  font: 1.2em;
+  font-size: 1.2em;
   width: 80px;
   height: 30px; }
 
 label {
-  font: 0.8em; }
+  font-size: 0.8em; }
 
 #singin {
   display: none;
@@ -474,9 +469,9 @@ label {
 
 h3[id^="msg"] {
   display: none;
-  font: 1.5em;
+  font-size: 1.2em;
   /*background: #0F263D url('ajax-loader.gif') no-repeat;*/ }
 
 h3[id^="err"] {
   display: none;
-  font: 1.5em; }
+  font-size: 1.2em; }

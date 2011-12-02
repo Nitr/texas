@@ -53,15 +53,16 @@
 
         #hall
           #seats_wrapper
-          #games_wrapper
-            %table#games_table
-              %thead
+          %table#table_list{:cellspacing => '0px'}
+            %thead
+              %tr
+                %th.col_longest 房間
+                %th.col_short 大/小盲注
+                %th.col_short 人數
+                %th.col_short 旁觀
+            %tbody
+              - 10.times do 
                 %tr
-                  %th.col_longest 房間
-                  %th.col_short 大/小盲注
-                  %th.col_short 人數
-                  %th.col_short 旁觀
-              %tbody
 
           #hall_commands
             %button#cmd_join.cmdred{:type => 'command'} 加入

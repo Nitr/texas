@@ -204,36 +204,6 @@ div.fht-tbody {
 /* @end */
 
 /* GAME_TABLE */
-#games_wrapper {
-  position: absolute;
-  width: 680px;
-  top: 320px;
-  left:80px;
-}
-
-.games-table {
-  -webkit-box-shadow: 1px 3px 3px black;
-  border: 2px solid black;
-  font-size: 20px;
-}
-
-.games-table th {
-  background: -webkit-gradient(linear, left top, left bottom, from(#e8e8ee), to(#bdbfc2));
-  text-shadow: 1px 1px 2px #000000;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid black;
-}
-
-.games-table td {
-  text-align: center;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
-.games-table {
-  background-color: #d0d2d3;
-}
 
 .col_longest {
   width: 180px;
@@ -257,21 +227,10 @@ div.fht-tbody {
   background-color: #bab1c6 !important;
 }
 
-#hall {
-  position: absolute;
-}
-
 button {
   font-family: 'Microsoft Yahei','simhei',sans-serif;
 }
 
-#hall button {
-  font-size: 17px;
-  display: block;
-  background-image: url(btn.png);
-  width: 138px;
-  height: 48px;
-}
 
 .cmdred {
   background-position: 138px 0px;
@@ -560,15 +519,67 @@ button {
 }
 
 @mixin m-font {
-  font: 1.2em;
+  font-size: 1.2em;
 }
 
 @mixin s-font {
-  font: 0.8em;
+  font-size: 0.8em;
 }
 
 @mixin x-font {
-  font: 1.5em;
+  font-size: 1.5em;
+}
+
+#tools {
+  @include auto-hide;
+  top: 5px;
+  left: 710px;
+  width: 215px;
+  padding: 0px;
+  position: absolute;
+}
+
+#hall {
+  @include auto-hide;
+  position: absolute;
+
+  button {
+    width: 138px;
+    height: 48px;
+    display: block;
+    background-image: url(btn.png);
+    @include s-font;
+  }
+}
+
+#table_list {
+  top: 320px;
+  left:80px;
+  width: 680px;
+  height: 278px;
+  -webkit-box-shadow: 1px 3px 3px black;
+  border: 2px solid black;
+  background-color: #d0d2d3;
+  position: absolute;
+
+  @include m-font;
+
+  th {
+    background: -webkit-gradient(linear, left top, left bottom, from(#e8e8ee), to(#bdbfc2));
+    text-shadow: 1px 1px 2px #000000;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid black;
+  }
+
+  tr {
+    height: 22px;
+  }
+
+  td{
+    padding: 5px 0px 5px 0px;
+    text-align: center;
+  }
 }
 
 button {
@@ -608,20 +619,11 @@ label {
 
 h3[id^="msg"] {
   @include auto-hide;
-  @include x-font;
+  @include m-font;
   /*background: #0F263D url('ajax-loader.gif') no-repeat;*/
 }
 
 h3[id^="err"] {
   @include auto-hide;
-  @include x-font;
-}
-
-#tools {
-  @include auto-hide;
-  top: 5px;
-  left: 710px;
-  width: 215px;
-  padding: 0px;
-  position: absolute;
+  @include m-font;
 }
