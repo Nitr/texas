@@ -24,6 +24,10 @@ $(function() {
       localStorage.getItem("player#identity") : $.url.get("usr");
     password = $.url.get("pwd"); // url hack (default password)
 
+    if (localStorage.getItem("autosave#identity") == "false") {
+      $("#ckb_save").attr('checked', false);
+    }
+
     $('#txt_identity').val(identity);
     $('#txt_password').val(password);
 
@@ -73,8 +77,14 @@ $(function() {
   $($.player).bind('singin', function() {
     $('#singin').stopTime();
 
-    if ($("#ckb_save").attr('checked'))
+    if ($("#ckb_save").attr('checked')) {
       localStorage.setItem("player#identity", $('#txt_identity').val());
+      localStorage.setItem("autosave#identity", true);
+    }
+    else {
+      localStorage.setItem("player#identity", "");
+      localStorage.setItem("autosave#identity", false);
+    }
 
     $('#toolbar > #usr > #nick').text(this.nick);
     $('#toolbar > #usr > #photo').attr('src', this.photo);
