@@ -95,11 +95,6 @@ body {
   width: 60px;
   height: 60px; }
 
-#hall_commands {
-  position: absolute;
-  top: 320px;
-  left: 800px; }
-
 .blockMsg {
   border-radius: 8px !important;
   border: 3px solid #174f75 !important;
@@ -389,14 +384,18 @@ button {
 #hall {
   display: none;
   position: absolute; }
-  #hall button {
-    width: 138px;
-    height: 48px;
-    display: block;
-    background-image: url(btn.png);
-    font-size: 0.8em; }
+  #hall .actions {
+    top: 320px;
+    left: 800px;
+    position: absolute; }
+    #hall .actions button {
+      width: 138px;
+      height: 48px;
+      display: block;
+      background-image: url(btn.png);
+      font-size: 0.8em; }
 
-#table_list {
+#game_list {
   top: 320px;
   left: 80px;
   width: 680px;
@@ -406,17 +405,19 @@ button {
   background-color: #d0d2d3;
   position: absolute;
   font-size: 1.2em; }
-  #table_list th {
+  #game_list th {
     background: -webkit-gradient(linear, left top, left bottom, from(#e8e8ee), to(#bdbfc2));
     text-shadow: 1px 1px 2px #000000;
     padding-top: 10px;
     padding-bottom: 10px;
     border-bottom: 1px solid black; }
-  #table_list tr {
+  #game_list tr {
     height: 22px; }
-  #table_list td {
+  #game_list td {
     padding: 5px 0px 5px 0px;
     text-align: center; }
+  #game_list .autofill {
+    height: auto; }
 
 button {
   font-size: 1.2em;
@@ -450,22 +451,34 @@ h3[id^="err"] {
   display: none;
   font-size: 1.2em; }
 
-#toolbar #usr {
+#toolbar #player {
   top: 10px;
   width: 250px;
   padding: 0px;
   position: absolute;
   display: none; }
-  #toolbar #usr > * {
+  #toolbar #player > * {
     position: absolute; }
-  #toolbar #usr > .photo {
+  #toolbar #player > .photo {
     width: 60px;
     height: 60px;
     margin-left: 10px;
     border: 1px solid black; }
-  #toolbar #usr > .nick {
+  #toolbar #player > .nick {
     top: 22px;
     margin-left: 78px; }
-  #toolbar #usr > .balance {
+  #toolbar #player > .balance {
     top: 45px;
     margin-left: 78px; }
+
+/* GAME PREVIEW */
+#game_preview {
+  top: 20px;
+  left: 172px;
+  width: 650px;
+  height: 310px;
+  background: url(table.png) no-repeat center;
+  position: absolute; }
+
+.template {
+  display: none; }

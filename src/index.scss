@@ -104,9 +104,6 @@ body {
 }
 
 #hall_commands {
-  position: absolute;
-  top: 320px;
-  left: 800px;
 }
 
 .blockMsg {
@@ -511,16 +508,22 @@ button {
   @include auto-hide;
   position: absolute;
 
-  button {
-    width: 138px;
-    height: 48px;
-    display: block;
-    background-image: url(btn.png);
-    @include s-font;
+  .actions {
+    top: 320px;
+    left: 800px;
+    position: absolute;
+
+    button {
+      width: 138px;
+      height: 48px;
+      display: block;
+      background-image: url(btn.png);
+      @include s-font;
+    }
   }
 }
 
-#table_list {
+#game_list {
   top: 320px;
   left:80px;
   width: 680px;
@@ -547,6 +550,10 @@ button {
   td{
     padding: 5px 0px 5px 0px;
     text-align: center;
+  }
+
+  .autofill {
+    height: auto;
   }
 }
 
@@ -597,7 +604,7 @@ h3[id^="err"] {
 }
 
 #toolbar {
-  #usr {
+  #player {
     top: 10px;
     width: 250px;
     padding: 0px;
@@ -625,4 +632,18 @@ h3[id^="err"] {
       margin-left: 78px;
     }
   }
+}
+
+/* GAME PREVIEW */
+#game_preview {
+  top: 20px;
+  left: 172px;
+  width: 650px;
+  height: 310px;
+  background: url(table.png) no-repeat center;
+  position: absolute;
+}
+
+.template {
+  @include auto-hide;
 }

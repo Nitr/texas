@@ -23,11 +23,10 @@
       %nav#toolbar
         #title
         %img#logo{:src => 'css/logo.png'}
-        #usr
+        #player
           %img.photo
           %label.nick
           %label.balance
-          #pong
         #tools
           #settings 設置
           .split
@@ -48,22 +47,29 @@
               %br/
               %label#lab_err_singin 帳號密碼有誤
               %br/
-              %button#cmd_singin{:type => 'submit', :style => ''} 登陸
+              %button#cmd_singin{:type => 'submit'} 登陸
 
         #hall
-          #seats_wrapper
-          %table#table_list{:cellspacing => '0px'}
+          #game_preview
+          %table#game_list{:cellspacing => '0px'}
             %thead
               %tr
                 %th.col_longest 房間
-                %th.col_short 大/小盲注
-                %th.col_short 人數
-                %th.col_short 旁觀
+                %th.col_short   大/小盲注
+                %th.col_short   人數
+                %th.col_short   旁觀
             %tbody
-              - 10.times do 
-                %tr
+              %tr.autofill
+              -# tbody中如果为空，则table只显示表头
 
-          #hall_commands
+          .actions
             %button#cmd_join.cmdred{:type => 'command'} 加入
             %br/
             %button#cmd_watch.cmdblue{:type => 'command'} 觀戰
+
+          %textarea.template
+            %tr
+              %td.type
+              %td.blind
+              %td.player
+              %td.waiting

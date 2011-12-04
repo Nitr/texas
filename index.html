@@ -22,11 +22,10 @@
       <nav id='toolbar'>
         <div id='title'></div>
         <img id='logo' src='css/logo.png'>
-        <div id='usr'>
+        <div id='player'>
           <img class='photo'>
           <label class='nick'></label>
           <label class='balance'></label>
-          <div id='pong'></div>
         </div>
         <div id='tools'>
           <div id='settings'>設置</div>
@@ -50,13 +49,13 @@
               <br>
               <label id='lab_err_singin'>帳號密碼有誤</label>
               <br>
-              <button id='cmd_singin' style='' type='submit'>登陸</button>
+              <button id='cmd_singin' type='submit'>登陸</button>
             </div>
           </form>
         </div>
         <div id='hall'>
-          <div id='seats_wrapper'></div>
-          <table cellspacing='0px' id='table_list'>
+          <div id='game_preview'></div>
+          <table cellspacing='0px' id='game_list'>
             <thead>
               <tr>
                 <th class='col_longest'>房間</th>
@@ -66,23 +65,20 @@
               </tr>
             </thead>
             <tbody>
-              <tr></tr>
-              <tr></tr>
-              <tr></tr>
-              <tr></tr>
-              <tr></tr>
-              <tr></tr>
-              <tr></tr>
-              <tr></tr>
-              <tr></tr>
-              <tr></tr>
+              <tr class='autofill'></tr>
             </tbody>
           </table>
-          <div id='hall_commands'>
+          <div class='actions'>
             <button class='cmdred' id='cmd_join' type='command'>加入</button>
             <br>
             <button class='cmdblue' id='cmd_watch' type='command'>觀戰</button>
           </div>
+          <textarea class='template'><tr>
+            <td class='type'></td>
+            <td class='blind'></td>
+            <td class='player'></td>
+            <td class='waiting'></td>
+          </tr></textarea>
         </div>
       </div>
     </div>

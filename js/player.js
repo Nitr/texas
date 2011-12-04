@@ -4,10 +4,10 @@ Player = (function() {
 
   function Player(pid, dom) {
     this.pid = pid;
-    this.dom = dom;
+    this.dom = dom != null ? dom : $('#toolbar > #player');
     this.set_inplay(0);
     this.set_photo($.rl.img.def_face_0);
-    this.dom.trigger('singin');
+    $.cache_player(this);
     $.ws.send($.pp.write({
       cmd: "PLAYER_QUERY",
       id: this.pid
@@ -58,9 +58,9 @@ Player = (function() {
   $.player = {};
   players = {};
   $.pp.reg("LOGIN", function(player) {
-    $.player = new Player(player.id, $('#toolbar > #usr'));
+    $.player = new Player(player.id);
     $.player.update_balance();
-    $.cache_player($.player);
+    $.player.dom.trigger('singin');
   });
   $.pp.reg("BALANCE_INFO", function(balance) {
     $.player.set_balance(balance.amount);

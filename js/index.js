@@ -1,12 +1,17 @@
+function blockUI(id) {
+  $.blockUI({ message: $(id).clone() });
+} 
+
+function unblockUI() {
+  $.unblockUI();
+} 
+
 $(function() {
   $.ajaxSetup ({ cache: false });
 
   var player;
   var sounds = ["bet", "raise", "move", "card", "check", "fold", "turn"];
 
-  var blockUI = function(id) {
-    $.blockUI({message: $(id)});
-  } 
 
   // block ui and first show Connecting...
   blockUI("#msg_connect");
@@ -74,7 +79,7 @@ $(function() {
     return false;
   });
 
-  $('#toolbar > #usr').bind('singin', function() {
+  $('#toolbar > #player').bind('singin', function() {
     $('#singin').stopTime();
     $('#toolbar > *').show();
 

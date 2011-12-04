@@ -1,8 +1,9 @@
 class Player
-  constructor: (@pid, @dom) ->
+  constructor: (@pid, @dom = $('#toolbar > #player')) ->
     @set_inplay 0
     @set_photo $.rl.img.def_face_0
-    @dom.trigger('singin')
+
+    $.cache_player(@)
 
     $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: @pid}))
     $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: @pid}))
@@ -42,10 +43,10 @@ class Player
   players = {}
 
   $.pp.reg "LOGIN", (player) ->
-    $.player = new Player(player.id, $('#toolbar > #usr'))
+    $.player = new Player player.id
     $.player.update_balance()
+    $.player.dom.trigger('singin')
 
-    $.cache_player $.player
     return
 
   $.pp.reg "BALANCE_INFO", (balance) ->
