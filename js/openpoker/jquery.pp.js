@@ -90,7 +90,7 @@
     notify_login: generate_notify("LOGIN", [31, 
       {type: "integer", prop: "id"}]),
     notify_player_info: generate_notify("PLAYER_INFO", [19, 
-      {type: "integer", prop: "id"}, 
+      {type: "integer", prop: "pid"}, 
       {type: "integer", prop: "inplay"}, 
       {type: "string", prop: "nick", base64: true},
       {type: "image", prop: "photo"}]),

@@ -1,8 +1,11 @@
 (function($) {
-  var player = function() {
+  var Player = function(id) {
     this.nick = null;
     this.photo = null;
     this.pid = null;
+    this.balance = null;
+
+    $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: player.id}));
   };
 
   $.player = new player();
@@ -10,7 +13,6 @@
   $.pp.reg("LOGIN", function(player) {
     $.player.pid = player.id;
     $.player.photo = $.rl.img.def_face_0;
-    $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: player.id}));
   });
 
   $.pp.reg("PLAYER_INFO", function(player) {
@@ -26,7 +28,6 @@
     console.log('error');
     $($.player).trigger('error');
   });
+
+  $.pp.reg("BALANCE_INFO", function(o) { });
 })(jQuery);
-
-
-

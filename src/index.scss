@@ -73,38 +73,6 @@ body {
 #logout   { background-position: -115px 0px; }
 #settings { background-position: -5px 0px; }
 
-#usr {
-  position: relative; 
-  padding: 0px;
-  display: none;
-  top: -75px;
-  width: 250px;
-}
-
-#usr > * {
-  margin-left: 10px;
-  position: relative;
-}
-
-#usr > #photo {
-  width: 60px;
-  height: 60px;
-  border: 1px solid black;
-}
-
-#usr label {
-  position: absolute;
-  left: 65px;
-}
-
-#usr #nick {
-  top: 15px;
-}
-
-#usr #money {
-  top: 42px;
-}
-
 #content {
   width: 1000px;
   margin: 0 auto;
@@ -626,4 +594,35 @@ h3[id^="msg"] {
 h3[id^="err"] {
   @include auto-hide;
   @include m-font;
+}
+
+#toolbar {
+  #usr {
+    top: 10px;
+    width: 250px;
+    padding: 0px;
+    position: absolute; 
+    @include auto-hide;
+
+    > * {
+      position: absolute;
+    }
+
+    > .photo {
+      width: 60px;
+      height: 60px;
+      margin-left: 10px;
+      border: 1px solid black;
+    }
+
+    > .nick {
+      top: 22px;
+      margin-left: 78px;
+    }
+
+    > .balance {
+      top: 45px;
+      margin-left: 78px;
+    }
+  }
 }

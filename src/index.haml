@@ -6,9 +6,8 @@
 
     - @scripts =  %w[jquery jquery.plugins jquery.resloader]
     - @scripts += %w[openpoker/jquery.pp openpoker/jquery.ws]
-    - @scripts += %w[openpoker/jquery.game openpoker/jquery.player]
-    - @scripts += %w[openpoker/jquery.positions]
-    - @scripts += %w[index hall game]
+    - @scripts += %w[jquery.player]
+    - @scripts += %w[index hall]
 
     - @scripts.each do |i|
       %script{:src => "js/#{i}.js", :type => 'text/javascript'}
@@ -25,9 +24,9 @@
         #title
         %img#logo{:src => 'css/logo.png'}
         #usr
-          %img#photo
-          %label#nick.msg
-          %label#money.msg
+          %img.photo
+          %label.nick
+          %label.balance
           #pong
         #tools
           #settings 設置

@@ -37,14 +37,6 @@ $(function() {
       // show singin form
       blockUI('#singin');
     }
-
-    //$('#games_table').fixedHeaderTable({
-      //footer: false, 
-      //cloneHeadToFoot: false, 
-      //fixedColumn: false, 
-      //themeClass: 'games-table', 
-      //height: '248px'
-    //});
   };
 
   var on_open = function() {
@@ -82,8 +74,11 @@ $(function() {
     return false;
   });
 
-  $($.player).bind('singin', function() {
+  $('#toolbar > #usr').bind('singin', function() {
     $('#singin').stopTime();
+    $('#toolbar > *').show();
+
+    $.unblockUI();
 
     if ($("#ckb_save").attr('checked')) {
       localStorage.setItem("player#identity", $('#txt_identity').val());
@@ -94,16 +89,10 @@ $(function() {
       localStorage.setItem("autosave#identity", false);
     }
 
-    $('#toolbar > #usr > #nick').text(this.nick);
-    $('#toolbar > #usr > #photo').attr('src', this.photo);
-
-    $('#toolbar > *').show();
-    $.unblockUI();
-
     $('#hall').trigger('setup');
   });
 
-  $($.player).bind('error', function() {
+  $('#toolbar > #usr').bind('error', function() {
     $('#singin').stopTime();
 
     $("#txt_password").val(""); // clear password

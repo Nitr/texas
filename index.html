@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset='utf-8' />
+    <meta charset='utf-8'>
     <title>創世紀-德州撲克</title>
     <script src='js/jquery.js' type='text/javascript'></script>
     <script src='js/jquery.plugins.js' type='text/javascript'></script>
     <script src='js/jquery.resloader.js' type='text/javascript'></script>
     <script src='js/openpoker/jquery.pp.js' type='text/javascript'></script>
     <script src='js/openpoker/jquery.ws.js' type='text/javascript'></script>
-    <script src='js/openpoker/jquery.game.js' type='text/javascript'></script>
-    <script src='js/openpoker/jquery.player.js' type='text/javascript'></script>
-    <script src='js/openpoker/jquery.positions.js' type='text/javascript'></script>
+    <script src='js/jquery.player.js' type='text/javascript'></script>
     <script src='js/index.js' type='text/javascript'></script>
     <script src='js/hall.js' type='text/javascript'></script>
-    <script src='js/game.js' type='text/javascript'></script>
-    <link href='css/index.css' rel='stylesheet' type='text/css' />
+    <link href='css/index.css' rel='stylesheet' type='text/css'>
   </head>
   <body>
     <div id='page'>
@@ -24,11 +21,11 @@
       <h3 id='err_network'>抱歉，網絡連線錯誤，請稍後再試。</h3>
       <nav id='toolbar'>
         <div id='title'></div>
-        <img id='logo' src='css/logo.png' />
+        <img id='logo' src='css/logo.png'>
         <div id='usr'>
-          <img id='photo' />
-          <label class='msg' id='nick'></label>
-          <label class='msg' id='money'></label>
+          <img class='photo'>
+          <label class='nick'></label>
+          <label class='balance'></label>
           <div id='pong'></div>
         </div>
         <div id='tools'>
@@ -43,16 +40,16 @@
         <div id='singin'>
           <form method='post'>
             <label>帳號</label>
-            <input id='txt_identity' placeholder='請輸入您的帳號' />
-            <br />
+            <input id='txt_identity' placeholder='請輸入您的帳號'>
+            <br>
             <label>密碼</label>
-            <input id='txt_password' placeholder='請輸入您的密碼' type='password' />
-            <br />
+            <input id='txt_password' placeholder='請輸入您的密碼' type='password'>
+            <br>
             <div>
               <input checked='checked' id='ckb_save' type='checkbox'>存儲帳號信息</input>
-              <br />
+              <br>
               <label id='lab_err_singin'>帳號密碼有誤</label>
-              <br />
+              <br>
               <button id='cmd_singin' style='' type='submit'>登陸</button>
             </div>
           </form>
@@ -83,7 +80,7 @@
           </table>
           <div id='hall_commands'>
             <button class='cmdred' id='cmd_join' type='command'>加入</button>
-            <br />
+            <br>
             <button class='cmdblue' id='cmd_watch' type='command'>觀戰</button>
           </div>
         </div>
