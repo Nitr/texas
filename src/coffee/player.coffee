@@ -1,12 +1,15 @@
 class Player
-  constructor: (@pid, @dom = $('#toolbar > #player')) ->
+  constructor: (@pid, @dom = $('#toolbar > #player'), @info) ->
     @set_inplay 0
     @set_photo $.rl.img.def_face_0
 
     $.cache_player(@)
 
-    $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: @pid}))
+    $.ws.send($.pp.write({cmd: "PLAYER_QUERY", id: @pid})) unless @info
     $.ws.send($.pp.write({cmd: "PHOTO_QUERY", id: @pid}))
+
+    this.set_nick @info.nick if @info
+    this.set_inplay @info.inplay if @info
 
     return
 
@@ -55,7 +58,6 @@ class Player
 
   $.pp.reg 'PLAYER_INFO', (info) ->
     players[info.pid].set_nick info.nick
-    players[info.pid].set_inplay info.inplay
     return
 
   $.pp.reg 'PHOTO_INFO', (info) ->

@@ -2,20 +2,25 @@ var Player;
 
 Player = (function() {
 
-  function Player(pid, dom) {
+  function Player(pid, dom, info) {
     this.pid = pid;
     this.dom = dom != null ? dom : $('#toolbar > #player');
+    this.info = info;
     this.set_inplay(0);
     this.set_photo($.rl.img.def_face_0);
     $.cache_player(this);
-    $.ws.send($.pp.write({
-      cmd: "PLAYER_QUERY",
-      id: this.pid
-    }));
+    if (!this.info) {
+      $.ws.send($.pp.write({
+        cmd: "PLAYER_QUERY",
+        id: this.pid
+      }));
+    }
     $.ws.send($.pp.write({
       cmd: "PHOTO_QUERY",
       id: this.pid
     }));
+    if (this.info) this.set_nick(this.info.nick);
+    if (this.info) this.set_inplay(this.info.inplay);
     return;
   }
 
@@ -67,7 +72,6 @@ Player = (function() {
   });
   $.pp.reg('PLAYER_INFO', function(info) {
     players[info.pid].set_nick(info.nick);
-    players[info.pid].set_inplay(info.inplay);
   });
   $.pp.reg('PHOTO_INFO', function(info) {
     players[info.pid].set_photo($.rl.img[info.photo]);

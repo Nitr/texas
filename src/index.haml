@@ -6,7 +6,7 @@
 
     - @scripts =  %w[jquery jquery.plugins jquery.resloader]
     - @scripts += %w[openpoker/jquery.pp openpoker/jquery.ws]
-    - @scripts += %w[player]
+    - @scripts += %w[game_preview  player]
     - @scripts += %w[index hall]
 
     - @scripts.each do |i|
@@ -51,6 +51,11 @@
 
         #hall
           #game_preview
+            %textarea.template
+              .seat
+                .nick
+                %img.photo
+                .inplay
           %table#game_list{:cellspacing => '0px'}
             %thead
               %tr

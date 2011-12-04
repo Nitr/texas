@@ -3,7 +3,7 @@ $(function() {
   var game_counter, game_preview, game_query, hall, template;
   hall = $('#hall');
   game_preview = $('#game_preview');
-  template = $('#hall .template').text();
+  template = $('#hall > .template').text();
   game_counter = 0;
   hall.bind('setup', function() {
     $(this).show();
@@ -29,6 +29,8 @@ $(function() {
       if ($(this).hasClass(selected)) return;
       $(this).parent().children().removeClass(selected);
       $(this).addClass(selected);
+      if ($.game_preview) $.game_preview.clear();
+      $.game_preview = new GamePreview($(this).attr('gid'), game_preview);
     });
     if (game_counter === game_info.count) hall.trigger('loaded');
   });

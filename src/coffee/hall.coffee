@@ -1,7 +1,7 @@
 $ ->
   hall = $('#hall')
   game_preview = $('#game_preview')
-  template = $('#hall .template').text()
+  template = $('#hall > .template').text()
   game_counter = 0
 
   hall.bind 'setup', ->
@@ -37,6 +37,10 @@ $ ->
 
         $(@).parent().children().removeClass selected
         $(@).addClass selected
+
+        $.game_preview.clear() if $.game_preview
+        $.game_preview = new GamePreview($(@).attr('gid'), game_preview)
+
         return
       )
 

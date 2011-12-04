@@ -118,7 +118,7 @@
     notify_seat_state: generate_notify("SEAT_STATE", [30,
       {type: "integer", prop: "gid"},
       {type: "byte",    prop: "seat"},
-      {type: "integer",    prop: "state"},
+      {type: "integer", prop: "state"},
       {type: "integer", prop: "pid"},
       {type: "decimal", prop: "inplay"},
       {type: "string", prop: "nick", base64: true}]),
