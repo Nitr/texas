@@ -1,0 +1,5 @@
+$ ->
+  $('#game').bind 'setup', ->
+    
+  return
+
