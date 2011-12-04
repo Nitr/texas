@@ -16,8 +16,7 @@ GamePreview = (function() {
   GamePreview.prototype.add = function(seat) {
     var player_dom;
     if (seat.state === 0) return;
-    console.log(['preview_add', seat]);
-    player_dom = $($('#game_preview > .template').text()).appendTo(this.dom);
+    player_dom = $($('#game_preview > .template').text()).css($.get_preview_position(seat.seat)).appendTo(this.dom);
     this.seats[seat.seat] = new Player(seat.pid, player_dom, seat);
   };
 

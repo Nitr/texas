@@ -6,8 +6,11 @@ class GamePreview
 
   add: (seat) ->
     return if seat.state == 0
-    console.log ['preview_add', seat]
-    player_dom = $($('#game_preview > .template').text()).appendTo(@dom)
+
+    player_dom = $($('#game_preview > .template').text()).
+      css($.get_preview_position(seat.seat)).
+      appendTo(@dom)
+
     @seats[seat.seat] = new Player(seat.pid, player_dom, seat)
     return
 

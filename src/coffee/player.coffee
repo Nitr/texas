@@ -41,6 +41,11 @@ class Player
     $(@dom).children('.photo').attr 'src', @photo
     return
 
+  set_css: (css) ->
+    console.log css
+    $(@dom).css css
+    return
+
 (($) ->
   $.player = {}
   players = {}

@@ -54,6 +54,11 @@ Player = (function() {
     $(this.dom).children('.photo').attr('src', this.photo);
   };
 
+  Player.prototype.set_css = function(css) {
+    console.log(css);
+    $(this.dom).css(css);
+  };
+
   return Player;
 
 })();
