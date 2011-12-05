@@ -11,6 +11,7 @@
     <script src='js/positions.js' type='text/javascript'></script>
     <script src='js/game_preview.js' type='text/javascript'></script>
     <script src='js/player.js' type='text/javascript'></script>
+    <script src='js/game.js' type='text/javascript'></script>
     <script src='js/index.js' type='text/javascript'></script>
     <script src='js/hall.js' type='text/javascript'></script>
     <link href='css/index.css' rel='stylesheet' type='text/css'>
@@ -87,6 +88,21 @@
             <td class='player'></td>
             <td class='limit'></td>
           </tr></textarea>
+        </div>
+        <div id='game'>
+          <img class='background' src='css/gametable.png'>
+          <div class='tips'>
+            <label id='wait_next'>請等待參與下局游戏。</label>
+            <label id='wait_player'>請等待其他玩家參與。</label>
+          </div>
+          <div class='actions'>
+            <a class='action' id='cmd_fold'>蓋牌</a>
+            <a class='action' id='cmd_check'>過牌</a>
+            <a class='action' id='cmd_call'>跟注</a>
+            <a class='action' id='cmd_raise'>加注</a>
+            <input id='raise_range' max='50' min='0' type='range' value='0'>
+            <input id='raise_number' max='50' min='0' step='1' type='number' value='0'>
+          </div>
         </div>
       </div>
     </div>

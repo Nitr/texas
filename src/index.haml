@@ -6,7 +6,7 @@
 
     - @scripts =  %w[jquery jquery.plugins jquery.resloader]
     - @scripts += %w[openpoker/jquery.pp openpoker/jquery.ws]
-    - @scripts += %w[positions game_preview  player]
+    - @scripts += %w[positions game_preview  player game]
     - @scripts += %w[index hall]
 
     - @scripts.each do |i|
@@ -78,3 +78,15 @@
               %td.blind
               %td.player
               %td.limit
+        #game
+          %img.background{:src => 'css/gametable.png'}
+          .tips
+            %label#wait_next 請等待參與下局游戏。
+            %label#wait_player 請等待其他玩家參與。
+          .actions
+            %a#cmd_fold.action 蓋牌
+            %a#cmd_check.action 過牌
+            %a#cmd_call.action 跟注
+            %a#cmd_raise.action 加注
+            %input#raise_range{:type => 'range', :value => 0, :max => 50, :min => 0}
+            %input#raise_number{:type => 'number', :value => 0, :max => 50, :min => 0, :step => 1}

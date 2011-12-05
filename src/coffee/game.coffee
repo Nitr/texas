@@ -3,6 +3,11 @@ class Game
     return
 
 $ ->
-  $('#game').bind 'setup', ->
+  game = $('#game')
+
+  game.bind 'switch_game', ->
+    console.log 'game_switch'
+    $(@).show()
+    return
     
   return

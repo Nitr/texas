@@ -12,5 +12,10 @@ Game = (function() {
 })();
 
 $(function() {
-  $('#game').bind('setup', function() {});
+  var game;
+  game = $('#game');
+  game.bind('switch_game', function() {
+    console.log('game_switch');
+    $(this).show();
+  });
 });

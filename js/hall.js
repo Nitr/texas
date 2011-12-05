@@ -1,10 +1,15 @@
 
 $(function() {
-  var game_counter, game_preview, game_query, hall, template;
+  var game, game_counter, game_preview, game_query, hall, template;
   hall = $('#hall');
+  game = $('#game');
   game_preview = $('#game_preview');
   template = $('#hall > .template').text();
   game_counter = 0;
+  $('#cmd_watch').bind('click', function() {
+    hall.trigger('switch_game');
+    game.trigger('switch_game');
+  });
   hall.bind('setup', function() {
     $(this).show();
     $(this).trigger('reload');
@@ -18,6 +23,10 @@ $(function() {
   hall.bind('loaded', function() {
     unblockUI();
     $('#game_list tr[gid]').first().click();
+  });
+  hall.bind('switch_game', function() {
+    console.log('hall_switch');
+    $(this).hide();
   });
   $.pp.reg("GAME_INFO", function(game_info) {
     game_counter++;
