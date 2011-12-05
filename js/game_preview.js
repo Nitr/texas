@@ -1,4 +1,6 @@
-var GamePreview;
+var GAME_PREVIEW_REF_MAX, GamePreview;
+
+GAME_PREVIEW_REF_MAX = 5;
 
 GamePreview = (function() {
 
@@ -6,21 +8,37 @@ GamePreview = (function() {
     this.gid = gid;
     this.dom = dom;
     this.seats = [];
-    $.ws.send($.pp.write({
-      cmd: "SEAT_QUERY",
-      gid: this.gid
-    }));
+    this.ref();
+    $(this).everyTime('3s', function() {
+      return this.ref();
+    }, GAME_PREVIEW_REF_MAX);
     return;
   }
 
+  GamePreview.prototype.ref = function() {
+    return $.ws.send($.pp.write({
+      cmd: "SEAT_QUERY",
+      gid: this.gid
+    }));
+  };
+
   GamePreview.prototype.add = function(seat) {
     var player_dom;
-    if (seat.state === 0) return;
-    player_dom = $($('#game_preview > .template').text()).css($.get_preview_position(seat.seat)).appendTo(this.dom);
+    player_dom = $('#game_preview > .seat').filter(function() {
+      return $(this).data('seat') === seat.seat;
+    });
+    if (seat.state === 0) {
+      player_dom.remove();
+      this.seats[seat.seat] = null;
+      return;
+    }
+    if (player_dom.size() !== 0) return;
+    player_dom = $($('#game_preview > .template').text()).css($.get_preview_position(seat.seat)).data('seat', seat.seat).appendTo(this.dom);
     this.seats[seat.seat] = new Player(seat.pid, player_dom, seat);
   };
 
   GamePreview.prototype.clear = function() {
+    $(this).stopTime();
     $('#game_preview > .seat').remove();
   };
 
