@@ -23,13 +23,12 @@ $ ->
     
   $.pp.reg "GAME_INFO", (game_info) ->
     game_counter++
-    game_type = 'Texas hold \'em' if game_info.type == 0
 
     $(template).attr('gid', game_info.id).
-      children('.type').text(game_type).parent().
+      children('.name').text(game_info.name).parent().
       children('.blind').text(game_info.low + " / " + game_info.height).parent().
       children('.player').text(game_info.joined + " / " + game_info.seats).parent().
-      children('.waiting').text(game_info.waiting).parent().
+      children('.limit').text(game_info.height * 10 + " / " + game_info.height * 200).parent().
       insertBefore('.autofill').
       click(->
         selected = 'selected'

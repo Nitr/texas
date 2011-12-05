@@ -20,10 +20,8 @@ $(function() {
     $('#game_list tr[gid]').first().click();
   });
   $.pp.reg("GAME_INFO", function(game_info) {
-    var game_type;
     game_counter++;
-    if (game_info.type === 0) game_type = 'Texas hold \'em';
-    $(template).attr('gid', game_info.id).children('.type').text(game_type).parent().children('.blind').text(game_info.low + " / " + game_info.height).parent().children('.player').text(game_info.joined + " / " + game_info.seats).parent().children('.waiting').text(game_info.waiting).parent().insertBefore('.autofill').click(function() {
+    $(template).attr('gid', game_info.id).children('.name').text(game_info.name).parent().children('.blind').text(game_info.low + " / " + game_info.height).parent().children('.player').text(game_info.joined + " / " + game_info.seats).parent().children('.limit').text(game_info.height * 10 + " / " + game_info.height * 200).parent().insertBefore('.autofill').click(function() {
       var selected;
       selected = 'selected';
       if ($(this).hasClass(selected)) return;

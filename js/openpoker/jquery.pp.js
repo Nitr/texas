@@ -102,7 +102,7 @@
       {type: "image", prop: "photo"}]),
     notify_game_info: generate_notify("GAME_INFO", [18, 
       {type: "integer", prop: "id"}, 
-      {type: "string", prop: "name"}, 
+      {type: "string", prop: "name", base64: true}, 
       {type: "byte", prop: "type"}, 
       {type: "byte", prop: "limit_type"}, 
       {type: "decimal", prop: "low"}, 
