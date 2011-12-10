@@ -5,9 +5,9 @@
     %title 創世紀-德州撲克
 
     - @scripts = %w[jquery/jquery header positions]
-    - @scripts += %w[base64 blockUI resloader timers tools].map do |x| "jquery/jquery.#{x}" end
-    - @scripts += %w[prototype websocket].map do |x| "plugins/#{x}" end
-    - @scripts += %w[player game game_preview hall index]
+    - @scripts += %w[base64 blockUI timers tools].map do |x| "jquery/jquery.#{x}" end
+    - @scripts += %w[resloader prototype websocket].map do |x| "plugins/#{x}" end
+    - @scripts += %w[header positions player preview hall game index]
 
     - @scripts.each do |i|
       %script{:src => "js/#{i}.js", :type => 'text/javascript'}
