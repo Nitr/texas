@@ -35,7 +35,10 @@
       var obj = $.pp.read(bin);
 
       if (obj != null) {
-        $.each(events[obj.notify], function(i, fun) { fun(obj); } );
+        if (obj.notify in events)
+          $.each(events[obj.notify], function(i, fun) { fun(obj); } );
+        else
+          console.log(['undefined event', obj.notify, obj]);
       } else {
         console.log(evt);
       }
