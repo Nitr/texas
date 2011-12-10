@@ -8,7 +8,9 @@ $(function() {
   game_counter = 0;
   $('#cmd_watch').bind('click', function() {
     hall.trigger('switch_game');
-    game.trigger('switch_game');
+    game.trigger('switch_game', {
+      action: 'watch'
+    });
   });
   hall.bind('setup', function() {
     $(this).show();
@@ -23,6 +25,11 @@ $(function() {
   hall.bind('loaded', function() {
     unblockUI();
     $('#game_list tr[gid]').first().click();
+    if ($.url.get('auto_watch') === 'true') {
+      $(this).oneTime('2s', function() {
+        $("#cmd_watch").trigger('click');
+      });
+    }
   });
   hall.bind('switch_game', function() {
     console.log('hall_switch');

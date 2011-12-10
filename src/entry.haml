@@ -1,0 +1,21 @@
+!!! 5
+%html
+  %head
+    %meta{:charset => "utf-8"}
+    %title 测试入口
+    %script{:src => "js/jquery/jquery.js", :type => 'text/javascript'}
+    %script{:src => "js/entry.js", :type => 'text/javascript'}
+  %body
+    %label Player
+    %br/
+    %input#usr{:value => "1010"}
+    %input#pwd{:value => "pass"}
+    %hr
+    %input#auto_watch{:type => 'checkbox', :checked => true} Auto Watch
+    %input#auto_join{:type => 'checkbox', :checked => false} Auto Join
+    %hr
+    %label Host
+    %br/
+    %input#host{:value => "127.0.0.1"}
+    %hr
+    %button#go Go

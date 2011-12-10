@@ -7,7 +7,7 @@ $ ->
   
   $('#cmd_watch').bind 'click', ->
     hall.trigger 'switch_game'
-    game.trigger 'switch_game'
+    game.trigger 'switch_game', {action: 'watch'}
     return
 
   hall.bind 'setup', ->
@@ -25,7 +25,14 @@ $ ->
   hall.bind 'loaded', ->
     unblockUI()
     $('#game_list tr[gid]').first().click()
-    return
+
+    if $.url.get('auto_watch') is 'true'
+      console.log 'test'
+      $(@).oneTime '2s', ->
+        $("#cmd_watch").trigger 'click'
+        return
+
+      return
     
   hall.bind 'switch_game', ->
     console.log 'hall_switch'
