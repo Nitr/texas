@@ -4,7 +4,7 @@ Player = (function() {
 
   function Player(pid, dom, info) {
     this.pid = pid;
-    this.dom = dom != null ? dom : $('#toolbar > #player');
+    this.dom = dom;
     this.info = info;
     this.set_inplay(0);
     this.set_photo($.rl.img.def_face_0);
@@ -68,7 +68,7 @@ Player = (function() {
   $.player = {};
   players = {};
   $.pp.reg("LOGIN", function(player) {
-    $.player = new Player(player.id);
+    $.player = new Player(player.id, $('#toolbar > #player'));
     $.player.update_balance();
     $.player.dom.trigger('singin');
   });

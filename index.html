@@ -8,6 +8,7 @@
     <script src='js/jquery.resloader.js' type='text/javascript'></script>
     <script src='js/openpoker/jquery.pp.js' type='text/javascript'></script>
     <script src='js/openpoker/jquery.ws.js' type='text/javascript'></script>
+    <script src='js/header.js' type='text/javascript'></script>
     <script src='js/positions.js' type='text/javascript'></script>
     <script src='js/game_preview.js' type='text/javascript'></script>
     <script src='js/player.js' type='text/javascript'></script>
@@ -20,8 +21,9 @@
     <div id='page'>
       <h3 id='msg_connect'>連線中...</h3>
       <h3 id='msg_loading'>加載中...</h3>
+      <h3 id='msg_joining'>進入中...</h3>
       <h3 id='msg_singin'>登陸中...</h3>
-      <h3 id='err_network'>抱歉，網絡連線錯誤，請稍後再試。</h3>
+      <h3 id='err_network'>抱歉，網絡連線錯誤，請稍後刷新重試。</h3>
       <nav id='toolbar'>
         <div id='title'></div>
         <img id='logo' src='css/logo.png'>
@@ -42,10 +44,10 @@
         <div id='singin'>
           <form method='post'>
             <label>帳號</label>
-            <input id='txt_identity' placeholder='請輸入您的帳號'>
+            <input id='txt_identity' placeholder='請輸入您的帳號' required='required'>
             <br>
             <label>密碼</label>
-            <input id='txt_password' placeholder='請輸入您的密碼' type='password'>
+            <input id='txt_password' placeholder='請輸入您的密碼' required='required' type='password'>
             <br>
             <div>
               <input checked='checked' id='ckb_save' type='checkbox'>存儲帳號信息</input>

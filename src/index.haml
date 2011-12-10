@@ -6,7 +6,7 @@
 
     - @scripts =  %w[jquery jquery.plugins jquery.resloader]
     - @scripts += %w[openpoker/jquery.pp openpoker/jquery.ws]
-    - @scripts += %w[positions game_preview  player game]
+    - @scripts += %w[header positions game_preview  player game]
     - @scripts += %w[index hall]
 
     - @scripts.each do |i|
@@ -17,8 +17,9 @@
     #page
       %h3#msg_connect 連線中...
       %h3#msg_loading 加載中...
+      %h3#msg_joining 進入中...
       %h3#msg_singin  登陸中...
-      %h3#err_network 抱歉，網絡連線錯誤，請稍後再試。
+      %h3#err_network 抱歉，網絡連線錯誤，請稍後刷新重試。
 
       %nav#toolbar
         #title
@@ -37,10 +38,10 @@
         #singin
           %form{:method => 'post'}
             %label 帳號
-            %input#txt_identity{:placeholder => '請輸入您的帳號'}
+            %input#txt_identity{:placeholder => '請輸入您的帳號', :required => 'required'}
             %br/
             %label 密碼
-            %input#txt_password{:placeholder => '請輸入您的密碼', :type => 'password'}
+            %input#txt_password{:placeholder => '請輸入您的密碼', :type => 'password', :required => 'required'}
             %br/
             %div
               %input#ckb_save{:type => 'checkbox', :checked => 'checked'} 存儲帳號信息

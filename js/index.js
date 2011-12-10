@@ -1,140 +1,115 @@
-function blockUI(id) {
-  $.blockUI({ message: $(id).clone() });
-} 
+var blockUI, unblockUI;
 
-function unblockUI() {
+blockUI = function(o) {
+  if (typeof o === 'string') {
+    $.blockUI({
+      message: $(o).clone()
+    });
+  } else {
+    $.blockUI({
+      message: $(o)
+    });
+  }
+};
+
+unblockUI = function() {
   $.unblockUI();
-} 
+};
 
 $(function() {
-  $.ajaxSetup ({ cache: false });
-
-  var player;
-  var sounds = ["bet", "raise", "move", "card", "check", "fold", "turn"];
-
-
-  // block ui and first show Connecting...
-  blockUI("#msg_connect");
-
-  $(this).oneTime('5s', function() {
-    if ($.ws.isConnection() == false) {
-      blockUI('#err_network');
-    }
+  var on_load, on_open, player_dom, singin_dom, singin_form;
+  singin_dom = $('#singin');
+  singin_form = $('#singin > form');
+  player_dom = $('#toolbar > #player');
+  $.ajaxSetup({
+    cache: false
   });
-
-  var on_load = function() {
+  blockUI("#msg_connect");
+  $(this).oneTime('5s', function() {
+    if (!$.ws.isConnection()) blockUI('#err_network');
+  });
+  on_load = function() {
     var identity, password;
-
-    identity = $.url.get("usr") == null ? // url hack (default identity)
-      localStorage.getItem("player#identity") : $.url.get("usr");
-    password = $.url.get("pwd"); // url hack (default password)
-
-    if (localStorage.getItem("autosave#identity") == "false") {
+    identity = $.url.get("usr" != null ? "usr" : localStorage.getItem("player#identity"));
+    password = $.url.get("pwd");
+    if (localStorage.getItem("autosave#identity") === "false") {
       $("#ckb_save").attr('checked', false);
     }
-
     $('#txt_identity').val(identity);
     $('#txt_password').val(password);
-
-    if (!$.isEmpty(identity) && !$.isEmpty(password)) {
-      $("#singin > form").trigger('submit');
+    if ((!$.isEmpty(identity)) && (!$.isEmpty(password))) {
+      singin_form.trigger('submit');
     } else {
-      // show singin form
-      blockUI('#singin');
+      blockUI(singin_dom);
     }
   };
-
-  var on_open = function() {
-    $(this).stopTime(); // stop #err_network error timer
-
+  on_open = function() {
+    $(this).stopTime();
     $(document).oneTime('1s', function() {
+      var resources, s, sounds, _i, _len;
       blockUI('#msg_loading');
-
-      var resources = [
-        { url: 'css/heads.png', callback: handle_heads }, 
-        { url: 'css/poker.png', callback: handle_pokers }, 
-        { url: 'css/betting.png', callback: handle_bets }
+      resources = [
+        {
+          url: 'css/heads.png',
+          callback: $.rl.handle_heads
+        }, {
+          url: 'css/poker.png',
+          callback: $.rl.handle_pokers
+        }, {
+          url: 'css/betting.png',
+          callback: $.rl.handle_bets
+        }
       ];
-
-      $.each(sounds, function(i, x) {
-        resources.push({url: 'css/sound/' + x + '.mp3', key: x});
-      });
-
+      sounds = ["bet", "raise", "move", "card", "check", "fold", "turn"];
+      for (_i = 0, _len = sounds.length; _i < _len; _i++) {
+        s = sounds[_i];
+        resources.push({
+          url: 'css/sound/' + s + '.mp3',
+          key: s
+        });
+      }
       $.rl.load(resources, on_load);
     });
   };
-
-  $("#singin > form").bind("submit", function() {
+  singin_form.bind("submit", function() {
+    var identity, password;
     blockUI('#msg_singin');
-
-    $.ws.send($.pp.write({cmd: "LOGIN",
-      usr: $('#txt_identity').val(),
-      pass: $('#txt_password').val()
+    identity = $(this).children("#txt_identity").val();
+    password = $(this).children("#txt_password").val();
+    $.ws.send($.pp.write({
+      cmd: "LOGIN",
+      usr: identity,
+      pass: password
     }));
-
-    $('#singin').oneTime('3s', function() {
-      blockUI('#singin'); // singin timeout
+    $(this).oneTime('3s', function() {
+      return blockUI(singin_dom);
     });
-
     return false;
   });
-
-  $('#toolbar > #player').bind('singin', function() {
-    $('#singin').stopTime();
+  singin_form.bind("stop", function() {
+    $(this).stopTime();
+  });
+  player_dom.bind('singin', function() {
+    singin_form.trigger("stop");
     $('#toolbar > *').show();
-
     $.unblockUI();
-
     if ($("#ckb_save").attr('checked')) {
       localStorage.setItem("player#identity", $('#txt_identity').val());
       localStorage.setItem("autosave#identity", true);
-    }
-    else {
+    } else {
       localStorage.setItem("player#identity", "");
       localStorage.setItem("autosave#identity", false);
     }
-
     $('#hall').trigger('setup');
   });
-
-  $('#toolbar > #usr').bind('error', function() {
-    $('#singin').stopTime();
-
-    $("#txt_password").val(""); // clear password
-    $("#lab_err_singin").show(); // show error
+  $.pp.reg('ERROR', function() {
+    $("#txt_password").val("");
+    $("#lab_err_singin").show();
+    singin_form.trigger("stop");
+    blockUI(singin_dom);
   });
-
-  if ($.url.get("host") != null)
-    $.ws.defaults.host = $.url.get('host');
-    
+  if ($.url.get('host')) $.ws.defaults.host = $.url.get('host');
   $.ws.defaults.onmessage = $.pp.onmessage;
   $.ws.defaults.onopen = on_open;
   $.ws.init();
-
-  // {{{ utility 
-  var handle_heads = function(img) {
-    for (var i = 0; i < img.width / 80; i++) {
-      $.rl.img['def_face_' + i] = $.rl.getImgDataUrl(img, i * 80, 0, 80, 80);
-    }
-  }
-
-  var handle_pokers = function(img) {
-    var swp = [1,4,3,2]
-    for (var j = 0; j < img.height / 65; j ++) {
-      for (var i = 0; i < img.width / 45; i++) {
-        var key = new Number(i + 1 << 8 | swp[j]);
-        $.rl.poker[key.toString()] = 
-          $.rl.getImgDataUrl(img, i * 45, j * 65, 45, 65);
-      }
-    }
-  }
-
-  var handle_bets = function(img) {
-    for (var i = 0; i < img.width / 13; i++) {
-      $.rl.img["betting_" + (i + 1)] = 
-        $.rl.getImgDataUrl(img, i * 13, 0, 13, 14);
-    }
-  }
-  // }}}
 });
-// vim: fdm=marker

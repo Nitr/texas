@@ -42,6 +42,33 @@
     sounds: {},
   }
 
+  $.extend($.rl, {
+    handle_heads: function(img) {
+      for (var i = 0; i < img.width / 80; i++) {
+        $.rl.img['def_face_' + i] = $.rl.getImgDataUrl(img, i * 80, 0, 80, 80);
+      }
+    },
+
+    handle_pokers: function(img) {
+      var swp = [1,4,3,2]
+      for (var j = 0; j < img.height / 65; j ++) {
+        for (var i = 0; i < img.width / 45; i++) {
+          var key = new Number(i + 1 << 8 | swp[j]);
+          $.rl.poker[key.toString()] = 
+            $.rl.getImgDataUrl(img, i * 45, j * 65, 45, 65);
+        }
+      }
+    },
+
+    handle_bets: function(img) {
+      for (var i = 0; i < img.width / 13; i++) {
+        $.rl.img["betting_" + (i + 1)] = 
+          $.rl.getImgDataUrl(img, i * 13, 0, 13, 14);
+      }
+    }
+
+  });
+
   function handleJs(res) {
     $.getScript(res.url, function() {
       if (res.callback) {
@@ -87,6 +114,7 @@
       onload();
     }
   }
+
 
   var length = 0,
       onload = null;

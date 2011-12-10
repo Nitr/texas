@@ -1,3 +1,12 @@
 class Seat
-  constructor: (@pid, @dom) ->
+  constructor: (@state, @dom) ->
     return
+  
+  set_state: ->
+    return
+
+  get_player: ->
+    return
+
+$ ->
+  return

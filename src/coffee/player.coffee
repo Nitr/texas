@@ -1,5 +1,5 @@
 class Player
-  constructor: (@pid, @dom = $('#toolbar > #player'), @info) ->
+  constructor: (@pid, @dom, @info) ->
     @set_inplay 0
     @set_photo $.rl.img.def_face_0
 
@@ -51,7 +51,7 @@ class Player
   players = {}
 
   $.pp.reg "LOGIN", (player) ->
-    $.player = new Player player.id
+    $.player = new Player player.id, $('#toolbar > #player')
     $.player.update_balance()
     $.player.dom.trigger('singin')
 
