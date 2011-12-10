@@ -1,15 +1,19 @@
 
 $(function() {
-  var game, game_counter, game_preview, game_query, hall, template;
+  var game, game_counter, game_list, game_preview, game_query, hall, template;
   hall = $('#hall');
   game = $('#game');
   game_preview = $('#game_preview');
+  game_list = $('#game_list > tbody');
   template = $('#hall > .template').text();
   game_counter = 0;
   $('#cmd_watch').bind('click', function() {
+    var gid;
+    gid = game_list.children().first().data('gid');
     hall.trigger('switch_game');
     game.trigger('switch_game', {
-      action: 'watch'
+      action: 'watch',
+      gid: gid
     });
   });
   hall.bind('setup', function() {
@@ -17,14 +21,16 @@ $(function() {
     $(this).trigger('reload');
   });
   hall.bind('reload', function() {
+    var autofill;
     blockUI('#msg_loading');
     game_counter = 0;
-    $('#game_list tr[gid]').remove();
+    autofill = game_list.children().last().clone();
+    game_list.empty().append(autofill);
     game_query([1, 0, 0, 0, 0, 0, 0]);
   });
   hall.bind('loaded', function() {
     unblockUI();
-    $('#game_list tr[gid]').first().click();
+    game_list.children().first().click();
     if ($.url.get('auto_watch') === 'true') {
       $(this).oneTime('2s', function() {
         $("#cmd_watch").trigger('click');
@@ -32,19 +38,18 @@ $(function() {
     }
   });
   hall.bind('switch_game', function() {
-    console.log('hall_switch');
     $(this).hide();
   });
   $.pp.reg("GAME_INFO", function(game_info) {
     game_counter++;
-    $(template).attr('gid', game_info.id).children('.name').text(game_info.name).parent().children('.blind').text(game_info.low + " / " + game_info.height).parent().children('.player').text(game_info.joined + " / " + game_info.seats).parent().children('.limit').text(game_info.height * 10 + " / " + game_info.height * 200).parent().insertBefore('.autofill').click(function() {
+    $(template).data('gid', game_info.id).children('.name').text(game_info.name).parent().children('.blind').text(game_info.low + " / " + game_info.height).parent().children('.player').text(game_info.joined + " / " + game_info.seats).parent().children('.limit').text(game_info.height * 10 + " / " + game_info.height * 200).parent().insertBefore('.autofill').click(function() {
       var selected;
       selected = 'selected';
       if ($(this).hasClass(selected)) return;
       $(this).parent().children().removeClass(selected);
       $(this).addClass(selected);
       if ($.game_preview) $.game_preview.clear();
-      $.game_preview = new GamePreview($(this).attr('gid'), game_preview);
+      $.game_preview = new GamePreview($(this).data('gid'), game_preview);
     });
     if (game_counter === game_info.count) hall.trigger('loaded');
   });

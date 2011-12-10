@@ -1,6 +1,7 @@
 class Game
   constructor: (@detail, @dom) ->
     @gid = @detail.gid
+    @dom.trigger 'inited'
     return
 
   add_seat: (@detail) ->
@@ -10,12 +11,17 @@ $ ->
   game = null
   game_dom = $('#game')
 
+  game_dom.bind 'inited', ->
+    $(@).stopTime()
+    unblockUI()
+    return
+
   game_dom.bind 'switch_game', (event, args)->
     $(@).show()
 
     switch args.action
-      when 'watch' then $.ws.send $.pp.write {cmd: "WATCH"}
-      when 'join' then $.ws.send $.pp.write {cmd: "JOIN", seat: 0, buyin: args.buyin}
+      when 'watch' then $.ws.send $.pp.write {cmd: "WATCH", gid: args.gid}
+      when 'join' then $.ws.send $.pp.write {cmd: "JOIN", gid: args.gid, seat: 0, buyin: args.buyin}
       else throw 'unknown game action'
 
     blockUI '#msg_joining'

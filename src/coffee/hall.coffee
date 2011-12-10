@@ -2,12 +2,14 @@ $ ->
   hall = $('#hall')
   game = $('#game')
   game_preview = $('#game_preview')
+  game_list = $('#game_list > tbody')
   template = $('#hall > .template').text()
   game_counter = 0
   
   $('#cmd_watch').bind 'click', ->
+    gid = game_list.children().first().data('gid')
     hall.trigger 'switch_game'
-    game.trigger 'switch_game', {action: 'watch'}
+    game.trigger 'switch_game', {action: 'watch', gid: gid}
     return
 
   hall.bind 'setup', ->
@@ -18,16 +20,17 @@ $ ->
   hall.bind 'reload', ->
     blockUI '#msg_loading'
     game_counter = 0
-    $('#game_list tr[gid]').remove()
+    # clone autofill apendto empty game_list
+    autofill = game_list.children().last().clone()
+    game_list.empty().append(autofill)
     game_query [1, 0, 0, 0, 0, 0, 0]
     return
 
   hall.bind 'loaded', ->
     unblockUI()
-    $('#game_list tr[gid]').first().click()
+    game_list.children().first().click()
 
     if $.url.get('auto_watch') is 'true'
-      console.log 'test'
       $(@).oneTime '2s', ->
         $("#cmd_watch").trigger 'click'
         return
@@ -35,14 +38,13 @@ $ ->
       return
     
   hall.bind 'switch_game', ->
-    console.log 'hall_switch'
     $(@).hide()
     return
 
   $.pp.reg "GAME_INFO", (game_info) ->
     game_counter++
 
-    $(template).attr('gid', game_info.id).
+    $(template).data('gid', game_info.id).
       children('.name').text(game_info.name).parent().
       children('.blind').text(game_info.low + " / " + game_info.height).parent().
       children('.player').text(game_info.joined + " / " + game_info.seats).parent().
@@ -56,7 +58,7 @@ $ ->
         $(@).addClass selected
 
         $.game_preview.clear() if $.game_preview
-        $.game_preview = new GamePreview($(@).attr('gid'), game_preview)
+        $.game_preview = new GamePreview($(@).data('gid'), game_preview)
 
         return
       )

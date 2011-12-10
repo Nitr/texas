@@ -6,6 +6,7 @@ Game = (function() {
     this.detail = detail;
     this.dom = dom;
     this.gid = this.detail.gid;
+    this.dom.trigger('inited');
     return;
   }
 
@@ -21,17 +22,23 @@ $(function() {
   var game, game_dom;
   game = null;
   game_dom = $('#game');
+  game_dom.bind('inited', function() {
+    $(this).stopTime();
+    unblockUI();
+  });
   game_dom.bind('switch_game', function(event, args) {
     $(this).show();
     switch (args.action) {
       case 'watch':
         $.ws.send($.pp.write({
-          cmd: "WATCH"
+          cmd: "WATCH",
+          gid: args.gid
         }));
         break;
       case 'join':
         $.ws.send($.pp.write({
           cmd: "JOIN",
+          gid: args.gid,
           seat: 0,
           buyin: args.buyin
         }));
