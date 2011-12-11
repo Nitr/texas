@@ -2,15 +2,19 @@ var Game;
 
 Game = (function() {
 
-  function Game(detail, dom) {
-    this.detail = detail;
+  function Game(gid, dom) {
+    this.gid = gid;
     this.dom = dom;
-    this.gid = this.detail.gid;
-    this.dom.trigger('inited');
     return;
   }
 
-  Game.prototype.add_seat = function(detail) {
+  Game.prototype.init = function(detail) {
+    this.detail = detail;
+    this.seats = [];
+    return this.dom.trigger('inited');
+  };
+
+  Game.prototype.init_seat = function(detail) {
     this.detail = detail;
   };
 
@@ -22,12 +26,8 @@ $(function() {
   var game, game_dom;
   game = null;
   game_dom = $('#game');
-  game_dom.bind('inited', function() {
-    $(this).stopTime();
-    unblockUI();
-  });
   game_dom.bind('switch_game', function(event, args) {
-    $(this).show();
+    game = new Game(args.gid, game_dom);
     switch (args.action) {
       case 'watch':
         $.ws.send($.pp.write({
@@ -46,17 +46,21 @@ $(function() {
       default:
         throw 'unknown game action';
     }
+    $(this).show();
     blockUI('#msg_joining');
     return $(this).oneTime('3s', function() {
       blockUI('#err_network');
     });
   });
+  game_dom.bind('inited', function() {
+    $(this).stopTime();
+    unblockUI();
+  });
   $.pp.reg("GAME_DETAIL", function(detail) {
-    game = new Game(detail, game_dom);
-    console.log('game_detail');
+    game.init(detail);
   });
   $.pp.reg("SEAT_DETAIL", function(detail) {
-    game.add_seat(detail);
-    console.log('seat_detail');
+    game.init_seat(detail);
   });
+  $.pp.reg("CANCEL", function(args) {});
 });

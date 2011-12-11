@@ -370,10 +370,13 @@ h3[id^="err"] {
   display: none;
   width: 1000px;
   position: absolute; }
-  #game .background {
+  #game .table {
     top: 80px;
     left: 120px;
-    position: absolute; }
+    width: 748px;
+    height: 377px;
+    position: absolute;
+    background: url(gametable.png) no-repeat; }
   #game .disable {
     opacity: 0.4 !important;
     cursor: not-allowed !important;

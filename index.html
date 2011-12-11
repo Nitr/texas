@@ -97,7 +97,7 @@
           </tr></textarea>
         </div>
         <div id='game'>
-          <img class='background' src='css/gametable.png'>
+          <div class='table' src='css/gametable.png'></div>
           <div class='tips'>
             <label id='wait_next'>請等待參與下局游戏。</label>
             <label id='wait_player'>請等待其他玩家參與。</label>
@@ -109,6 +109,10 @@
             <a class='action' id='cmd_raise'>加注</a>
             <input id='raise_range' max='50' min='0' type='range' value='0'>
             <input id='raise_number' max='50' min='0' step='1' type='number' value='0'>
+          </div>
+          <div class='template'>
+            <div class='empty_seat'></div>
+            <div class='playing_seat'></div>
           </div>
         </div>
       </div>

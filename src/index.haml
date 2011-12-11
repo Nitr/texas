@@ -80,7 +80,7 @@
               %td.player
               %td.limit
         #game
-          %img.background{:src => 'css/gametable.png'}
+          .table{:src => 'css/gametable.png'}
           .tips
             %label#wait_next 請等待參與下局游戏。
             %label#wait_player 請等待其他玩家參與。
@@ -91,3 +91,6 @@
             %a#cmd_raise.action 加注
             %input#raise_range{:type => 'range', :value => 0, :max => 50, :min => 0}
             %input#raise_number{:type => 'number', :value => 0, :max => 50, :min => 0, :step => 1}
+          .template
+            .empty_seat
+            .playing_seat

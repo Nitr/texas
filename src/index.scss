@@ -494,10 +494,13 @@ h3[id^="err"] {
   width: 1000px;
   position: absolute;
 
-  .background {
+  .table {
     top: 80px;
     left: 120px;
+    width: 748px;
+    height: 377px;
     position: absolute;
+    background: url(gametable.png) no-repeat;
   }
 
   .disable {
