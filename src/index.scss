@@ -73,24 +73,6 @@ body {
   -webkit-box-shadow: 0px 0px 6px 6px silver;
 }
 
-.empty_seat {
-  position: absolute;
-  width: 84px;
-  height: 84px;
-  font-size: 18px;
-  padding: 0px;
-  margin: 0px;
-  border: 0px;
-  text-align: center;
-  border: 0px solid #000000;
-  background-image: url(sit.png);
-  background-repeat: no-repeat;
-  color: gray;
-  padding-top: 30px;
-  cursor: pointer;
-  display: none;
-}
-
 .game_seat > .photo {
   padding: 0px;
   margin: 0px;
@@ -495,8 +477,8 @@ h3[id^="err"] {
   position: absolute;
 
   .table {
-    top: 80px;
-    left: 120px;
+    top: 100px;
+    left: 125px;
     width: 748px;
     height: 377px;
     position: absolute;
@@ -546,6 +528,19 @@ h3[id^="err"] {
     width: 118px;
     height: 22px;
     font-size: 15px;
+  }
+
+  > .empty_seat {
+    width: 84px;
+    height: 84px;
+    border: 0px;
+    margin: 0px;
+    padding: 30px 0px 0px 0px;
+    text-align: center;
+    background: url(sit.png) no-repeat;
+    color: gray;
+    cursor: pointer;
+    position: absolute;
   }
 }
 // @GAME }}}

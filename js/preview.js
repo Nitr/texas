@@ -33,7 +33,7 @@ GamePreview = (function() {
       return;
     }
     if (player_dom.size() !== 0) return;
-    player_dom = $($('#game_preview > .template').text()).css($.get_preview_position(seat.seat)).data('seat', seat.seat).appendTo(this.dom);
+    player_dom = $($('#game_preview > .template').text()).css($.positions.get_preview_position(seat.seat)).data('seat', seat.seat).appendTo(this.dom);
     this.seats[seat.seat] = new Player(seat.pid, player_dom, seat);
   };
 

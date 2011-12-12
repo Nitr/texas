@@ -7,7 +7,7 @@
     - @scripts = %w[jquery/jquery header positions]
     - @scripts += %w[base64 blockUI timers tools].map do |x| "jquery/jquery.#{x}" end
     - @scripts += %w[resloader prototype websocket].map do |x| "plugins/#{x}" end
-    - @scripts += %w[header positions player preview hall game index]
+    - @scripts += %w[header positions player preview hall seat game index]
 
     - @scripts.each do |i|
       %script{:src => "js/#{i}.js", :type => 'text/javascript'}
@@ -92,5 +92,6 @@
             %input#raise_range{:type => 'range', :value => 0, :max => 50, :min => 0}
             %input#raise_number{:type => 'number', :value => 0, :max => 50, :min => 0, :step => 1}
           .template
-            .empty_seat
+            .seat
+            .empty_seat 觀戰
             .playing_seat

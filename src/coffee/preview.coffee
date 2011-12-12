@@ -25,7 +25,7 @@ class GamePreview
     return if player_dom.size() != 0
 
     player_dom = $($('#game_preview > .template').text()).
-      css($.get_preview_position(seat.seat)).
+      css($.positions.get_preview_position(seat.seat)).
       data('seat', seat.seat).
       appendTo(@dom)
 

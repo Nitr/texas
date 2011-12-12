@@ -5,9 +5,12 @@ class Game
   init: (@detail) ->
     @seats = []
     @dom.trigger 'inited'
+    return
 
-  init_seat: (@detail) ->
-    #@seats[@detail.seat] = new Seat @detail
+  init_seat: (seat_detail) ->
+    switch seat_detail.state
+      when PS_EMPTY then @seats[seat_detail.sn] = new EmptySeat seat_detail, @
+      else @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
 
     return
 
@@ -17,11 +20,14 @@ $ ->
 
   game_dom.bind 'switch_game', (event, args)->
     game = new Game args.gid, game_dom
+    cmd = {gid: args.gid}
 
     switch args.action
-      when 'watch' then $.ws.send $.pp.write {cmd: "WATCH", gid: args.gid}
-      when 'join' then $.ws.send $.pp.write {cmd: "JOIN", gid: args.gid, seat: 0, buyin: args.buyin}
+      when 'watch' then $.extend(cmd, {cmd: "WATCH"})
+      when 'join' then $.extend(cmd, {cmd: "JOIN", buyin: args.buyin, seat: 0})
       else throw 'unknown game action'
+
+    $.ws.send $.pp.write cmd
 
     $(@).show()
     blockUI '#msg_joining'
