@@ -929,6 +929,7 @@ $(document).ready(function() {
     play_sound('card');
   });
   // }}}
+  //
 
   // {{{ showdown notify
   reg("HAND", function(notify) { 

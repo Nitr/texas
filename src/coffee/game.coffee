@@ -53,6 +53,55 @@ $ ->
 
   $.pp.reg "CANCEL", (args) ->
     return
+
+  $.pp.reg "SHOW", (args) ->
+    return
+
+  $.pp.reg "HAND", (args) ->
+    return
+
+  $.pp.reg "WIN", (args) ->
+    return
+
+  $.pp.reg "END", (args) ->
+    return
+
+  $.pp.reg "START", (args) ->
+    return
+
+  $.pp.reg "DEALER", (args) ->
+    return
+
+  $.pp.reg "SBLIND", (args) ->
+    return
+
+  $.pp.reg "BBLIND", (args) ->
+    return
+
+  $.pp.reg "RAISE", (args) ->
+    return
+
+  $.pp.reg "DRAW", (args) ->
+    return
+
+  $.pp.reg "PRIVATE", (args) ->
+    return
+
+  $.pp.reg "ACTOR", (args) ->
+    return
+
+  $.pp.reg "STAGE", (args) ->
+    return
+
+  $.pp.reg "JOIN", (args) ->
+    return
+
+  $.pp.reg "LEAVE", (args) ->
+    return
+
+  $.pp.reg "BET_REQ", (args) ->
+    return
+
   # }}}
 
   return

@@ -8,7 +8,6 @@ Seat = (function() {
     this.game = game;
     this.sn = this.detail.sn;
     this.init_dom();
-    return;
   }
 
   Seat.prototype.init_dom = function() {
@@ -19,7 +18,11 @@ Seat = (function() {
 
   Seat.prototype.set_position = function(offset) {
     this.offset = offset != null ? offset : 0;
-    this.dom.css(this.get_position());
+    return this.dom.css(this.get_position());
+  };
+
+  Seat.prototype.clear = function() {
+    return this.dom.remove();
   };
 
   return Seat;
@@ -30,7 +33,9 @@ EmptySeat = (function() {
 
   __extends(EmptySeat, Seat);
 
-  function EmptySeat() {
+  function EmptySeat(detail, game) {
+    this.detail = detail;
+    this.game = game;
     EmptySeat.__super__.constructor.apply(this, arguments);
   }
 
@@ -39,7 +44,6 @@ EmptySeat = (function() {
   };
 
   EmptySeat.prototype.get_position = function() {
-    console.log(this.detail);
     return $.positions.get_empty_position(this.detail.sn, this.offset);
   };
 
@@ -51,8 +55,11 @@ PlayingSeat = (function() {
 
   __extends(PlayingSeat, Seat);
 
-  function PlayingSeat() {
+  function PlayingSeat(detail, game) {
+    this.detail = detail;
+    this.game = game;
     PlayingSeat.__super__.constructor.apply(this, arguments);
+    this.player = new Player(this.detail.pid, this.dom, this.detail);
   }
 
   PlayingSeat.prototype.get_dom = function() {

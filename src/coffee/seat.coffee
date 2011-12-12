@@ -2,7 +2,6 @@ class Seat
   constructor: (@detail, @game) ->
     @sn = @detail.sn
     @init_dom()
-    return
 
   init_dom: () ->
     @dom = @get_dom()
@@ -11,17 +10,25 @@ class Seat
 
   set_position: (@offset = 0) ->
     @dom.css @get_position()
-    return
+
+  clear: ->
+    @dom.remove()
 
 class EmptySeat extends Seat
+  constructor: (@detail, @game) ->
+    super
+
   get_dom: ->
     $("#game > .template > .empty_seat").clone true
 
   get_position: ->
-    console.log @detail
     $.positions.get_empty_position @detail.sn, @offset
     
 class PlayingSeat extends Seat
+  constructor: (@detail, @game) ->
+    super
+    @player = new Player @detail.pid, @dom, @detail
+
   get_dom: ->
     $("#game > .template > .playing_seat").clone true
 
