@@ -11,16 +11,26 @@ Game = (function() {
   Game.prototype.init = function(detail) {
     this.detail = detail;
     this.seats = [];
-    this.dom.trigger('inited');
+    return this.dom.trigger('inited');
   };
 
   Game.prototype.init_seat = function(seat_detail) {
     switch (seat_detail.state) {
       case PS_EMPTY:
-        this.seats[seat_detail.sn] = new EmptySeat(seat_detail, this);
-        break;
+        return this.seats[seat_detail.sn] = new EmptySeat(seat_detail, this);
       default:
-        this.seats[seat_detail.sn] = new PlayingSeat(seat_detail, this);
+        return this.seats[seat_detail.sn] = new PlayingSeat(seat_detail, this);
+    }
+  };
+
+  Game.prototype.get_seat = function(o) {
+    var seat, _i, _len, _ref;
+    _ref = this.seats;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      seat = _ref[_i];
+      if ((seat != null) && seat.__proto__.constructor === PlayingSeat && seat.player.pid === o.pid) {
+        return seat;
+      }
     }
   };
 
@@ -72,15 +82,21 @@ $(function() {
     game.init_seat(detail);
   });
   $.pp.reg("CANCEL", function(args) {});
-  $.pp.reg("SHOW", function(args) {});
-  $.pp.reg("HAND", function(args) {});
-  $.pp.reg("WIN", function(args) {});
-  $.pp.reg("END", function(args) {});
   $.pp.reg("START", function(args) {});
+  $.pp.reg("END", function(args) {});
   $.pp.reg("DEALER", function(args) {});
   $.pp.reg("SBLIND", function(args) {});
   $.pp.reg("BBLIND", function(args) {});
-  $.pp.reg("RAISE", function(args) {});
+  $.pp.reg("RAISE", function(args) {
+    var seat, sum;
+    sum = args.call + args.raise;
+    seat = game.get_seat(args);
+    if (sum === 0) {
+      seat.raise(args.call, args.raise);
+    } else {
+      seat.check();
+    }
+  });
   $.pp.reg("DRAW", function(args) {});
   $.pp.reg("PRIVATE", function(args) {});
   $.pp.reg("ACTOR", function(args) {});
@@ -88,4 +104,7 @@ $(function() {
   $.pp.reg("JOIN", function(args) {});
   $.pp.reg("LEAVE", function(args) {});
   $.pp.reg("BET_REQ", function(args) {});
+  $.pp.reg("SHOW", function(args) {});
+  $.pp.reg("HAND", function(args) {});
+  $.pp.reg("WIN", function(args) {});
 });

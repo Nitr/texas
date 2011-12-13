@@ -5,14 +5,14 @@ class Game
   init: (@detail) ->
     @seats = []
     @dom.trigger 'inited'
-    return
 
   init_seat: (seat_detail) ->
     switch seat_detail.state
       when PS_EMPTY then @seats[seat_detail.sn] = new EmptySeat seat_detail, @
       else @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
 
-    return
+  get_seat: (o) ->
+    return seat for seat in @seats when seat? and seat.__proto__.constructor is PlayingSeat and seat.player.pid is o.pid
 
 $ ->
   game = null
@@ -54,19 +54,10 @@ $ ->
   $.pp.reg "CANCEL", (args) ->
     return
 
-  $.pp.reg "SHOW", (args) ->
-    return
-
-  $.pp.reg "HAND", (args) ->
-    return
-
-  $.pp.reg "WIN", (args) ->
+  $.pp.reg "START", (args) ->
     return
 
   $.pp.reg "END", (args) ->
-    return
-
-  $.pp.reg "START", (args) ->
     return
 
   $.pp.reg "DEALER", (args) ->
@@ -79,6 +70,14 @@ $ ->
     return
 
   $.pp.reg "RAISE", (args) ->
+    sum = args.call + args.raise
+    seat = game.get_seat args
+
+    if sum is 0
+      seat.raise(args.call, args.raise)
+    else
+      seat.check()
+
     return
 
   $.pp.reg "DRAW", (args) ->
@@ -100,6 +99,15 @@ $ ->
     return
 
   $.pp.reg "BET_REQ", (args) ->
+    return
+
+  $.pp.reg "SHOW", (args) ->
+    return
+
+  $.pp.reg "HAND", (args) ->
+    return
+
+  $.pp.reg "WIN", (args) ->
     return
 
   # }}}

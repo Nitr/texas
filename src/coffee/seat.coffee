@@ -35,9 +35,12 @@ class PlayingSeat extends Seat
   get_position: ->
     $.positions.get_playing_position @detail.sn, @offset
 
+  raise: (call, raise)->
+    console.log 'call ' + call + ' raise ' + raise
+
+  check: ->
+    console.log 'check'
+
 $ ->
   $("#game .empty_seat").bind 'click', ->
     console.log $(@).data 'sn'
-    return
-
-  return

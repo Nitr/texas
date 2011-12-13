@@ -70,12 +70,20 @@ PlayingSeat = (function() {
     return $.positions.get_playing_position(this.detail.sn, this.offset);
   };
 
+  PlayingSeat.prototype.raise = function(call, raise) {
+    return console.log('call ' + call + ' raise ' + raise);
+  };
+
+  PlayingSeat.prototype.check = function() {
+    return console.log('check');
+  };
+
   return PlayingSeat;
 
 })();
 
 $(function() {
-  $("#game .empty_seat").bind('click', function() {
-    console.log($(this).data('sn'));
+  return $("#game .empty_seat").bind('click', function() {
+    return console.log($(this).data('sn'));
   });
 });
