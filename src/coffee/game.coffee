@@ -99,6 +99,9 @@ $ ->
   $.pp.reg "PRIVATE", (args) ->
     return
 
+  $.pp.reg "SHARE", (args) ->
+    return
+
   $.pp.reg "ACTOR", (args) ->
     return
 

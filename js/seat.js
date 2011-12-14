@@ -70,17 +70,18 @@ PlayingSeat = (function() {
     return $.positions.get_playing_position(this.detail.sn, this.offset);
   };
 
-  PlayingSeat.prototype.raise = function(call, raise) {
-    return console.log('call ' + call + ' raise ' + raise);
-  };
+  PlayingSeat.prototype.raise = function(call, raise) {};
 
-  PlayingSeat.prototype.check = function() {
-    return console.log('check');
-  };
+  PlayingSeat.prototype.check = function() {};
 
   PlayingSeat.prototype.set_dealer = function() {
-    console.log('dealer');
-    return $('#dealer').remove().insertBefore(this.dom.children(".nick"));
+    var dealer;
+    dealer = $('.playing_seat > .dealer');
+    if (dealer.size() === 0) {
+      return $('#game > .template > .dealer').clone().insertBefore(this.dom.children(".nick"));
+    } else {
+      return dealer.remove().insertBefore(this.dom.children(".nick"));
+    }
   };
 
   return PlayingSeat;

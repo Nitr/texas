@@ -36,14 +36,18 @@ class PlayingSeat extends Seat
     $.positions.get_playing_position @detail.sn, @offset
 
   raise: (call, raise)->
-    console.log 'call ' + call + ' raise ' + raise
+    #console.log 'call ' + call + ' raise ' + raise
+    return
 
   check: ->
-    console.log 'check'
+    return
 
   set_dealer: ->
-    console.log 'dealer'
-    $('#dealer').remove().insertBefore(@dom.children(".nick"))
+    dealer = $('.playing_seat > .dealer')
+    if dealer.size() is 0
+      $('#game > .template > .dealer').clone().insertBefore(@dom.children(".nick"))
+    else
+      dealer.remove().insertBefore(@dom.children(".nick"))
 
 $ ->
   $("#game .empty_seat").bind 'click', ->

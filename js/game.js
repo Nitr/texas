@@ -124,6 +124,7 @@ $(function() {
   });
   $.pp.reg("DRAW", function(args) {});
   $.pp.reg("PRIVATE", function(args) {});
+  $.pp.reg("SHARE", function(args) {});
   $.pp.reg("ACTOR", function(args) {});
   $.pp.reg("STAGE", function(args) {});
   $.pp.reg("JOIN", function(args) {});
