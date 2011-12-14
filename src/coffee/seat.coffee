@@ -50,5 +50,14 @@ class PlayingSeat extends Seat
       dealer.remove().insertBefore(@dom.children(".nick"))
 
 $ ->
+  mod_sum = (sum, bet, bets) ->
+    times = Math.floor(sum / bet[0])
+    bets.push bet[1] for i in [1..times]
+    return sum % bet[0]
+
+  $.compute_bet_count = (sum, bets) ->
+    sum = mod_sum sum, bet, bets for bet in BETS when sum >= bet[0]
+    "betting_#{b}" for b in bets
+
   $("#game .empty_seat").bind 'click', ->
     console.log "JOIN seat[#{$(@).data('sn')}]"

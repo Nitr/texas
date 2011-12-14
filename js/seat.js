@@ -89,6 +89,28 @@ PlayingSeat = (function() {
 })();
 
 $(function() {
+  var mod_sum;
+  mod_sum = function(sum, bet, bets) {
+    var i, times;
+    times = Math.floor(sum / bet[0]);
+    for (i = 1; 1 <= times ? i <= times : i >= times; 1 <= times ? i++ : i--) {
+      bets.push(bet[1]);
+    }
+    return sum % bet[0];
+  };
+  $.compute_bet_count = function(sum, bets) {
+    var b, bet, _i, _j, _len, _len2, _results;
+    for (_i = 0, _len = BETS.length; _i < _len; _i++) {
+      bet = BETS[_i];
+      if (sum >= bet[0]) sum = mod_sum(sum, bet, bets);
+    }
+    _results = [];
+    for (_j = 0, _len2 = bets.length; _j < _len2; _j++) {
+      b = bets[_j];
+      _results.push("betting_" + b);
+    }
+    return _results;
+  };
   return $("#game .empty_seat").bind('click', function() {
     return console.log("JOIN seat[" + ($(this).data('sn')) + "]");
   });
