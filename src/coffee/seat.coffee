@@ -41,6 +41,10 @@ class PlayingSeat extends Seat
   check: ->
     console.log 'check'
 
+  set_dealer: ->
+    console.log 'dealer'
+    $('#dealer').remove().insertBefore(@dom.children(".nick"))
+
 $ ->
   $("#game .empty_seat").bind 'click', ->
-    console.log $(@).data 'sn'
+    console.log "JOIN seat[#{$(@).data('sn')}]"

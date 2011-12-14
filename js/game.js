@@ -23,7 +23,7 @@ Game = (function() {
     }
   };
 
-  Game.prototype.get_seat = function(o) {
+  Game.prototype.get_seat_by_pid = function(o) {
     var seat, _i, _len, _ref;
     _ref = this.seats;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -31,6 +31,27 @@ Game = (function() {
       if ((seat != null) && seat.__proto__.constructor === PlayingSeat && seat.player.pid === o.pid) {
         return seat;
       }
+    }
+  };
+
+  Game.prototype.get_seat_by_sn = function(o) {
+    var seat, _i, _len, _ref;
+    _ref = this.seats;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      seat = _ref[_i];
+      if ((seat != null) && seat.__proto__.constructor === PlayingSeat && seat.sn === o.seat) {
+        return seat;
+      }
+    }
+  };
+
+  Game.prototype.get_seat = function(o) {
+    if ('pid' in o) {
+      return this.get_seat_by_pid(o);
+    } else if ('seat' in o) {
+      return this.get_seat_by_sn(o);
+    } else {
+      throw "unknown object " + o + " in get_seat()";
     }
   };
 
@@ -84,7 +105,11 @@ $(function() {
   $.pp.reg("CANCEL", function(args) {});
   $.pp.reg("START", function(args) {});
   $.pp.reg("END", function(args) {});
-  $.pp.reg("DEALER", function(args) {});
+  $.pp.reg("DEALER", function(args) {
+    var seat;
+    seat = game.get_seat(args);
+    seat.set_dealer();
+  });
   $.pp.reg("SBLIND", function(args) {});
   $.pp.reg("BBLIND", function(args) {});
   $.pp.reg("RAISE", function(args) {

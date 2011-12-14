@@ -50,11 +50,6 @@ body {
 .actor_seat {
   -webkit-box-shadow: 0px 0px 6px 6px silver; }
 
-.dealer {
-  position: absolute;
-  top: 70px;
-  left: 60px; }
-
 .bet_label, .pot_label {
   background-color: #77B73E;
   position: absolute;
@@ -340,12 +335,19 @@ h3[id^="err"] {
     left: 520px;
     top: 32px; }
   #game #raise_number {
-    position: absolute;
-    left: 525px;
     top: 5px;
+    left: 525px;
     width: 118px;
     height: 22px;
-    font-size: 15px; }
+    font-size: 15px;
+    position: absolute; }
+  #game #dealer {
+    top: 70px;
+    left: 60px;
+    width: 28px;
+    height: 36px;
+    position: absolute;
+    background: url(dealer.png) no-repeat; }
   #game > .empty_seat {
     width: 84px;
     height: 84px;

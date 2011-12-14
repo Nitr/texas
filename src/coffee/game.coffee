@@ -11,8 +11,19 @@ class Game
       when PS_EMPTY then @seats[seat_detail.sn] = new EmptySeat seat_detail, @
       else @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
 
-  get_seat: (o) ->
+  get_seat_by_pid: (o) ->
     return seat for seat in @seats when seat? and seat.__proto__.constructor is PlayingSeat and seat.player.pid is o.pid
+
+  get_seat_by_sn: (o) ->
+    return seat for seat in @seats when seat? and seat.__proto__.constructor is PlayingSeat and seat.sn is o.seat
+
+  get_seat: (o) ->
+    if 'pid' of o
+      return @get_seat_by_pid(o)
+    else if 'seat' of o
+      return @get_seat_by_sn(o)
+    else
+      throw "unknown object #{o} in get_seat()"
 
 $ ->
   game = null
@@ -61,6 +72,8 @@ $ ->
     return
 
   $.pp.reg "DEALER", (args) ->
+    seat = game.get_seat args
+    seat.set_dealer()
     return
 
   $.pp.reg "SBLIND", (args) ->

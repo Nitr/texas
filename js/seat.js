@@ -78,12 +78,17 @@ PlayingSeat = (function() {
     return console.log('check');
   };
 
+  PlayingSeat.prototype.set_dealer = function() {
+    console.log('dealer');
+    return $('#dealer').remove().insertBefore(this.dom.children(".nick"));
+  };
+
   return PlayingSeat;
 
 })();
 
 $(function() {
   return $("#game .empty_seat").bind('click', function() {
-    return console.log($(this).data('sn'));
+    return console.log("JOIN seat[" + ($(this).data('sn')) + "]");
   });
 });
