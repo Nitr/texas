@@ -44,7 +44,7 @@ EmptySeat = (function() {
   };
 
   EmptySeat.prototype.get_position = function() {
-    return $.positions.get_empty_position(this.detail.sn, this.offset);
+    return $.positions.get_empty(this.detail.sn, this.offset);
   };
 
   return EmptySeat;
@@ -67,12 +67,12 @@ PlayingSeat = (function() {
   };
 
   PlayingSeat.prototype.get_position = function() {
-    return $.positions.get_playing_position(this.detail.sn, this.offset);
+    return $.positions.get_playing(this.detail.sn, this.offset);
   };
 
   PlayingSeat.prototype.raise = function(call, raise) {
     var bet, bets, ps, _i, _len;
-    ps = $.positions.get_bet_position(this.sn);
+    ps = $.positions.get_bet(this.sn);
     bets = $.compute_bet_count(call + raise, []);
     for (_i = 0, _len = bets.length; _i < _len; _i++) {
       bet = bets[_i];

@@ -26,16 +26,16 @@
   $.positions = {}
 
   $.extend $.positions, {
-    get_preview_position: (sn) ->
+    get_preview: (sn) ->
       return game_position[sn - 1].preview
 
-    get_playing_position: (sn) ->
+    get_playing: (sn) ->
       return game_position[sn - 1].playing_seat
 
-    get_bet_position: (sn) ->
+    get_bet: (sn) ->
       return game_position[sn - 1].bet
 
-    get_empty_position: (sn) ->
+    get_empty: (sn) ->
       return game_position[sn - 1].empty_seat
 
     get_random: (ps, offset = 20) ->

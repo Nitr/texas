@@ -22,7 +22,7 @@ class EmptySeat extends Seat
     $("#game > .template > .empty_seat").clone true
 
   get_position: ->
-    $.positions.get_empty_position @detail.sn, @offset
+    $.positions.get_empty @detail.sn, @offset
     
 class PlayingSeat extends Seat
   constructor: (@detail, @game) ->
@@ -33,10 +33,10 @@ class PlayingSeat extends Seat
     $("#game > .template > .playing_seat").clone true
 
   get_position: ->
-    $.positions.get_playing_position @detail.sn, @offset
+    $.positions.get_playing @detail.sn, @offset
 
   raise: (call, raise) ->
-    ps = $.positions.get_bet_position(@sn)
+    ps = $.positions.get_bet(@sn)
     bets = $.compute_bet_count(call + raise, [])
 
     @raise_bet $.rl.img[bet], ps for bet in bets

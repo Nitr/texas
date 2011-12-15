@@ -72,16 +72,16 @@
   game_position = convert(nine_position);
   $.positions = {};
   $.extend($.positions, {
-    get_preview_position: function(sn) {
+    get_preview: function(sn) {
       return game_position[sn - 1].preview;
     },
-    get_playing_position: function(sn) {
+    get_playing: function(sn) {
       return game_position[sn - 1].playing_seat;
     },
-    get_bet_position: function(sn) {
+    get_bet: function(sn) {
       return game_position[sn - 1].bet;
     },
-    get_empty_position: function(sn) {
+    get_empty: function(sn) {
       return game_position[sn - 1].empty_seat;
     },
     get_random: function(ps, offset) {
