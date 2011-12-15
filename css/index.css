@@ -66,15 +66,6 @@ body {
   position: absolute;
   z-index: 50; }
 
-.card {
-  width: 45px;
-  height: 65px;
-  display: none;
-  position: absolute;
-  z-index: 50;
-  border-radius: 4px;
-  -webkit-box-shadow: 1px 1px 5px black; }
-
 .bet, .pot {
   position: absolute;
   width: 13px;
@@ -330,6 +321,13 @@ h3[id^="err"] {
     margin: 0px 10px 0px 0px;
     padding: 16px 0px 0px 48px;
     background: url(button.png) no-repeat; }
+  #game .card {
+    z-index: 1;
+    width: 45px;
+    height: 65px;
+    border-radius: 4px;
+    -webkit-box-shadow: 1px 1px 5px black;
+    position: absolute; }
   #game #raise_range {
     position: absolute;
     left: 520px;

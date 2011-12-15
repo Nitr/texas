@@ -23,7 +23,11 @@
     {pv: [518, 125], es: [640, 363], ps: [680, 350], bet: [711,408,710,306], draw: [-51,28]}
   ]
 
+  current_share_card = null
   game_position = convert nine_position
+
+  format = (ps) ->
+    {top: "#{ps[0]}px", left: "#{ps[1]}px"}
 
   $.positions = {}
 
@@ -46,6 +50,13 @@
     get_random: (ps, offset = 20) ->
       return {top: (ps[0] + (Math.floor(Math.random() * 1000)) % (offset * 2) - offset) + 'px', left: (ps[1] + (Math.floor(Math.random() * 1000)) % (offset * 2) - offset) + 'px'}
   }
+
+    reset_share: ->
+      current_share_card = [200,245]
+
+    get_next_share: ->
+      current_share_card = [current_share_card[0], current_share_card[1] + 55]
+      format(current_share_card)
 
   return
 )(jQuery)

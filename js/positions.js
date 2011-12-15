@@ -1,6 +1,6 @@
 
 (function($) {
-  var convert, game_position, nine_position;
+  var convert, current_share_card, format, game_position, nine_position;
   convert = function(positions) {
     var result, x, y;
     return result = (function() {
@@ -92,7 +92,14 @@
       draw: [-51, 28]
     }
   ];
+  current_share_card = null;
   game_position = convert(nine_position);
+  format = function(ps) {
+    return {
+      top: "" + ps[0] + "px",
+      left: "" + ps[1] + "px"
+    };
+  };
   $.positions = {};
   $.extend($.positions, {
     get_preview: function(sn) {
@@ -119,6 +126,14 @@
         top: (ps[0] + (Math.floor(Math.random() * 1000)) % (offset * 2) - offset) + 'px',
         left: (ps[1] + (Math.floor(Math.random() * 1000)) % (offset * 2) - offset) + 'px'
       };
+    }
+  }, {
+    reset_share: function() {
+      return current_share_card = [200, 245];
+    },
+    get_next_share: function() {
+      current_share_card = [current_share_card[0], current_share_card[1] + 55];
+      return format(current_share_card);
     }
   });
 })(jQuery);

@@ -11,6 +11,12 @@ class Game
       when PS_EMPTY then @seats[seat_detail.sn] = new EmptySeat seat_detail, @
       else @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
 
+  clear: ->
+    @dom.children(".card").remove()
+    @dom.children(".pot").remove()
+
+    $.positions.reset_share()
+
   get_seat_by_pid: (o) ->
     return seat for seat in @seats when seat? and seat.__proto__.constructor is PlayingSeat and seat.player.pid is o.pid
 
@@ -30,6 +36,9 @@ class Game
     @dom.oneTime '1s', ->
       $(bet).css($.positions.get_random([240, 680], 20)).removeClass('bet').addClass('pot') for bet in ref.children(".bet")
     return
+
+  share_card: (face, suit) ->
+    $("<img src='#{$.get_poker(face, suit)}' class='card'/>").css($.positions.get_next_share()).appendTo(@dom)
 
 $ ->
   game = null
@@ -61,6 +70,9 @@ $ ->
     unblockUI()
     return
 
+  $.get_poker = (face, suit) ->
+    $.rl.poker["#{new Number(face << 8 | suit)}"]
+
   # {{{
   $.pp.reg "GAME_DETAIL", (detail) ->
     game.init detail
@@ -74,6 +86,7 @@ $ ->
     return
 
   $.pp.reg "START", (args) ->
+    game.clear()
     return
 
   $.pp.reg "END", (args) ->
@@ -106,11 +119,11 @@ $ ->
     seat.draw_card()
     return
 
-  $.pp.reg "PRIVATE", (args) ->
-    console.log args
+  $.pp.reg "SHARE", (args) ->
+    game.share_card(args.face, args.suit)
     return
 
-  $.pp.reg "SHARE", (args) ->
+  $.pp.reg "PRIVATE", (args) ->
     console.log args
     return
 
