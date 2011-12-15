@@ -44,10 +44,10 @@ class PlayingSeat extends Seat
     return
 
   raise_bet: (img, ps) ->
-    bet = $("<img class='bet' src='" + img + "' />").css(ps).appendTo(@game.dom)
+    bet = $("<img class='bet' src='" + img + "' />").css(ps.start).appendTo(@game.dom)
 
     $(@dom).oneTime 100, ->
-      bet.css($.positions.get_random([500,500]))
+      bet.css($.positions.get_random(ps.end, 5))
 
   check: ->
     return
