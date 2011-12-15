@@ -102,12 +102,16 @@ $ ->
     return
 
   $.pp.reg "DRAW", (args) ->
+    seat = game.get_seat args
+    seat.draw_card()
     return
 
   $.pp.reg "PRIVATE", (args) ->
+    console.log args
     return
 
   $.pp.reg "SHARE", (args) ->
+    console.log args
     return
 
   $.pp.reg "ACTOR", (args) ->

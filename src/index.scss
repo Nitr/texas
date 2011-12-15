@@ -551,6 +551,15 @@ h3[id^="err"] {
       border-top: 0px;
       display: block;
     }
+
+    .draw_card {
+      top: 50px;
+      left: 50px;
+      width: 41px;
+      height: 41px;
+      @include auto-hide;
+      position: absolute;
+    }
   }
 }
 // @GAME }}}

@@ -100,6 +100,10 @@ PlayingSeat = (function() {
     }
   };
 
+  PlayingSeat.prototype.draw_card = function() {
+    return this.dom.children(".draw_card").css($.positions.get_draw(this.sn)).show();
+  };
+
   return PlayingSeat;
 
 })();

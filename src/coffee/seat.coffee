@@ -59,6 +59,9 @@ class PlayingSeat extends Seat
     else
       dealer.remove().insertBefore(@dom.children(".nick"))
 
+  draw_card: ->
+    @dom.children(".draw_card").css($.positions.get_draw(@sn)).show()
+
 $ ->
   mod_sum = (sum, bet, bets) ->
     times = Math.floor(sum / bet[0])

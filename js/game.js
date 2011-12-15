@@ -138,9 +138,17 @@ $(function() {
       seat.raise(args.call, args.raise);
     }
   });
-  $.pp.reg("DRAW", function(args) {});
-  $.pp.reg("PRIVATE", function(args) {});
-  $.pp.reg("SHARE", function(args) {});
+  $.pp.reg("DRAW", function(args) {
+    var seat;
+    seat = game.get_seat(args);
+    seat.draw_card();
+  });
+  $.pp.reg("PRIVATE", function(args) {
+    console.log(args);
+  });
+  $.pp.reg("SHARE", function(args) {
+    console.log(args);
+  });
   $.pp.reg("ACTOR", function(args) {});
   $.pp.reg("STAGE", function(args) {
     game.new_stage();
