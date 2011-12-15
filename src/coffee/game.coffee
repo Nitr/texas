@@ -33,6 +33,8 @@ $ ->
     game = new Game args.gid, game_dom
     cmd = {gid: args.gid}
 
+    $.game = game
+
     switch args.action
       when 'watch' then $.extend(cmd, {cmd: "WATCH"})
       when 'join' then $.extend(cmd, {cmd: "JOIN", buyin: args.buyin, seat: 0})
@@ -87,9 +89,9 @@ $ ->
     seat = game.get_seat args
 
     if sum is 0
-      seat.raise(args.call, args.raise)
-    else
       seat.check()
+    else
+      seat.raise(args.call, args.raise)
 
     return
 

@@ -69,6 +69,7 @@ $(function() {
     cmd = {
       gid: args.gid
     };
+    $.game = game;
     switch (args.action) {
       case 'watch':
         $.extend(cmd, {
@@ -117,9 +118,9 @@ $(function() {
     sum = args.call + args.raise;
     seat = game.get_seat(args);
     if (sum === 0) {
-      seat.raise(args.call, args.raise);
-    } else {
       seat.check();
+    } else {
+      seat.raise(args.call, args.raise);
     }
   });
   $.pp.reg("DRAW", function(args) {});

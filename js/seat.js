@@ -13,7 +13,7 @@ Seat = (function() {
   Seat.prototype.init_dom = function() {
     this.dom = this.get_dom();
     this.set_position();
-    return this.dom.data('sn', this.sn).appendTo($("#game"));
+    return this.dom.data('sn', this.sn).data('game', this.game).appendTo($("#game"));
   };
 
   Seat.prototype.set_position = function(offset) {
@@ -70,7 +70,23 @@ PlayingSeat = (function() {
     return $.positions.get_playing_position(this.detail.sn, this.offset);
   };
 
-  PlayingSeat.prototype.raise = function(call, raise) {};
+  PlayingSeat.prototype.raise = function(call, raise) {
+    var bet, bets, ps, _i, _len;
+    ps = $.positions.get_bet_position(this.sn);
+    bets = $.compute_bet_count(call + raise, []);
+    for (_i = 0, _len = bets.length; _i < _len; _i++) {
+      bet = bets[_i];
+      this.raise_bet($.rl.img[bet], ps);
+    }
+  };
+
+  PlayingSeat.prototype.raise_bet = function(img, ps) {
+    var bet;
+    bet = $("<img class='bet' src='" + img + "' />").css(ps).appendTo(this.game.dom);
+    return $(this.dom).oneTime(100, function() {
+      return bet.css($.positions.get_random([500, 500]));
+    });
+  };
 
   PlayingSeat.prototype.check = function() {};
 
@@ -111,7 +127,5 @@ $(function() {
     }
     return _results;
   };
-  return $("#game .empty_seat").bind('click', function() {
-    return console.log("JOIN seat[" + ($(this).data('sn')) + "]");
-  });
+  return $("#game .empty_seat").bind('click', function() {});
 });

@@ -6,7 +6,7 @@ class Seat
   init_dom: () ->
     @dom = @get_dom()
     @set_position()
-    @dom.data('sn', @sn).appendTo $("#game")
+    @dom.data('sn', @sn).data('game', @game).appendTo $("#game")
 
   set_position: (@offset = 0) ->
     @dom.css @get_position()
@@ -35,9 +35,19 @@ class PlayingSeat extends Seat
   get_position: ->
     $.positions.get_playing_position @detail.sn, @offset
 
-  raise: (call, raise)->
-    #console.log 'call ' + call + ' raise ' + raise
+  raise: (call, raise) ->
+    ps = $.positions.get_bet_position(@sn)
+    bets = $.compute_bet_count(call + raise, [])
+
+    @raise_bet $.rl.img[bet], ps for bet in bets
+
     return
+
+  raise_bet: (img, ps) ->
+    bet = $("<img class='bet' src='" + img + "' />").css(ps).appendTo(@game.dom)
+
+    $(@dom).oneTime 100, ->
+      bet.css($.positions.get_random([500,500]))
 
   check: ->
     return
@@ -60,4 +70,4 @@ $ ->
     "betting_#{b}" for b in bets
 
   $("#game .empty_seat").bind 'click', ->
-    console.log "JOIN seat[#{$(@).data('sn')}]"
+    return

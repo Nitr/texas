@@ -20,6 +20,10 @@
           playing_seat: {
             left: y.ps[0] + 'px',
             top: y.ps[1] + 'px'
+          },
+          bet: {
+            left: (y.ps[0] + 40) + 'px',
+            top: (y.ps[1] + 40) + 'px'
           }
         });
       }
@@ -74,8 +78,18 @@
     get_playing_position: function(sn) {
       return game_position[sn - 1].playing_seat;
     },
+    get_bet_position: function(sn) {
+      return game_position[sn - 1].bet;
+    },
     get_empty_position: function(sn) {
       return game_position[sn - 1].empty_seat;
+    },
+    get_random: function(ps, offset) {
+      if (offset == null) offset = 20;
+      return {
+        top: (ps[0] + (Math.floor(Math.random() * 1000)) % (offset * 2) - offset) + 'px',
+        left: (ps[1] + (Math.floor(Math.random() * 1000)) % (offset * 2) - offset) + 'px'
+      };
     }
   });
 })(jQuery);
