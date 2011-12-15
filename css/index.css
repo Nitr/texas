@@ -348,13 +348,12 @@ h3[id^="err"] {
     height: 36px;
     position: absolute;
     background: url(dealer.png) no-repeat; }
-  #game .bet {
+  #game .bet, #game .pot {
     width: 13px;
-    z-index: 5;
+    z-index: 1;
     position: absolute;
     -webkit-transition-property: all;
-    -webkit-transition-duration: 1s;
-    -webkit-transition-delay: 0s; }
+    -webkit-transition-duration: 1s; }
   #game > .empty_seat {
     width: 84px;
     height: 84px;

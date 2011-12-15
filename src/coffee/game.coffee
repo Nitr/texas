@@ -25,6 +25,12 @@ class Game
     else
       throw "unknown object #{o} in get_seat()"
 
+  new_stage: ->
+    ref = @dom
+    @dom.oneTime '1s', ->
+      $(bet).css($.positions.get_random([240, 680], 20)).removeClass('bet').addClass('pot') for bet in ref.children(".bet")
+    return
+
 $ ->
   game = null
   game_dom = $('#game')
@@ -108,6 +114,7 @@ $ ->
     return
 
   $.pp.reg "STAGE", (args) ->
+    game.new_stage()
     return
 
   $.pp.reg "JOIN", (args) ->

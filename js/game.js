@@ -55,6 +55,21 @@ Game = (function() {
     }
   };
 
+  Game.prototype.new_stage = function() {
+    var ref;
+    ref = this.dom;
+    this.dom.oneTime('1s', function() {
+      var bet, _i, _len, _ref, _results;
+      _ref = ref.children(".bet");
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        bet = _ref[_i];
+        _results.push($(bet).css($.positions.get_random([240, 680], 20)).removeClass('bet').addClass('pot'));
+      }
+      return _results;
+    });
+  };
+
   return Game;
 
 })();
@@ -127,7 +142,9 @@ $(function() {
   $.pp.reg("PRIVATE", function(args) {});
   $.pp.reg("SHARE", function(args) {});
   $.pp.reg("ACTOR", function(args) {});
-  $.pp.reg("STAGE", function(args) {});
+  $.pp.reg("STAGE", function(args) {
+    game.new_stage();
+  });
   $.pp.reg("JOIN", function(args) {});
   $.pp.reg("LEAVE", function(args) {});
   $.pp.reg("BET_REQ", function(args) {});
