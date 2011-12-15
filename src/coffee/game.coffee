@@ -128,6 +128,8 @@ $ ->
     return
 
   $.pp.reg "ACTOR", (args) ->
+    seat = game.get_seat args
+    seat.set_actor()
     return
 
   $.pp.reg "STAGE", (args) ->

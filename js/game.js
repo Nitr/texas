@@ -164,7 +164,11 @@ $(function() {
   $.pp.reg("PRIVATE", function(args) {
     console.log(args);
   });
-  $.pp.reg("ACTOR", function(args) {});
+  $.pp.reg("ACTOR", function(args) {
+    var seat;
+    seat = game.get_seat(args);
+    seat.set_actor();
+  });
   $.pp.reg("STAGE", function(args) {
     game.new_stage();
   });

@@ -132,6 +132,7 @@
       return current_share_card = [200, 245];
     },
     get_next_share: function() {
+      if (current_share_card === null) current_share_card = [200, 245];
       current_share_card = [current_share_card[0], current_share_card[1] + 55];
       return format(current_share_card);
     }

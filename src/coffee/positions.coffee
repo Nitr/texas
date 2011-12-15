@@ -55,6 +55,7 @@
       current_share_card = [200,245]
 
     get_next_share: ->
+      current_share_card = [200,245] if current_share_card is null
       current_share_card = [current_share_card[0], current_share_card[1] + 55]
       format(current_share_card)
 

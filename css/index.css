@@ -47,9 +47,6 @@ body {
 .cmdblue {
   background-position: 276px 0px; }
 
-.actor_seat {
-  -webkit-box-shadow: 0px 0px 6px 6px silver; }
-
 .bet_label, .pot_label {
   background-color: #77B73E;
   position: absolute;
@@ -73,19 +70,6 @@ body {
 
 .ps_fold {
   opacity: 0.75; }
-
-.timer {
-  width: 6px;
-  position: absolute;
-  top: 0px;
-  left: -7px;
-  border-radius: 4px;
-  border: 1px solid gray; }
-
-.timer > div {
-  background-color: red;
-  height: 120px;
-  border-radius: 4px; }
 
 .rank_label {
   top: 447px;
@@ -363,6 +347,8 @@ h3[id^="err"] {
     color: gray;
     cursor: pointer;
     position: absolute; }
+  #game > .actor_seat {
+    -webkit-box-shadow: 0px 0px 6px 6px silver; }
   #game > .playing_seat {
     width: 84px;
     height: 120px;
@@ -414,3 +400,21 @@ h3[id^="err"] {
       height: 41px;
       display: none;
       position: absolute; }
+    #game > .playing_seat .actor_timer {
+      top: 0px;
+      left: -8px;
+      width: 7px;
+      height: 120px;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      border: 1px solid gray;
+      position: absolute;
+      overflow: hidden; }
+      #game > .playing_seat .actor_timer div {
+        width: 7px;
+        height: 130px;
+        background: -webkit-gradient(linear, 0 0, 0 40%, from(red), to(yellow));
+        border-radius: 4px;
+        -webkit-transition-property: all;
+        -webkit-transition-duration: 14s;
+        -webkit-transition-timing-function: ease-in; }

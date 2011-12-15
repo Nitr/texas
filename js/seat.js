@@ -100,6 +100,17 @@ PlayingSeat = (function() {
     }
   };
 
+  PlayingSeat.prototype.set_actor = function() {
+    $('.actor_timer').remove();
+    $('.actor_seat').removeClass('actor_seat');
+    this.dom.addClass('actor_seat');
+    return $('<div class="actor_timer"><div /></div>').appendTo(this.dom).oneTime(100, function() {
+      return $(this).children('div').css({
+        'margin-top': '120px'
+      });
+    });
+  };
+
   PlayingSeat.prototype.draw_card = function() {
     return this.dom.children(".draw_card").css($.positions.get_draw(this.sn)).show();
   };

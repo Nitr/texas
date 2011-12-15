@@ -59,6 +59,14 @@ class PlayingSeat extends Seat
     else
       dealer.remove().insertBefore(@dom.children(".nick"))
 
+  set_actor: ->
+    $('.actor_timer').remove()
+    $('.actor_seat').removeClass('actor_seat')
+    @dom.addClass('actor_seat')
+
+    $('<div class="actor_timer"><div /></div>').appendTo(@dom).oneTime 100, ->
+      $(@).children('div').css({'margin-top': '120px'})
+
   draw_card: ->
     @dom.children(".draw_card").css($.positions.get_draw(@sn)).show()
 
