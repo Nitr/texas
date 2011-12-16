@@ -21,7 +21,9 @@ Seat = (function() {
     return this.dom.css(this.get_position());
   };
 
-  Seat.prototype.clear = function() {};
+  Seat.prototype.clear = function() {
+    this.dom.children(".high_label").removeClass("high_label");
+  };
 
   return Seat;
 
@@ -61,6 +63,7 @@ PlayingSeat = (function() {
   }
 
   PlayingSeat.prototype.clear = function() {
+    this.player.set_nick();
     this.dom.children(".card").remove();
     return PlayingSeat.__super__.clear.apply(this, arguments);
   };
@@ -121,6 +124,10 @@ PlayingSeat = (function() {
   PlayingSeat.prototype.private_card = function(face, suit, card_sn) {
     this.dom.children(".draw_card").hide();
     return $.get_poker(face, suit).addClass('private_card').css($.positions.get_private(this.sn, card_sn)).appendTo(this.dom);
+  };
+
+  PlayingSeat.prototype.set_high = function(args) {
+    return this.dom.children(".nick").addClass("high_label").text(RANKS[args.rank]);
   };
 
   return PlayingSeat;

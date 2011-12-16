@@ -88,6 +88,17 @@ Game = (function() {
     return $.get_poker(face, suit).css($.positions.get_next_share()).appendTo(this.dom);
   };
 
+  Game.prototype.high = function(face, suit) {
+    var pokers;
+    pokers = $.find_poker(face);
+    console.log([pokers.size(), face, suit]);
+    return pokers.addClass('high_card');
+  };
+
+  Game.prototype.clear_high = function() {
+    return $.find_poker().removeClass('high_card');
+  };
+
   return Game;
 
 })();
@@ -131,7 +142,15 @@ $(function() {
     unblockUI();
   });
   $.get_poker = function(face, suit) {
-    return $("<img src='" + $.rl.poker["" + (new Number(face << 8 | suit))] + "' class='card'/>").data('face', face).data('suit', suit);
+    return $("<img src='" + $.rl.poker["" + (new Number(face << 8 | suit))] + "' class='card'/>").attr('face', face).attr('suit', suit);
+  };
+  $.find_poker = function(face, suit) {
+    if ((face != null) && (suit != null)) {
+      return $("[face=" + face + "]").filter("[suit=" + suit + "]");
+    }
+    if (face != null) return $("[face=" + face + "]");
+    if (suit != null) return $("[suit=" + suit + "]");
+    return $(".card");
   };
   $.pp.reg("GAME_DETAIL", function(detail) {
     return game.init(detail);
@@ -189,6 +208,35 @@ $(function() {
     seat.private_card(args.face1, args.suit1, 1);
     return seat.private_card(args.face2, args.suit2, 2);
   });
-  $.pp.reg("HAND", function(args) {});
+  $.pp.reg("HAND", function(args) {
+    var face, face2, seat, suit;
+    suit = args.suit;
+    face = args.high1;
+    face2 = args.high2;
+    game.clear_high();
+    switch (args.rank) {
+      case HC_PAIR:
+      case HC_THREE_KIND:
+      case HC_FOUR_KIND:
+        game.high(face);
+        break;
+      case HC_TWO_PAIR:
+      case HC_FULL_HOUSE:
+        game.high(face);
+        game.high(face2);
+        break;
+      case HC_FLUSH:
+      case HC_STRAIGHT:
+      case HC_STRAIGHT_FLUSH:
+        console.log('HC_HACK');
+        break;
+      case HC_HIGH_CARD:
+        break;
+      default:
+        throw "Unknown poker rank " + args.rank;
+    }
+    seat = game.get_seat(args);
+    seat.set_high(args);
+  });
   $.pp.reg("WIN", function(args) {});
 });

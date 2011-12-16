@@ -487,6 +487,15 @@ h3[id^="err"] {
    -webkit-box-shadow: 0px 0px 6px 6px silver;
   }
 
+  .high_card {
+    -webkit-box-shadow: 1px 1px 3px 3px gold;
+  }
+
+  .high_label {
+    color: gold;
+    text-shadow: -1px 2px 3px #ffb69a;
+  }
+
   // {{{ Playing Seat
   > .playing_seat {
     width: 84px;
@@ -499,6 +508,7 @@ h3[id^="err"] {
     text-align: center;
     position: absolute;
     
+
     .photo {
       padding: 0px;
       margin: 0px;

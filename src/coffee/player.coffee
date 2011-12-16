@@ -21,7 +21,7 @@ class Player
 
     return
     
-  set_nick: (nick) ->
+  set_nick: (nick = @nick) ->
     @nick = nick
     $(@dom).children('.nick').text @nick
     return

@@ -12,6 +12,7 @@ class Seat
     @dom.css @get_position()
 
   clear: ->
+    @dom.children(".high_label").removeClass("high_label")
     return
 
 class EmptySeat extends Seat
@@ -30,6 +31,7 @@ class PlayingSeat extends Seat
     @player = new Player @detail.pid, @dom, @detail
 
   clear: ->
+    @player.set_nick()
     @dom.children(".card").remove()
     super
 
@@ -81,6 +83,9 @@ class PlayingSeat extends Seat
       addClass('private_card').
       css($.positions.get_private(@sn, card_sn)).
       appendTo(@dom)
+
+  set_high: (args) ->
+    @dom.children(".nick").addClass("high_label").text(RANKS[args.rank])
 
 $ ->
   mod_sum = (sum, bet, bets) ->

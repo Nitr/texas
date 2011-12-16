@@ -35,6 +35,7 @@ Player = (function() {
   };
 
   Player.prototype.set_nick = function(nick) {
+    if (nick == null) nick = this.nick;
     this.nick = nick;
     $(this.dom).children('.nick').text(this.nick);
   };

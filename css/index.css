@@ -349,6 +349,11 @@ h3[id^="err"] {
     position: absolute; }
   #game > .actor_seat {
     -webkit-box-shadow: 0px 0px 6px 6px silver; }
+  #game .high_card {
+    -webkit-box-shadow: 1px 1px 3px 3px gold; }
+  #game .high_label {
+    color: gold;
+    text-shadow: -1px 2px 3px #ffb69a; }
   #game > .playing_seat {
     width: 84px;
     height: 120px;
