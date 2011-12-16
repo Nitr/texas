@@ -21,9 +21,7 @@ Seat = (function() {
     return this.dom.css(this.get_position());
   };
 
-  Seat.prototype.clear = function() {
-    return this.dom.remove();
-  };
+  Seat.prototype.clear = function() {};
 
   return Seat;
 
@@ -61,6 +59,11 @@ PlayingSeat = (function() {
     PlayingSeat.__super__.constructor.apply(this, arguments);
     this.player = new Player(this.detail.pid, this.dom, this.detail);
   }
+
+  PlayingSeat.prototype.clear = function() {
+    this.dom.children(".card").remove();
+    return PlayingSeat.__super__.clear.apply(this, arguments);
+  };
 
   PlayingSeat.prototype.get_dom = function() {
     return $("#game > .template > .playing_seat").clone(true);
@@ -113,6 +116,11 @@ PlayingSeat = (function() {
 
   PlayingSeat.prototype.draw_card = function() {
     return this.dom.children(".draw_card").css($.positions.get_draw(this.sn)).show();
+  };
+
+  PlayingSeat.prototype.private_card = function(face, suit, card_sn) {
+    this.dom.children(".draw_card").hide();
+    return $.get_poker(face, suit).addClass('private_card').css($.positions.get_private(this.sn, card_sn)).appendTo(this.dom);
   };
 
   return PlayingSeat;

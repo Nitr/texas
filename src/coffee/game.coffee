@@ -12,10 +12,12 @@ class Game
       else @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
 
   clear: ->
-    @dom.children(".card").remove()
-    @dom.children(".pot").remove()
-
     $.positions.reset_share()
+
+    @dom.children(".pot").remove()
+    @dom.children(".card").remove()
+
+    seat.clear() for seat in @seats when seat?
 
   get_seat_by_pid: (o) ->
     return seat for seat in @seats when seat? and seat.__proto__.constructor is PlayingSeat and seat.player.pid is o.pid
@@ -38,7 +40,9 @@ class Game
     return
 
   share_card: (face, suit) ->
-    $("<img src='#{$.get_poker(face, suit)}' class='card'/>").css($.positions.get_next_share()).appendTo(@dom)
+    $.get_poker(face, suit).
+      css($.positions.get_next_share()).
+      appendTo(@dom)
 
 $ ->
   game = null
@@ -71,16 +75,14 @@ $ ->
     return
 
   $.get_poker = (face, suit) ->
-    $.rl.poker["#{new Number(face << 8 | suit)}"]
-
+    $("<img src='#{$.rl.poker["#{new Number(face << 8 | suit)}"]}' class='card'/>").data('face', face).data('suit', suit)
+    
   # {{{
   $.pp.reg "GAME_DETAIL", (detail) ->
     game.init detail
-    return
 
   $.pp.reg "SEAT_DETAIL", (detail) ->
     game.init_seat detail
-    return
 
   $.pp.reg "CANCEL", (args) ->
     return
@@ -95,7 +97,6 @@ $ ->
   $.pp.reg "DEALER", (args) ->
     seat = game.get_seat args
     seat.set_dealer()
-    return
 
   $.pp.reg "SBLIND", (args) ->
     return
@@ -112,29 +113,22 @@ $ ->
     else
       seat.raise(args.call, args.raise)
 
-    return
-
   $.pp.reg "DRAW", (args) ->
     seat = game.get_seat args
     seat.draw_card()
-    return
 
   $.pp.reg "SHARE", (args) ->
     game.share_card(args.face, args.suit)
-    return
 
   $.pp.reg "PRIVATE", (args) ->
     console.log args
-    return
 
   $.pp.reg "ACTOR", (args) ->
     seat = game.get_seat args
     seat.set_actor()
-    return
 
   $.pp.reg "STAGE", (args) ->
     game.new_stage()
-    return
 
   $.pp.reg "JOIN", (args) ->
     return
@@ -146,7 +140,9 @@ $ ->
     return
 
   $.pp.reg "SHOW", (args) ->
-    return
+    seat = game.get_seat args
+    seat.private_card(args.face1, args.suit1, 1)
+    seat.private_card(args.face2, args.suit2, 2)
 
   $.pp.reg "HAND", (args) ->
     return

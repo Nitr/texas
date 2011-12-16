@@ -12,7 +12,7 @@ class Seat
     @dom.css @get_position()
 
   clear: ->
-    @dom.remove()
+    return
 
 class EmptySeat extends Seat
   constructor: (@detail, @game) ->
@@ -28,6 +28,10 @@ class PlayingSeat extends Seat
   constructor: (@detail, @game) ->
     super
     @player = new Player @detail.pid, @dom, @detail
+
+  clear: ->
+    @dom.children(".card").remove()
+    super
 
   get_dom: ->
     $("#game > .template > .playing_seat").clone true
@@ -69,6 +73,14 @@ class PlayingSeat extends Seat
 
   draw_card: ->
     @dom.children(".draw_card").css($.positions.get_draw(@sn)).show()
+
+  private_card: (face, suit, card_sn)->
+    @dom.children(".draw_card").hide()
+
+    $.get_poker(face, suit).
+      addClass('private_card').
+      css($.positions.get_private(@sn, card_sn)).
+      appendTo(@dom)
 
 $ ->
   mod_sum = (sum, bet, bets) ->

@@ -305,7 +305,7 @@ h3[id^="err"] {
     margin: 0px 10px 0px 0px;
     padding: 16px 0px 0px 48px;
     background: url(button.png) no-repeat; }
-  #game .card {
+  #game .card, #game .private_card {
     z-index: 1;
     width: 45px;
     height: 65px;
@@ -394,8 +394,6 @@ h3[id^="err"] {
       border-top: 0px;
       display: block; }
     #game > .playing_seat .draw_card {
-      top: 50px;
-      left: 50px;
       width: 41px;
       height: 41px;
       display: none;

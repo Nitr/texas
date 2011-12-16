@@ -24,9 +24,17 @@ Game = (function() {
   };
 
   Game.prototype.clear = function() {
-    this.dom.children(".card").remove();
+    var seat, _i, _len, _ref, _results;
+    $.positions.reset_share();
     this.dom.children(".pot").remove();
-    return $.positions.reset_share();
+    this.dom.children(".card").remove();
+    _ref = this.seats;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      seat = _ref[_i];
+      if (seat != null) _results.push(seat.clear());
+    }
+    return _results;
   };
 
   Game.prototype.get_seat_by_pid = function(o) {
@@ -77,7 +85,7 @@ Game = (function() {
   };
 
   Game.prototype.share_card = function(face, suit) {
-    return $("<img src='" + ($.get_poker(face, suit)) + "' class='card'/>").css($.positions.get_next_share()).appendTo(this.dom);
+    return $.get_poker(face, suit).css($.positions.get_next_share()).appendTo(this.dom);
   };
 
   return Game;
@@ -123,13 +131,13 @@ $(function() {
     unblockUI();
   });
   $.get_poker = function(face, suit) {
-    return $.rl.poker["" + (new Number(face << 8 | suit))];
+    return $("<img src='" + $.rl.poker["" + (new Number(face << 8 | suit))] + "' class='card'/>").data('face', face).data('suit', suit);
   };
   $.pp.reg("GAME_DETAIL", function(detail) {
-    game.init(detail);
+    return game.init(detail);
   });
   $.pp.reg("SEAT_DETAIL", function(detail) {
-    game.init_seat(detail);
+    return game.init_seat(detail);
   });
   $.pp.reg("CANCEL", function(args) {});
   $.pp.reg("START", function(args) {
@@ -139,7 +147,7 @@ $(function() {
   $.pp.reg("DEALER", function(args) {
     var seat;
     seat = game.get_seat(args);
-    seat.set_dealer();
+    return seat.set_dealer();
   });
   $.pp.reg("SBLIND", function(args) {});
   $.pp.reg("BBLIND", function(args) {});
@@ -148,34 +156,39 @@ $(function() {
     sum = args.call + args.raise;
     seat = game.get_seat(args);
     if (sum === 0) {
-      seat.check();
+      return seat.check();
     } else {
-      seat.raise(args.call, args.raise);
+      return seat.raise(args.call, args.raise);
     }
   });
   $.pp.reg("DRAW", function(args) {
     var seat;
     seat = game.get_seat(args);
-    seat.draw_card();
+    return seat.draw_card();
   });
   $.pp.reg("SHARE", function(args) {
-    game.share_card(args.face, args.suit);
+    return game.share_card(args.face, args.suit);
   });
   $.pp.reg("PRIVATE", function(args) {
-    console.log(args);
+    return console.log(args);
   });
   $.pp.reg("ACTOR", function(args) {
     var seat;
     seat = game.get_seat(args);
-    seat.set_actor();
+    return seat.set_actor();
   });
   $.pp.reg("STAGE", function(args) {
-    game.new_stage();
+    return game.new_stage();
   });
   $.pp.reg("JOIN", function(args) {});
   $.pp.reg("LEAVE", function(args) {});
   $.pp.reg("BET_REQ", function(args) {});
-  $.pp.reg("SHOW", function(args) {});
+  $.pp.reg("SHOW", function(args) {
+    var seat;
+    seat = game.get_seat(args);
+    seat.private_card(args.face1, args.suit1, 1);
+    return seat.private_card(args.face2, args.suit2, 2);
+  });
   $.pp.reg("HAND", function(args) {});
   $.pp.reg("WIN", function(args) {});
 });

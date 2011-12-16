@@ -1,13 +1,18 @@
 (($) ->
+  css = (left, top) ->
+    {left: "#{left}px", top: "#{top}px"}
+
   convert = (positions) ->
     result = for x, y of positions
       {
-        preview: {left: y.pv[0] + 'px', top: y.pv[1] + 'px'},
-        empty_seat: {left: y.es[0] + 'px', top: y.es[1] + 'px'},
-        playing_seat: {left: y.ps[0] + 'px', top: y.ps[1] + 'px'},
-        bet_start: {left: "#{y.bet[0]}px", top: "#{y.bet[1]}px"},
+        preview: css(y.pv[0], y.pv[1])
+        empty_seat: css(y.es[0], y.es[1]),
+        playing_seat: css(y.ps[0], y.ps[1]),
+        draw: css(y.draw[0], y.draw[1]),
         bet_end: [y.bet[3], y.bet[2]],
-        draw: {left: "#{y.draw[0]}px", top: "#{y.draw[1]}px"}
+        bet_start: css(y.bet[0], y.bet[1]),
+        private_1: css(y.draw[0], y.draw[1]),
+        private_2: css(y.draw[0] + 15, y.draw[1])
       }
       
   nine_position = [
@@ -58,6 +63,9 @@
       current_share_card = [200,245] if current_share_card is null
       current_share_card = [current_share_card[0], current_share_card[1] + 55]
       format(current_share_card)
+
+    get_private: (sn, card_sn) ->
+      return game_position[sn - 1]["private_#{card_sn}"]
 
   return
 )(jQuery)
