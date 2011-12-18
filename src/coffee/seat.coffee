@@ -114,7 +114,7 @@ class PlayingSeat extends Seat
         high @hand.face2
       when HC_FLUSH
         high null_face, @hand.suit, (pokers) ->
-          pokers.sort(compare_card).slice(0, 5)
+          pokers.sort($.compare_card).slice(0, 5)
         console.log 'HC_FLUSH'
       when HC_STRAIGHT, HC_STRAIGHT_FLUSH
         faces = [
@@ -147,7 +147,17 @@ $ ->
     sum = mod_sum sum, bet, bets for bet in BETS when sum >= bet[0]
     "betting_#{b}" for b in bets
 
-  $.compute
+
+  $.compare_card = (a, b) ->
+    a1 = new Number($(a).attr('face'))
+    b1 = new Number($(b).attr('face'))
+
+    if (a1 > b1)
+      return -1
+    else if (a1 < b1)
+      return 1
+    else
+      return 0
 
   $("#game .empty_seat").bind 'click', ->
     return

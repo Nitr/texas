@@ -164,7 +164,7 @@ PlayingSeat = (function() {
         break;
       case HC_FLUSH:
         high(null_face, this.hand.suit, function(pokers) {
-          return pokers.sort(compare_card).slice(0, 5);
+          return pokers.sort($.compare_card).slice(0, 5);
         });
         console.log('HC_FLUSH');
         break;
@@ -217,6 +217,17 @@ $(function() {
     }
     return _results;
   };
-  $.compute;
+  $.compare_card = function(a, b) {
+    var a1, b1;
+    a1 = new Number($(a).attr('face'));
+    b1 = new Number($(b).attr('face'));
+    if (a1 > b1) {
+      return -1;
+    } else if (a1 < b1) {
+      return 1;
+    } else {
+      return 0;
+    }
+  };
   return $("#game .empty_seat").bind('click', function() {});
 });

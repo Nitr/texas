@@ -26,8 +26,7 @@ Game = (function() {
   Game.prototype.clear = function() {
     var seat, _i, _len, _ref, _results;
     $.positions.reset_share();
-    this.dom.children(".pot").remove();
-    this.dom.children(".card").remove();
+    $(".bet, .pot, .card").remove();
     _ref = this.seats;
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -72,7 +71,7 @@ Game = (function() {
   Game.prototype.new_stage = function() {
     var ref;
     ref = this.dom;
-    this.dom.oneTime('1s', function() {
+    this.dom.oneTime('0.3s', function() {
       var bet, _i, _len, _ref, _results;
       _ref = ref.children(".bet");
       _results = [];
@@ -86,6 +85,21 @@ Game = (function() {
 
   Game.prototype.share_card = function(face, suit) {
     return $.get_poker(face, suit).css($.positions.get_next_share()).appendTo(this.dom);
+  };
+
+  Game.prototype.win = function(seat) {
+    var ref;
+    ref = this.dom;
+    ref.oneTime('1s', function() {
+      var bet, _i, _len, _ref, _results;
+      _ref = ref.children(".bet, .pot");
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        bet = _ref[_i];
+        _results.push($(bet).css($.positions.get_bet(seat.sn).start));
+      }
+      return _results;
+    });
   };
 
   Game.prototype.high = function(face, suit, filter, seat_pokers) {
@@ -110,7 +124,7 @@ Game = (function() {
 })();
 
 $(function() {
-  var compare_card, game, game_dom;
+  var game, game_dom;
   game = null;
   game_dom = $('#game');
   game_dom.bind('switch_game', function(event, args) {
@@ -158,18 +172,6 @@ $(function() {
     if (suit != null) return pokers.filter("[suit=" + suit + "]");
     return $(".card");
   };
-  compare_card = function(a, b) {
-    var a1, b1;
-    a1 = new Number($(a).attr('face'));
-    b1 = new Number($(b).attr('face'));
-    if (a1 > b1) {
-      return -1;
-    } else if (a1 < b1) {
-      return 1;
-    } else {
-      return 0;
-    }
-  };
   $.pp.reg("GAME_DETAIL", function(detail) {
     return game.init(detail);
   });
@@ -215,19 +217,21 @@ $(function() {
     return seat.set_actor();
   });
   $.pp.reg("STAGE", function(args) {
-    return game.new_stage();
+    if (args.stage !== 0) return game.new_stage();
   });
   $.pp.reg("JOIN", function(args) {});
   $.pp.reg("LEAVE", function(args) {});
   $.pp.reg("BET_REQ", function(args) {});
   $.pp.reg("SHOW", function(args) {
     var seat;
+    game.new_stage();
     seat = game.get_seat(args);
     seat.private_card(args.face1, args.suit1, 1);
     return seat.private_card(args.face2, args.suit2, 2);
   });
   $.pp.reg("HAND", function(args) {
     var seat;
+    console.log('HAND');
     seat = game.get_seat(args);
     seat.set_hand(args);
     return seat.set_rank();
@@ -236,6 +240,7 @@ $(function() {
     var seat;
     game.clear_actor();
     seat = game.get_seat(args);
+    game.win(seat);
     return seat.high();
   });
 });

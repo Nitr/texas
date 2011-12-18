@@ -14,8 +14,7 @@ class Game
   clear: ->
     $.positions.reset_share()
 
-    @dom.children(".pot").remove()
-    @dom.children(".card").remove()
+    $(".bet, .pot, .card").remove()
 
     seat.clear() for seat in @seats when seat?
 
@@ -35,7 +34,7 @@ class Game
 
   new_stage: ->
     ref = @dom
-    @dom.oneTime '1s', ->
+    @dom.oneTime '0.3s', ->
       $(bet).css($.positions.get_random([240, 680], 20)).removeClass('bet').addClass('pot') for bet in ref.children(".bet")
     return
 
@@ -43,6 +42,12 @@ class Game
     $.get_poker(face, suit).
       css($.positions.get_next_share()).
       appendTo(@dom)
+
+  win: (seat) ->
+    ref = @dom
+    ref.oneTime '1s', ->
+      $(bet).css($.positions.get_bet(seat.sn).start) for bet in ref.children(".bet, .pot")
+    return
 
   high: (face, suit, filter, seat_pokers) ->
     pokers = $.merge(@dom.children('.card'), seat_pokers)
@@ -96,17 +101,6 @@ $ ->
     return pokers.filter("[suit=#{suit}]") if suit?
     return $(".card")
 
-  compare_card = (a, b) ->
-    a1 = new Number($(a).attr('face'))
-    b1 = new Number($(b).attr('face'))
-
-    if (a1 > b1)
-      return -1
-    else if (a1 < b1)
-      return 1
-    else
-      return 0
-    
   # {{{
   $.pp.reg "GAME_DETAIL", (detail) ->
     game.init detail
@@ -158,7 +152,7 @@ $ ->
     seat.set_actor()
 
   $.pp.reg "STAGE", (args) ->
-    game.new_stage()
+    game.new_stage() if args.stage != 0
 
   $.pp.reg "JOIN", (args) ->
     return
@@ -170,11 +164,13 @@ $ ->
     return
 
   $.pp.reg "SHOW", (args) ->
+    game.new_stage()
     seat = game.get_seat args
     seat.private_card(args.face1, args.suit1, 1)
     seat.private_card(args.face2, args.suit2, 2)
 
   $.pp.reg "HAND", (args) ->
+    console.log 'HAND'
     seat = game.get_seat args
     seat.set_hand args
     seat.set_rank()
@@ -182,6 +178,7 @@ $ ->
   $.pp.reg "WIN", (args) ->
     game.clear_actor()
     seat = game.get_seat args
+    game.win seat
     seat.high()
   # }}}
 
