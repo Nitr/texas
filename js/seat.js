@@ -60,6 +60,7 @@ PlayingSeat = (function() {
     this.game = game;
     PlayingSeat.__super__.constructor.apply(this, arguments);
     this.player = new Player(this.detail.pid, this.dom, this.detail);
+    this.poker = this.dom.children('.card');
   }
 
   PlayingSeat.prototype.clear = function() {
@@ -107,8 +108,7 @@ PlayingSeat = (function() {
   };
 
   PlayingSeat.prototype.set_actor = function() {
-    $('.actor_timer').remove();
-    $('.actor_seat').removeClass('actor_seat');
+    this.game.clear_actor();
     this.dom.addClass('actor_seat');
     return $('<div class="actor_timer"><div /></div>').appendTo(this.dom).oneTime(100, function() {
       return $(this).children('div').css({
@@ -122,12 +122,72 @@ PlayingSeat = (function() {
   };
 
   PlayingSeat.prototype.private_card = function(face, suit, card_sn) {
+    var poker;
     this.dom.children(".draw_card").hide();
-    return $.get_poker(face, suit).addClass('private_card').css($.positions.get_private(this.sn, card_sn)).appendTo(this.dom);
+    poker = $.get_poker(face, suit).addClass('private_card').css($.positions.get_private(this.sn, card_sn)).appendTo(this.dom);
+    return this.pokers = this.dom.children('.card');
   };
 
-  PlayingSeat.prototype.set_high = function(args) {
-    return this.dom.children(".nick").addClass("high_label").text(RANKS[args.rank]);
+  PlayingSeat.prototype.set_rank = function() {
+    return this.dom.children(".nick").addClass("high_label").text(RANKS[this.hand.rank]);
+  };
+
+  PlayingSeat.prototype.set_hand = function(hand) {
+    return this.hand = {
+      face: hand.high1,
+      face2: hand.high2,
+      suit: hand.suit,
+      rank: hand.rank
+    };
+  };
+
+  PlayingSeat.prototype.high = function() {
+    var f, faces, game, high, null_face, null_suit, one, pokers, s, _i, _len;
+    game = this.game;
+    game.clear_high();
+    pokers = this.pokers;
+    null_suit = null;
+    null_face = null;
+    high = function(face, suit, filter) {
+      return game.high(face, suit, filter, pokers);
+    };
+    switch (this.hand.rank) {
+      case HC_PAIR:
+      case HC_THREE_KIND:
+      case HC_FOUR_KIND:
+        high(this.hand.face);
+        break;
+      case HC_TWO_PAIR:
+      case HC_FULL_HOUSE:
+        high(this.hand.face);
+        high(this.hand.face2);
+        break;
+      case HC_FLUSH:
+        high(null_face, this.hand.suit, function(pokers) {
+          return pokers.sort(compare_card).slice(0, 5);
+        });
+        console.log('HC_FLUSH');
+        break;
+      case HC_STRAIGHT:
+      case HC_STRAIGHT_FLUSH:
+        faces = [this.hand.face, this.hand.face - 1, this.hand.face - 2, this.hand.face - 3, this.hand.face === CF_FIVE ? CF_ACE : this.hand.face - 4];
+        one = function(pokers) {
+          var result;
+          result = pokers.first();
+          return result;
+        };
+        s = this.hand.rank === HC_STRAIGHT_FLUSH ? this.hand.suit : null_suit;
+        for (_i = 0, _len = faces.length; _i < _len; _i++) {
+          f = faces[_i];
+          high(f, s, one);
+        }
+        console.log('HC_STRAIGHT or HC_STRAIGHT_FLUSH');
+        break;
+      case HC_HIGH_CARD:
+        break;
+      default:
+        throw "Unknown poker rank " + args.rank;
+    }
   };
 
   return PlayingSeat;
@@ -157,5 +217,6 @@ $(function() {
     }
     return _results;
   };
+  $.compute;
   return $("#game .empty_seat").bind('click', function() {});
 });

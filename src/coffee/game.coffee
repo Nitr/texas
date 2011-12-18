@@ -44,13 +44,18 @@ class Game
       css($.positions.get_next_share()).
       appendTo(@dom)
 
-  high: (face, suit) ->
-    pokers = $.find_poker(face)
-    console.log [pokers.size(), face, suit]
+  high: (face, suit, filter, seat_pokers) ->
+    pokers = $.merge(@dom.children('.card'), seat_pokers)
+    pokers = $.find_poker(face, suit, pokers)
+    pokers = filter(pokers) if filter?
     pokers.addClass('high_card')
 
   clear_high: ->
     $.find_poker().removeClass('high_card')
+
+  clear_actor: ->
+    $('.actor_timer').remove()
+    $('.actor_seat').removeClass('actor_seat')
 
 $ ->
   game = null
@@ -85,11 +90,22 @@ $ ->
   $.get_poker = (face, suit) ->
     $("<img src='#{$.rl.poker["#{new Number(face << 8 | suit)}"]}' class='card'/>").attr('face', face).attr('suit', suit)
 
-  $.find_poker = (face, suit) ->
-    return $("[face=#{face}]").filter("[suit=#{suit}]") if face? and suit?
-    return $("[face=#{face}]") if face? 
-    return $("[suit=#{suit}]") if suit? 
+  $.find_poker = (face, suit, pokers) ->
+    return pokers.filter("[face=#{face}]").filter("[suit=#{suit}]") if face? and suit?
+    return pokers.filter("[face=#{face}]") if face?
+    return pokers.filter("[suit=#{suit}]") if suit?
     return $(".card")
+
+  compare_card = (a, b) ->
+    a1 = new Number($(a).attr('face'))
+    b1 = new Number($(b).attr('face'))
+
+    if (a1 > b1)
+      return -1
+    else if (a1 < b1)
+      return 1
+    else
+      return 0
     
   # {{{
   $.pp.reg "GAME_DETAIL", (detail) ->
@@ -159,60 +175,14 @@ $ ->
     seat.private_card(args.face2, args.suit2, 2)
 
   $.pp.reg "HAND", (args) ->
-    suit = args.suit
-    face = args.high1
-    face2 = args.high2
-
-    game.clear_high()
-
-    switch args.rank
-      when HC_PAIR, HC_THREE_KIND, HC_FOUR_KIND
-        game.high face
-      when HC_TWO_PAIR, HC_FULL_HOUSE
-        game.high face
-        game.high face2
-      when HC_FLUSH, HC_STRAIGHT, HC_STRAIGHT_FLUSH
-        console.log 'HC_HACK'
-      when HC_HIGH_CARD
-      else
-        throw "Unknown poker rank #{args.rank}"
-
     seat = game.get_seat args
-    seat.set_high args
-
-    return
-      #when HC_FLUSH
-        #$("[suit=" + args.suit + "]").
-          #sort(compare_card).
-          #slice(0, 5).
-          #each(function() {
-            #set_high_css($(this))
-          #})
-      #when HC_STRAIGHT
-        #set_high(args.high1)
-        #set_high(args.high1 - 1)
-        #set_high(args.high1 - 2)
-        #set_high(args.high1 - 3)
-        #if (args.high1 == CF_FIVE) {
-          #set_high(CF_ACE)
-        #} else {
-          #set_high(args.high1 - 4)
-        #}
-      #when HC_STRAIGHT_FLUSH
-        #set_high(args.high1, args.suit)
-        #set_high(args.high1 - 1, args.suit)
-        #set_high(args.high1 - 2, args.suit)
-        #set_high(args.high1 - 3, args.suit)
-        #if (args.high1 == CF_FIVE) {
-          #set_high(CF_ACE, args.suit)
-        #} else {
-          #set_high(args.high1 - 4, args.suit)
-        #}
-    #return
+    seat.set_hand args
+    seat.set_rank()
 
   $.pp.reg "WIN", (args) ->
-    return
-
+    game.clear_actor()
+    seat = game.get_seat args
+    seat.high()
   # }}}
 
   return

@@ -88,10 +88,11 @@ Game = (function() {
     return $.get_poker(face, suit).css($.positions.get_next_share()).appendTo(this.dom);
   };
 
-  Game.prototype.high = function(face, suit) {
+  Game.prototype.high = function(face, suit, filter, seat_pokers) {
     var pokers;
-    pokers = $.find_poker(face);
-    console.log([pokers.size(), face, suit]);
+    pokers = $.merge(this.dom.children('.card'), seat_pokers);
+    pokers = $.find_poker(face, suit, pokers);
+    if (filter != null) pokers = filter(pokers);
     return pokers.addClass('high_card');
   };
 
@@ -99,12 +100,17 @@ Game = (function() {
     return $.find_poker().removeClass('high_card');
   };
 
+  Game.prototype.clear_actor = function() {
+    $('.actor_timer').remove();
+    return $('.actor_seat').removeClass('actor_seat');
+  };
+
   return Game;
 
 })();
 
 $(function() {
-  var game, game_dom;
+  var compare_card, game, game_dom;
   game = null;
   game_dom = $('#game');
   game_dom.bind('switch_game', function(event, args) {
@@ -144,13 +150,25 @@ $(function() {
   $.get_poker = function(face, suit) {
     return $("<img src='" + $.rl.poker["" + (new Number(face << 8 | suit))] + "' class='card'/>").attr('face', face).attr('suit', suit);
   };
-  $.find_poker = function(face, suit) {
+  $.find_poker = function(face, suit, pokers) {
     if ((face != null) && (suit != null)) {
-      return $("[face=" + face + "]").filter("[suit=" + suit + "]");
+      return pokers.filter("[face=" + face + "]").filter("[suit=" + suit + "]");
     }
-    if (face != null) return $("[face=" + face + "]");
-    if (suit != null) return $("[suit=" + suit + "]");
+    if (face != null) return pokers.filter("[face=" + face + "]");
+    if (suit != null) return pokers.filter("[suit=" + suit + "]");
     return $(".card");
+  };
+  compare_card = function(a, b) {
+    var a1, b1;
+    a1 = new Number($(a).attr('face'));
+    b1 = new Number($(b).attr('face'));
+    if (a1 > b1) {
+      return -1;
+    } else if (a1 < b1) {
+      return 1;
+    } else {
+      return 0;
+    }
   };
   $.pp.reg("GAME_DETAIL", function(detail) {
     return game.init(detail);
@@ -209,34 +227,15 @@ $(function() {
     return seat.private_card(args.face2, args.suit2, 2);
   });
   $.pp.reg("HAND", function(args) {
-    var face, face2, seat, suit;
-    suit = args.suit;
-    face = args.high1;
-    face2 = args.high2;
-    game.clear_high();
-    switch (args.rank) {
-      case HC_PAIR:
-      case HC_THREE_KIND:
-      case HC_FOUR_KIND:
-        game.high(face);
-        break;
-      case HC_TWO_PAIR:
-      case HC_FULL_HOUSE:
-        game.high(face);
-        game.high(face2);
-        break;
-      case HC_FLUSH:
-      case HC_STRAIGHT:
-      case HC_STRAIGHT_FLUSH:
-        console.log('HC_HACK');
-        break;
-      case HC_HIGH_CARD:
-        break;
-      default:
-        throw "Unknown poker rank " + args.rank;
-    }
+    var seat;
     seat = game.get_seat(args);
-    seat.set_high(args);
+    seat.set_hand(args);
+    return seat.set_rank();
   });
-  $.pp.reg("WIN", function(args) {});
+  $.pp.reg("WIN", function(args) {
+    var seat;
+    game.clear_actor();
+    seat = game.get_seat(args);
+    return seat.high();
+  });
 });
