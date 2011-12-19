@@ -36,7 +36,9 @@ Game = (function() {
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       seat = _ref[_i];
-      if (seat != null) _results.push(seat.clear());
+      if ((seat != null) && seat.__proto__.constructor === PlayingSeat) {
+        _results.push(seat.clear());
+      }
     }
     return _results;
   };
@@ -225,10 +227,11 @@ $(function() {
     if (args.stage !== GS_PREFLOP) return game.new_stage();
   });
   $.pp.reg("JOIN", function(args) {
-    console.log(args);
     game.join(args);
   });
-  $.pp.reg("LEAVE", function(args) {});
+  $.pp.reg("LEAVE", function(args) {
+    game.leave(args);
+  });
   $.pp.reg("BET_REQ", function(args) {});
   $.pp.reg("SHOW", function(args) {
     var seat;

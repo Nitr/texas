@@ -25,16 +25,16 @@ GamePreview = (function() {
   GamePreview.prototype.add = function(seat) {
     var player_dom;
     player_dom = $('#game_preview > .seat').filter(function() {
-      return $(this).data('seat') === seat.seat;
+      return $(this).data('seat') === seat.sn;
     });
     if (seat.state === 0) {
       player_dom.remove();
-      this.seats[seat.seat] = null;
+      this.seats[seat.sn] = null;
       return;
     }
     if (player_dom.size() !== 0) return;
-    player_dom = $($('#game_preview > .template').text()).css($.positions.get_preview(seat.seat)).data('seat', seat.seat).appendTo(this.dom);
-    this.seats[seat.seat] = new Player(seat.pid, player_dom, seat);
+    player_dom = $($('#game_preview > .template').text()).css($.positions.get_preview(seat.sn)).data('seat', seat.sn).appendTo(this.dom);
+    this.seats[seat.sn] = new Player(seat.pid, player_dom, seat);
   };
 
   GamePreview.prototype.clear = function() {

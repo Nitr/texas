@@ -15,21 +15,21 @@ class GamePreview
 
   add: (seat) ->
     player_dom = $('#game_preview > .seat').filter ->
-      $(@).data('seat') == seat.seat
+      $(@).data('seat') == seat.sn
 
     if seat.state == 0
       player_dom.remove()
-      @seats[seat.seat] = null
+      @seats[seat.sn] = null
       return
     
     return if player_dom.size() != 0
 
     player_dom = $($('#game_preview > .template').text()).
-      css($.positions.get_preview(seat.seat)).
-      data('seat', seat.seat).
+      css($.positions.get_preview(seat.sn)).
+      data('seat', seat.sn).
       appendTo(@dom)
 
-    @seats[seat.seat] = new Player(seat.pid, player_dom, seat)
+    @seats[seat.sn] = new Player(seat.pid, player_dom, seat)
     return
 
   clear: ->

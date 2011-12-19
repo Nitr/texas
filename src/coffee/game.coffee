@@ -18,7 +18,7 @@ class Game
   clear: ->
     $.positions.reset_share()
     $(".bet, .pot, .card").remove()
-    seat.clear() for seat in @seats when seat?
+    seat.clear() for seat in @seats when seat? and seat.__proto__.constructor is PlayingSeat
 
   get_seat_by_pid: (o) ->
     return seat for seat in @seats when seat? and seat.__proto__.constructor is PlayingSeat and seat.player.pid is o.pid
@@ -157,11 +157,11 @@ $ ->
     game.new_stage() if args.stage != GS_PREFLOP
 
   $.pp.reg "JOIN", (args) ->
-    console.log args
     game.join args
     return
 
   $.pp.reg "LEAVE", (args) ->
+    game.leave args
     return
 
   $.pp.reg "BET_REQ", (args) ->
