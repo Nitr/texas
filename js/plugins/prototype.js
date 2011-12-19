@@ -226,9 +226,9 @@
     notify_seat_state: generate_notify("JOIN", [44,
       {type: "integer", prop: "gid"},
       {type: "integer", prop: "pid"},
-      {type: "byte", prop: "seat"},
-      {type: "decimal", prop: "buyin"},
-      {type: "string", prop: "nick", base64: true}
+      {type: "byte",    prop: "sn"},
+      {type: "decimal", prop: "inplay"},
+      {type: "string",  prop: "nick", base64: true}
     ])
   };
 

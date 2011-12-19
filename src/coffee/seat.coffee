@@ -6,14 +6,11 @@ class Seat
   init_dom: () ->
     @dom = @get_dom()
     @set_position()
-    @dom.data('sn', @sn).data('game', @game).appendTo $("#game")
+    @dom.appendTo @game.dom
 
   set_position: (@offset = 0) ->
     @dom.css @get_position()
 
-  clear: ->
-    @dom.children(".high_label").removeClass("high_label")
-    return
 
 class EmptySeat extends Seat
   constructor: (@detail, @game) ->
@@ -24,17 +21,21 @@ class EmptySeat extends Seat
 
   get_position: ->
     $.positions.get_empty @detail.sn, @offset
-    
+
+  remove: ->
+    @dom.remove()
+
 class PlayingSeat extends Seat
   constructor: (@detail, @game) ->
     super
     @player = new Player @detail.pid, @dom, @detail
     @poker = @dom.children('.card')
+    @draw_card() if @game.detail.stage != GS_CANCEL and @game.detail.stage != GS_PREFLOP 
 
   clear: ->
     @player.set_nick()
     @dom.children(".card").remove()
-    super
+    @dom.children(".high_label").removeClass("high_label")
 
   get_dom: ->
     $("#game > .template > .playing_seat").clone true

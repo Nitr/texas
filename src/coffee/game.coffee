@@ -11,11 +11,13 @@ class Game
       when PS_EMPTY then @seats[seat_detail.sn] = new EmptySeat seat_detail, @
       else @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
 
+  join: (seat_detail) ->
+    @seats[seat_detail.sn].remove()
+    @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
+
   clear: ->
     $.positions.reset_share()
-
     $(".bet, .pot, .card").remove()
-
     seat.clear() for seat in @seats when seat?
 
   get_seat_by_pid: (o) ->
@@ -152,9 +154,11 @@ $ ->
     seat.set_actor()
 
   $.pp.reg "STAGE", (args) ->
-    game.new_stage() if args.stage != 0
+    game.new_stage() if args.stage != GS_PREFLOP
 
   $.pp.reg "JOIN", (args) ->
+    console.log args
+    game.join args
     return
 
   $.pp.reg "LEAVE", (args) ->
@@ -170,7 +174,6 @@ $ ->
     seat.private_card(args.face2, args.suit2, 2)
 
   $.pp.reg "HAND", (args) ->
-    console.log 'HAND'
     seat = game.get_seat args
     seat.set_hand args
     seat.set_rank()

@@ -23,6 +23,11 @@ Game = (function() {
     }
   };
 
+  Game.prototype.join = function(seat_detail) {
+    this.seats[seat_detail.sn].remove();
+    return this.seats[seat_detail.sn] = new PlayingSeat(seat_detail, this);
+  };
+
   Game.prototype.clear = function() {
     var seat, _i, _len, _ref, _results;
     $.positions.reset_share();
@@ -217,9 +222,12 @@ $(function() {
     return seat.set_actor();
   });
   $.pp.reg("STAGE", function(args) {
-    if (args.stage !== 0) return game.new_stage();
+    if (args.stage !== GS_PREFLOP) return game.new_stage();
   });
-  $.pp.reg("JOIN", function(args) {});
+  $.pp.reg("JOIN", function(args) {
+    console.log(args);
+    game.join(args);
+  });
   $.pp.reg("LEAVE", function(args) {});
   $.pp.reg("BET_REQ", function(args) {});
   $.pp.reg("SHOW", function(args) {
@@ -231,7 +239,6 @@ $(function() {
   });
   $.pp.reg("HAND", function(args) {
     var seat;
-    console.log('HAND');
     seat = game.get_seat(args);
     seat.set_hand(args);
     return seat.set_rank();
