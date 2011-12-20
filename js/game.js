@@ -178,7 +178,6 @@ $(function() {
   });
   game_dom.bind('inited', function() {
     $(this).stopTime();
-    unblockUI();
   });
   $.get_poker = function(face, suit) {
     return $("<img src='" + $.rl.poker["" + (new Number(face << 8 | suit))] + "' class='card'/>").attr('face', face).attr('suit', suit);
@@ -192,7 +191,8 @@ $(function() {
     return $(".card");
   };
   $.pp.reg("GAME_DETAIL", function(detail) {
-    return game.init(detail);
+    game.init(detail);
+    if (detail.players < 2) return growlUI("#tips_empty");
   });
   $.pp.reg("SEAT_DETAIL", function(detail) {
     return game.init_seat(detail);
@@ -201,8 +201,11 @@ $(function() {
     if (!game) return;
     return console.log("STATE " + detail.pid + ": " + detail.state);
   });
-  $.pp.reg("CANCEL", function(args) {});
+  $.pp.reg("CANCEL", function(args) {
+    return growlUI("#tips_empty");
+  });
   $.pp.reg("START", function(args) {
+    unblockUI();
     game.clear();
   });
   $.pp.reg("END", function(args) {});

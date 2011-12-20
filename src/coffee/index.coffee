@@ -3,7 +3,7 @@ growlUI = (id, opt) ->
     message: $(id).clone(),
     fadeIn: 700
     fadeOut: 700
-    timeout: 2000
+    timeout: 6000
     showOverlay: false
     centerY: false
     css: GROWLUI

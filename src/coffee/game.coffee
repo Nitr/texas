@@ -102,7 +102,6 @@ $ ->
 
   game_dom.bind 'inited', ->
     $(@).stopTime()
-    unblockUI()
     return
 
   $.get_poker = (face, suit) ->
@@ -117,6 +116,7 @@ $ ->
   # {{{
   $.pp.reg "GAME_DETAIL", (detail) ->
     game.init detail
+    growlUI "#tips_empty" if detail.players < 2
 
   $.pp.reg "SEAT_DETAIL", (detail) ->
     game.init_seat detail
@@ -126,9 +126,10 @@ $ ->
     console.log "STATE #{detail.pid}: #{detail.state}"
 
   $.pp.reg "CANCEL", (args) ->
-    return
+    growlUI "#tips_empty"
 
   $.pp.reg "START", (args) ->
+    unblockUI()
     game.clear()
     return
 
