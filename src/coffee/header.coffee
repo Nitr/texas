@@ -65,3 +65,28 @@ BETS = [
   [50, 7],   [20, 8],   [10, 9]
   [5, 10],   [2, 11],   [1, 12]
 ]
+
+BLOCKUI = {
+  'border-radius': "8px"
+  'border': "3px solid #174f75"
+  'background-color': "#0f263d"
+  'color': "#ffffff"
+  'text-shadow': "1px 1px 1px #929da7"
+  'margin': "0px auto"
+  'width': "400px"
+  '-webkit-box-shadow': "2px 2px 2px black"
+}
+
+GROWLUI = {
+  width: '350px'
+  top: '10px'
+  left: ''
+  right: '10px'
+  border: 'none'
+  padding: '5px'
+  backgroundColor: '#000'
+  '-webkit-border-radius': '10px'
+  '-moz-border-radius': '10px'
+  opacity: .6
+  color: '#fff'
+}

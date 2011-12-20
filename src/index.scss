@@ -28,26 +28,6 @@ body {
   }
 }
 
-.blockMsg {
-  border-radius: 8px !important;
-  border: 3px solid #174f75 !important;
-  background-color: #0f263d !important;
-  color: #ffffff !important;
-  text-shadow: 1px 1px 1px #929da7 !important;
-  margin: 0px auto !important;
-  width: 400px !important;
-  -webkit-box-shadow: 2px 2px 2px black;
-  left: 0px !important;
-  right: 0px !important;
-  top: 260px !important;
-}
-
-.msg {
-  padding: 0px;
-  color: #ffffff;
-  text-shadow: 1px 1px 1px #929da7;
-}
-
 .cmdred {
   background-position: 138px 0px;
 }
@@ -74,17 +54,6 @@ body {
 .background_card {
   position: absolute;
   z-index: 50;
-}
-
-
-.bet, .pot {
-  position: absolute;
-  width: 13px;
-  z-index: 100;
-}
-
-.ps_fold {
-  opacity: 0.75;
 }
 
 .rank_label {
@@ -195,6 +164,13 @@ h3[id^="err"] {
     }
   }
 }
+
+/*div.growlUI { background: url(check48.png) no-repeat 10px 10px }*/
+div.growlUI { @include auto-hide; }
+div.growlUI h1, div.growlUI h2 {
+	color: white; padding: 5px 5px 5px 75px; text-align: left;
+}
+
 
 // TOOLBAR {{{
 #toolbar {

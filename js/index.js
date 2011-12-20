@@ -1,13 +1,34 @@
-var blockUI, unblockUI;
+var blockUI, growlUI, unblockUI;
+
+growlUI = function(id, opt) {
+  var conf;
+  conf = {
+    message: $(id).clone(),
+    fadeIn: 700,
+    fadeOut: 700,
+    timeout: 2000,
+    showOverlay: false,
+    centerY: false,
+    css: GROWLUI
+  };
+  if (opt != null) conf = $.extend(conf, opt);
+  return $.blockUI(conf);
+};
 
 blockUI = function(o) {
   if (typeof o === 'string') {
     $.blockUI({
-      message: $(o).clone()
+      message: $(o).clone(),
+      centerX: true,
+      centerY: true,
+      css: BLOCKUI
     });
   } else {
     $.blockUI({
-      message: $(o)
+      message: $(o),
+      centerX: true,
+      centerY: true,
+      css: BLOCKUI
     });
   }
 };

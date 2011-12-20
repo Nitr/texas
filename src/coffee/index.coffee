@@ -1,8 +1,32 @@
+growlUI = (id, opt) ->
+  conf = {
+    message: $(id).clone(),
+    fadeIn: 700
+    fadeOut: 700
+    timeout: 2000
+    showOverlay: false
+    centerY: false
+    css: GROWLUI
+  }
+
+  conf = $.extend(conf, opt) if opt?
+  $.blockUI conf
+
 blockUI = (o) ->
   if typeof o is 'string'
-    $.blockUI { message: $(o).clone() }
+    $.blockUI {
+      message: $(o).clone()
+      centerX: true
+      centerY: true
+      css: BLOCKUI
+    }
   else
-    $.blockUI { message: $(o) }
+    $.blockUI {
+      message: $(o)
+      centerX: true
+      centerY: true
+      css: BLOCKUI
+    }
 
   return
 
