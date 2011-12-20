@@ -45,7 +45,7 @@ $(function() {
   });
   $.pp.reg("GAME_INFO", function(game_info) {
     game_counter++;
-    $(template).data('gid', game_info.id).children('.name').text(game_info.name).parent().children('.blind').text(game_info.low + " / " + game_info.height).parent().children('.player').text(game_info.joined + " / " + game_info.seats).parent().children('.limit').text(game_info.height * 10 + " / " + game_info.height * 200).parent().insertBefore('.autofill').click(function() {
+    $(template).data('gid', game_info.id).children('.name').text(game_info.name).parent().children('.blind').text(game_info.low + " / " + game_info.height).parent().children('.player').text(game_info.joined + " / " + game_info.seats).parent().children('.limit').text(game_info.min + " / " + game_info.max).parent().insertBefore('.autofill').click(function() {
       var selected;
       selected = 'selected';
       if ($(this).hasClass(selected)) return;

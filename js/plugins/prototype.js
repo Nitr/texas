@@ -110,6 +110,8 @@
       {type: "byte",    prop: "limit_type"}, 
       {type: "decimal", prop: "low"}, 
       {type: "decimal", prop: "height"}, 
+      {type: "decimal", prop: "min"}, 
+      {type: "decimal", prop: "max"}, 
       {type: "integer", prop: "seats"}, 
       {type: "integer", prop: "required"},
       {type: "integer", prop: "joined"}, 
@@ -142,7 +144,9 @@
       {type: "byte",    prop: "bblind"},
       {type: "byte",    prop: "stage"},
       {type: "decimal", prop: "high"},
-      {type: "decimal", prop: "low"}
+      {type: "decimal", prop: "low"},
+      {type: "decimal", prop: "min"}, 
+      {type: "decimal", prop: "max"} 
     ]),
     notify_seat_state: generate_notify("END", [24,
       {type: "integer", prop: "gid"}

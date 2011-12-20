@@ -52,7 +52,7 @@ $ ->
       children('.name').text(game_info.name).parent().
       children('.blind').text(game_info.low + " / " + game_info.height).parent().
       children('.player').text(game_info.joined + " / " + game_info.seats).parent().
-      children('.limit').text(game_info.height * 10 + " / " + game_info.height * 200).parent().
+      children('.limit').text(game_info.min + " / " + game_info.max).parent().
       insertBefore('.autofill').
       click(->
         selected = 'selected'
