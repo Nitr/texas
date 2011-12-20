@@ -8,8 +8,8 @@ $ ->
   
   $('#cmd_watch').bind 'click', ->
     gid = game_list.children().first().data('gid')
-    hall.trigger 'switch_game'
-    game.trigger 'switch_game', {action: 'watch', gid: gid}
+    hall.trigger 'start_game'
+    game.trigger 'start_game', {action: 'watch', gid: gid}
     return
 
   hall.bind 'setup', ->
@@ -37,8 +37,12 @@ $ ->
 
       return
     
-  hall.bind 'switch_game', ->
+  hall.bind 'start_game', ->
     $(@).hide()
+    return
+
+  hall.bind 'cancel_game', ->
+    $(@).show()
     return
 
   $.pp.reg "GAME_INFO", (game_info) ->

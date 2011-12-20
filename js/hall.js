@@ -10,8 +10,8 @@ $(function() {
   $('#cmd_watch').bind('click', function() {
     var gid;
     gid = game_list.children().first().data('gid');
-    hall.trigger('switch_game');
-    game.trigger('switch_game', {
+    hall.trigger('start_game');
+    game.trigger('start_game', {
       action: 'watch',
       gid: gid
     });
@@ -37,8 +37,11 @@ $(function() {
       });
     }
   });
-  hall.bind('switch_game', function() {
+  hall.bind('start_game', function() {
     $(this).hide();
+  });
+  hall.bind('cancel_game', function() {
+    $(this).show();
   });
   $.pp.reg("GAME_INFO", function(game_info) {
     game_counter++;

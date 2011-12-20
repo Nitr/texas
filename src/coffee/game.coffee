@@ -15,6 +15,11 @@ class Game
     @seats[seat_detail.sn].remove()
     @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
 
+  leave: (seat_detail) ->
+    return @seats[seat_detail.sn].__proto__.constructor is EmptySeat
+    @seats[seat_detail.sn].clear()
+    @seats[seat_detail.sn] = new EmptySeat seat_detail, @
+
   clear: ->
     $.positions.reset_share()
     $(".bet, .pot, .card").remove()
@@ -67,8 +72,14 @@ class Game
 $ ->
   game = null
   game_dom = $('#game')
+  hall_dom = $('#hall')
 
-  game_dom.bind 'switch_game', (event, args)->
+  game_dom.bind 'cancel_game', (event, args) ->
+    game.clear()
+    game = null
+    $(@).hide()
+
+  game_dom.bind 'start_game', (event, args) ->
     game = new Game args.gid, game_dom
     cmd = {gid: args.gid}
 
@@ -109,6 +120,10 @@ $ ->
 
   $.pp.reg "SEAT_DETAIL", (detail) ->
     game.init_seat detail
+
+  $.pp.reg "SEAT_STATE", (detail) ->
+    return unless game
+    console.log "STATE #{detail.pid}: #{detail.state}"
 
   $.pp.reg "CANCEL", (args) ->
     return

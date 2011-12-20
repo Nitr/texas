@@ -28,6 +28,12 @@ Game = (function() {
     return this.seats[seat_detail.sn] = new PlayingSeat(seat_detail, this);
   };
 
+  Game.prototype.leave = function(seat_detail) {
+    return this.seats[seat_detail.sn].__proto__.constructor === EmptySeat;
+    this.seats[seat_detail.sn].clear();
+    return this.seats[seat_detail.sn] = new EmptySeat(seat_detail, this);
+  };
+
   Game.prototype.clear = function() {
     var seat, _i, _len, _ref, _results;
     $.positions.reset_share();
@@ -131,10 +137,16 @@ Game = (function() {
 })();
 
 $(function() {
-  var game, game_dom;
+  var game, game_dom, hall_dom;
   game = null;
   game_dom = $('#game');
-  game_dom.bind('switch_game', function(event, args) {
+  hall_dom = $('#hall');
+  game_dom.bind('cancel_game', function(event, args) {
+    game.clear();
+    game = null;
+    return $(this).hide();
+  });
+  game_dom.bind('start_game', function(event, args) {
     var cmd;
     game = new Game(args.gid, game_dom);
     cmd = {
@@ -184,6 +196,10 @@ $(function() {
   });
   $.pp.reg("SEAT_DETAIL", function(detail) {
     return game.init_seat(detail);
+  });
+  $.pp.reg("SEAT_STATE", function(detail) {
+    if (!game) return;
+    return console.log("STATE " + detail.pid + ": " + detail.state);
   });
   $.pp.reg("CANCEL", function(args) {});
   $.pp.reg("START", function(args) {
