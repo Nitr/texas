@@ -140,7 +140,9 @@
       {type: "byte",    prop: "dealer"},
       {type: "byte",    prop: "sblind"},
       {type: "byte",    prop: "bblind"},
-      {type: "byte",    prop: "stage"}
+      {type: "byte",    prop: "stage"},
+      {type: "decimal", prop: "high"},
+      {type: "decimal", prop: "low"}
     ]),
     notify_seat_state: generate_notify("END", [24,
       {type: "integer", prop: "gid"}
