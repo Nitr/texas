@@ -50,7 +50,7 @@ $ ->
 
     $(template).data('gid', game_info.id).
       children('.name').text(game_info.name).parent().
-      children('.blind').text(game_info.low + " / " + game_info.height).parent().
+      children('.blind').text(game_info.low + " / " + game_info.high).parent().
       children('.player').text(game_info.joined + " / " + game_info.seats).parent().
       children('.limit').text(game_info.min + " / " + game_info.max).parent().
       insertBefore('.autofill').

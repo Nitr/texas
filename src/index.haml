@@ -78,8 +78,8 @@
             %tr
               %td.name
               %td.blind
-              %td.player
               %td.limit
+              %td.player
         #game
           .table{:src => 'css/gametable.png'}
           .tips
@@ -104,7 +104,12 @@
               %tr
                 %td.key 您的餘額:
                 %td.value#balance
+            %label#lab_buyin 200
+            %label#lab_min 10
+            %label#lab_max 400
+            %input#range_buy{:type => 'range', :value => 0, :max => 1, :min => 0}
             %a#cmd_cancel 返回
+            %button#cmd_buy{:type => 'command'} 確定
           .template
             .seat
             .empty_seat 觀戰

@@ -122,13 +122,38 @@ div.growlUI h1, div.growlUI h2 {
 
 .buyin table {
   width: 100%;
-  padding: 0px 0px 20px 0px; }
+  padding: 0px 0px 10px 0px; }
   .buyin table td.key {
     text-align: right;
     width: 145px; }
   .buyin table td.value {
     text-align: left;
     text-indent: 20px; }
+.buyin a {
+  display: block; }
+.buyin #lab_buyin {
+  display: block;
+  font-size: 2.0em;
+  text-shadow: 3px 3px 5px #0F0F0F; }
+.buyin #lab_min {
+  top: 155px;
+  left: 40px;
+  position: absolute; }
+.buyin #lab_max {
+  top: 155px;
+  right: 43px;
+  position: absolute; }
+.buyin #cmd_cancel {
+  top: 220px;
+  left: 100px;
+  position: absolute; }
+.buyin #cmd_buy {
+  top: 207px;
+  left: 150px;
+  position: absolute; }
+.buyin #range_buy {
+  width: 225px;
+  margin-bottom: 60px; }
 
 #toolbar {
   width: 930px;

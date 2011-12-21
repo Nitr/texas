@@ -112,7 +112,7 @@ body {
 }
 
 @mixin x-font {
-  font-size: 1.5em;
+  font-size: 2.0em;
 }
 
 button {
@@ -174,7 +174,7 @@ div.growlUI h1, div.growlUI h2 {
 .buyin {
   table {
     width: 100%;
-    padding: 0px 0px 20px 0px;
+    padding: 0px 0px 10px 0px;
 
     td.key {
       text-align: right;
@@ -185,6 +185,45 @@ div.growlUI h1, div.growlUI h2 {
       text-align: left; 
       text-indent: 20px;
     }
+  }
+
+  a {
+    display: block;
+  }
+
+  #lab_buyin {
+    display: block;
+    @include x-font;
+    text-shadow: 3px 3px 5px #0F0F0F;
+  }
+
+  #lab_min {
+    top: 155px;
+    left: 40px;
+    position: absolute;
+  }
+
+  #lab_max {
+    top: 155px;
+    right: 43px;
+    position: absolute;
+  }
+
+  #cmd_cancel {
+    top: 220px;
+    left: 100px;
+    position: absolute;
+  }
+
+  #cmd_buy {
+    top: 207px;
+    left: 150px;
+    position: absolute;
+  }
+
+  #range_buy {
+    width: 225px;
+    margin-bottom: 60px;
   }
 }
 

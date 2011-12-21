@@ -94,8 +94,8 @@
           <textarea class='template'><tr>
             <td class='name'></td>
             <td class='blind'></td>
-            <td class='player'></td>
             <td class='limit'></td>
+            <td class='player'></td>
           </tr></textarea>
         </div>
         <div id='game'>
@@ -128,7 +128,12 @@
                 <td class='value' id='balance'></td>
               </tr>
             </table>
+            <label id='lab_buyin'>200</label>
+            <label id='lab_min'>10</label>
+            <label id='lab_max'>400</label>
+            <input id='range_buy' max='1' min='0' type='range' value='0'>
             <a id='cmd_cancel'>返回</a>
+            <button id='cmd_buy' type='command'>確定</button>
           </div>
           <div class='template'>
             <div class='seat'></div>
