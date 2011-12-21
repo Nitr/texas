@@ -92,6 +92,19 @@
             %a#cmd_raise.action 加注
             %input#raise_range{:type => 'range', :value => 0, :max => 50, :min => 0}
             %input#raise_number{:type => 'number', :value => 0, :max => 50, :min => 0, :step => 1}
+          .buyin
+            %h3 參與游戏
+            %table
+              %tr
+                %td.key 最小代入:
+                %td.value#min
+              %tr
+                %td.key 最大代入:
+                %td.value#max
+              %tr
+                %td.key 您的餘額:
+                %td.value#balance
+            %a#cmd_cancel 返回
           .template
             .seat
             .empty_seat 觀戰

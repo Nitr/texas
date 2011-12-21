@@ -109,7 +109,7 @@
       {type: "byte",    prop: "type"}, 
       {type: "byte",    prop: "limit_type"}, 
       {type: "decimal", prop: "low"}, 
-      {type: "decimal", prop: "height"}, 
+      {type: "decimal", prop: "high"}, 
       {type: "decimal", prop: "min"}, 
       {type: "decimal", prop: "max"}, 
       {type: "integer", prop: "seats"}, 
@@ -139,14 +139,11 @@
       {type: "decimal", prop: "pot"},
       {type: "byte",    prop: "players"},
       {type: "byte",    prop: "seats"},
-      {type: "byte",    prop: "dealer"},
-      {type: "byte",    prop: "sblind"},
-      {type: "byte",    prop: "bblind"},
       {type: "byte",    prop: "stage"},
-      {type: "decimal", prop: "high"},
-      {type: "decimal", prop: "low"},
       {type: "decimal", prop: "min"}, 
-      {type: "decimal", prop: "max"} 
+      {type: "decimal", prop: "max"},
+      {type: "decimal", prop: "low"}, 
+      {type: "decimal", prop: "high"}
     ]),
     notify_seat_state: generate_notify("END", [24,
       {type: "integer", prop: "gid"}

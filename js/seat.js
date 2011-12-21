@@ -232,5 +232,18 @@ $(function() {
       return 0;
     }
   };
-  return $("#game .empty_seat").bind('click', function() {});
+  $("#game .empty_seat").bind('click', function() {
+    $('#page').block({
+      message: $(".buyin").clone(true, true),
+      css: $.extend(BLOCKUI, {
+        width: '300px'
+      })
+    });
+    $(".buyin #min").text('1000');
+    $(".buyin #max").text('1000');
+    return $(".buyin #balance").text('1000');
+  });
+  return $(".buyin #cmd_cancel").bind('click', function() {
+    return $('#page').unblock();
+  });
 });

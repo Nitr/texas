@@ -171,6 +171,23 @@ div.growlUI h1, div.growlUI h2 {
 	color: white; padding: 5px 5px 5px 75px; text-align: left;
 }
 
+.buyin {
+  table {
+    width: 100%;
+    padding: 0px 0px 20px 0px;
+
+    td.key {
+      text-align: right;
+      width: 145px;
+    }
+
+    td.value {
+      text-align: left; 
+      text-indent: 20px;
+    }
+  }
+}
+
 
 // TOOLBAR {{{
 #toolbar {
@@ -403,6 +420,10 @@ div.growlUI h1, div.growlUI h2 {
     margin: 0px 10px 0px 0px;
     padding: 16px 0px 0px 48px;
     background: url(button.png) no-repeat;
+  }
+
+  .buyin {
+    @include auto-hide;
   }
 
   .card, .private_card {

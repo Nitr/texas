@@ -67,14 +67,16 @@ BETS = [
 ]
 
 BLOCKUI = {
+  'width': "400px"
+  'color': "#ffffff"
   'border-radius': "8px"
   'border': "3px solid #174f75"
   'background-color': "#0f263d"
-  'color': "#ffffff"
   'text-shadow': "1px 1px 1px #929da7"
-  'margin': "0px auto"
-  'width': "400px"
   '-webkit-box-shadow': "2px 2px 2px black"
+  'top': '200px'
+  #TODO 設計樣式
+  
 }
 
 GROWLUI = {

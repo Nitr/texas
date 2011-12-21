@@ -120,6 +120,16 @@ div.growlUI h1, div.growlUI h2 {
   padding: 5px 5px 5px 75px;
   text-align: left; }
 
+.buyin table {
+  width: 100%;
+  padding: 0px 0px 20px 0px; }
+  .buyin table td.key {
+    text-align: right;
+    width: 145px; }
+  .buyin table td.value {
+    text-align: left;
+    text-indent: 20px; }
+
 #toolbar {
   width: 930px;
   height: 78px;
@@ -288,6 +298,8 @@ div.growlUI h1, div.growlUI h2 {
     margin: 0px 10px 0px 0px;
     padding: 16px 0px 0px 48px;
     background: url(button.png) no-repeat; }
+  #game .buyin {
+    display: none; }
   #game .card, #game .private_card {
     z-index: 1;
     width: 45px;

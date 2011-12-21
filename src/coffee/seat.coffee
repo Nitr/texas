@@ -161,4 +161,14 @@ $ ->
       return 0
 
   $("#game .empty_seat").bind 'click', ->
-    return
+    $('#page').block {
+      message: $(".buyin").clone(true, true)
+      css: $.extend(BLOCKUI, {width: '300px'})
+    }
+
+    $(".buyin #min").text('1000')
+    $(".buyin #max").text('1000')
+    $(".buyin #balance").text('1000')
+
+  $(".buyin #cmd_cancel").bind 'click', ->
+    $('#page').unblock()

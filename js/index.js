@@ -15,20 +15,24 @@ growlUI = function(id, opt) {
   return $.blockUI(conf);
 };
 
-blockUI = function(o) {
+blockUI = function(o, css, event, deep) {
+  var d, e, style;
+  d = deep != null ? deep : false;
+  e = event != null ? event : false;
+  style = css != null ? $.extend(BLOCKUI, css) : BLOCKUI;
   if (typeof o === 'string') {
     $.blockUI({
-      message: $(o).clone(),
+      message: $(o).clone(e, d),
       centerX: true,
       centerY: true,
-      css: BLOCKUI
+      css: style
     });
   } else {
     $.blockUI({
       message: $(o),
       centerX: true,
       centerY: true,
-      css: BLOCKUI
+      css: style
     });
   }
 };

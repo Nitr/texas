@@ -192,20 +192,23 @@ $(function() {
   };
   $.pp.reg("GAME_DETAIL", function(detail) {
     game.init(detail);
-    if (detail.players < 2) return growlUI("#tips_empty");
+    if (detail.players < 2) {
+      return growlUI("#tips_empty");
+    } else {
+      return unblockUI();
+    }
   });
   $.pp.reg("SEAT_DETAIL", function(detail) {
     return game.init_seat(detail);
   });
   $.pp.reg("SEAT_STATE", function(detail) {
-    if (!game) return;
-    return console.log("STATE " + detail.pid + ": " + detail.state);
+    if (!game) {}
   });
   $.pp.reg("CANCEL", function(args) {
     return growlUI("#tips_empty");
   });
   $.pp.reg("START", function(args) {
-    unblockUI();
+    if ($(".blockUI > .buyin").size() === 0) unblockUI();
     game.clear();
   });
   $.pp.reg("END", function(args) {});
@@ -234,9 +237,7 @@ $(function() {
   $.pp.reg("SHARE", function(args) {
     return game.share_card(args.face, args.suit);
   });
-  $.pp.reg("PRIVATE", function(args) {
-    return console.log(args);
-  });
+  $.pp.reg("PRIVATE", function(args) {});
   $.pp.reg("ACTOR", function(args) {
     var seat;
     seat = game.get_seat(args);

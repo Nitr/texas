@@ -116,20 +116,24 @@ $ ->
   # {{{
   $.pp.reg "GAME_DETAIL", (detail) ->
     game.init detail
-    growlUI "#tips_empty" if detail.players < 2
+    if detail.players < 2
+      growlUI "#tips_empty"
+    else
+      unblockUI()
 
   $.pp.reg "SEAT_DETAIL", (detail) ->
     game.init_seat detail
 
   $.pp.reg "SEAT_STATE", (detail) ->
     return unless game
-    console.log "STATE #{detail.pid}: #{detail.state}"
 
   $.pp.reg "CANCEL", (args) ->
     growlUI "#tips_empty"
 
   $.pp.reg "START", (args) ->
-    unblockUI()
+    if $(".blockUI > .buyin").size() is 0
+      unblockUI()
+
     game.clear()
     return
 
@@ -163,7 +167,7 @@ $ ->
     game.share_card(args.face, args.suit)
 
   $.pp.reg "PRIVATE", (args) ->
-    console.log args
+    return
 
   $.pp.reg "ACTOR", (args) ->
     seat = game.get_seat args

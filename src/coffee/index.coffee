@@ -12,20 +12,24 @@ growlUI = (id, opt) ->
   conf = $.extend(conf, opt) if opt?
   $.blockUI conf
 
-blockUI = (o) ->
+blockUI = (o, css, event, deep) ->
+  d = if deep? then deep else false
+  e = if event? then event else false
+  style = if css? then $.extend(BLOCKUI, css) else BLOCKUI
+
   if typeof o is 'string'
     $.blockUI {
-      message: $(o).clone()
+      message: $(o).clone(e, d)
       centerX: true
       centerY: true
-      css: BLOCKUI
+      css: style
     }
   else
     $.blockUI {
       message: $(o)
       centerX: true
       centerY: true
-      css: BLOCKUI
+      css: style
     }
 
   return

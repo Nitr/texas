@@ -103,14 +103,14 @@ RANKS = ["高牌", "一對", "兩對", "三條", "順子", "同花", "葫蘆", "
 BETS = [[5000, 1], [2000, 2], [1000, 3], [500, 4], [200, 5], [100, 6], [50, 7], [20, 8], [10, 9], [5, 10], [2, 11], [1, 12]];
 
 BLOCKUI = {
+  'width': "400px",
+  'color': "#ffffff",
   'border-radius': "8px",
   'border': "3px solid #174f75",
   'background-color': "#0f263d",
-  'color': "#ffffff",
   'text-shadow': "1px 1px 1px #929da7",
-  'margin': "0px auto",
-  'width': "400px",
-  '-webkit-box-shadow': "2px 2px 2px black"
+  '-webkit-box-shadow': "2px 2px 2px black",
+  'top': '200px'
 };
 
 GROWLUI = {
