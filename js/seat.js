@@ -16,8 +16,7 @@ Seat = (function() {
     return this.dom.appendTo(this.game.dom);
   };
 
-  Seat.prototype.set_position = function(offset) {
-    this.offset = offset != null ? offset : 0;
+  Seat.prototype.set_position = function() {
     return this.dom.css(this.get_position());
   };
 
@@ -40,7 +39,7 @@ EmptySeat = (function() {
   };
 
   EmptySeat.prototype.get_position = function() {
-    return $.positions.get_empty(this.detail.sn, this.offset);
+    return $.positions.get_empty(this.detail.sn);
   };
 
   EmptySeat.prototype.remove = function() {
@@ -77,7 +76,7 @@ PlayingSeat = (function() {
   };
 
   PlayingSeat.prototype.get_position = function() {
-    return $.positions.get_playing(this.detail.sn, this.offset);
+    return $.positions.get_playing(this.detail.sn);
   };
 
   PlayingSeat.prototype.raise = function(call, raise) {

@@ -8,7 +8,7 @@ class Seat
     @set_position()
     @dom.appendTo @game.dom
 
-  set_position: (@offset = 0) ->
+  set_position: () ->
     @dom.css @get_position()
 
 
@@ -20,7 +20,7 @@ class EmptySeat extends Seat
     $("#game > .template > .empty_seat").clone true
 
   get_position: ->
-    $.positions.get_empty @detail.sn, @offset
+    $.positions.get_empty @detail.sn
 
   remove: ->
     @dom.remove()
@@ -41,7 +41,7 @@ class PlayingSeat extends Seat
     $("#game > .template > .playing_seat").clone true
 
   get_position: ->
-    $.positions.get_playing @detail.sn, @offset
+    $.positions.get_playing @detail.sn
 
   raise: (call, raise) ->
     ps = $.positions.get_bet(@sn)
@@ -192,7 +192,6 @@ $ ->
       attr('min', min).
       attr('max', max).
       val(buyin)
-
 
   $(".buyin #cmd_cancel").bind 'click', ->
     $('#page').unblock()

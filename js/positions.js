@@ -1,6 +1,6 @@
 
 (function($) {
-  var convert, css, current_share_card, format, game_position, nine_position;
+  var convert, css, current_share_card, format, game_position, get, nine_position;
   css = function(left, top) {
     return {
       left: "" + left + "px",
@@ -30,6 +30,12 @@
   };
   nine_position = [
     {
+      pv: [518, 125],
+      es: [640, 363],
+      ps: [680, 350],
+      bet: [711, 408, 710, 306],
+      draw: [-51, 28]
+    }, {
       pv: [418, 170],
       es: [448, 363],
       ps: [435, 350],
@@ -77,12 +83,6 @@
       ps: [801, 230],
       bet: [832, 290, 749, 208],
       draw: [-51, 30]
-    }, {
-      pv: [518, 125],
-      es: [640, 363],
-      ps: [680, 350],
-      bet: [711, 408, 710, 306],
-      draw: [-51, 28]
     }
   ];
   current_share_card = null;
@@ -93,25 +93,36 @@
       left: "" + ps[1] + "px"
     };
   };
-  $.positions = {};
+  $.positions = {
+    offset: 6,
+    get: function(sn) {
+      var index;
+      index = (sn + $.positions.offset) % game_position.length;
+      return game_position[index];
+    }
+  };
+  get = function(sn) {
+    return $.positions.get(sn);
+  };
   $.extend($.positions, {
     get_preview: function(sn) {
-      return game_position[sn - 1].preview;
+      return get(sn + 1).preview;
     },
     get_playing: function(sn) {
-      return game_position[sn - 1].playing_seat;
+      return get(sn).playing_seat;
     },
     get_draw: function(sn) {
-      return game_position[sn - 1].draw;
+      return get(sn).draw;
     },
     get_bet: function(sn) {
       return {
-        start: game_position[sn - 1].bet_start,
-        end: game_position[sn - 1].bet_end
+        start: get(sn).bet_start,
+        end: get(sn).bet_end
       };
     },
     get_empty: function(sn) {
-      return game_position[sn - 1].empty_seat;
+      console.log(sn);
+      return get(sn).empty_seat;
     },
     get_random: function(ps, offset) {
       if (offset == null) offset = 20;
@@ -130,7 +141,7 @@
       return format(current_share_card);
     },
     get_private: function(sn, card_sn) {
-      return game_position[sn - 1]["private_" + card_sn];
+      return get(sn)["private_" + card_sn];
     }
   });
 })(jQuery);
