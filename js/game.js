@@ -23,6 +23,17 @@ Game = (function() {
     }
   };
 
+  Game.prototype.reset_position = function() {
+    var seat, _i, _len, _ref, _results;
+    _ref = this.seats;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      seat = _ref[_i];
+      if (seat != null) _results.push(seat.set_position());
+    }
+    return _results;
+  };
+
   Game.prototype.join = function(seat_detail) {
     this.seats[seat_detail.sn].remove();
     return this.seats[seat_detail.sn] = new PlayingSeat(seat_detail, this);

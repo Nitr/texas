@@ -370,7 +370,9 @@ div.growlUI h1, div.growlUI h2 {
     background: url(sit.png) no-repeat;
     color: gray;
     cursor: pointer;
-    position: absolute; }
+    position: absolute;
+    -webkit-transition-property: all;
+    -webkit-transition-duration: 1s; }
   #game > .actor_seat {
     -webkit-box-shadow: 0px 0px 6px 6px silver; }
   #game .high_card {
@@ -387,7 +389,9 @@ div.growlUI h1, div.growlUI h2 {
     z-index: 3;
     border-radius: 3px;
     text-align: center;
-    position: absolute; }
+    position: absolute;
+    -webkit-transition-property: all;
+    -webkit-transition-duration: 1s; }
     #game > .playing_seat .photo {
       padding: 0px;
       margin: 0px;

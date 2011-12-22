@@ -110,7 +110,7 @@ BLOCKUI = {
   'background-color': "#0f263d",
   'text-shadow': "1px 1px 1px #929da7",
   '-webkit-box-shadow': "2px 2px 2px black",
-  'top': '170px'
+  'top': '200px'
 };
 
 GROWLUI = {

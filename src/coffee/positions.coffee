@@ -35,7 +35,7 @@
     {top: "#{ps[0]}px", left: "#{ps[1]}px"}
 
   $.positions = {
-    offset: 6
+    offset: 0
 
     get: (sn) ->
       index =  (sn + $.positions.offset) % game_position.length

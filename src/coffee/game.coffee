@@ -11,6 +11,9 @@ class Game
       when PS_EMPTY then @seats[seat_detail.sn] = new EmptySeat seat_detail, @
       else @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
 
+  reset_position: ->
+    seat.set_position() for seat in @seats when seat?
+
   join: (seat_detail) ->
     @seats[seat_detail.sn].remove()
     @seats[seat_detail.sn] = new PlayingSeat seat_detail, @

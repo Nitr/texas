@@ -522,6 +522,8 @@ div.growlUI h1, div.growlUI h2 {
     color: gray;
     cursor: pointer;
     position: absolute;
+    -webkit-transition-property: all;
+    -webkit-transition-duration: 1s;
   }
 
   > .actor_seat {
@@ -548,7 +550,8 @@ div.growlUI h1, div.growlUI h2 {
     border-radius: 3px;
     text-align: center;
     position: absolute;
-    
+    -webkit-transition-property: all;
+    -webkit-transition-duration: 1s;
 
     .photo {
       padding: 0px;

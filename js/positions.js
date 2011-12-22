@@ -94,7 +94,7 @@
     };
   };
   $.positions = {
-    offset: 6,
+    offset: 0,
     get: function(sn) {
       var index;
       index = (sn + $.positions.offset) % game_position.length;
