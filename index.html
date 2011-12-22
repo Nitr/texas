@@ -31,6 +31,10 @@
       <h3 id='msg_joining'>進入中...</h3>
       <h3 id='msg_singin'>登陸中...</h3>
       <h3 id='err_network'>抱歉，網絡連線錯誤，請稍後刷新重試。</h3>
+      <div id='err_buyin'>
+        <h3>抱歉，您的账户餘額不足。</h3>
+        <h3>請確保有足够的游戏币方可加入此游戏。</h3>
+      </div>
       <nav id='toolbar'>
         <div id='title'></div>
         <img id='logo' src='css/logo.png'>
@@ -78,8 +82,8 @@
               <tr>
                 <th class='col_longest'>房間</th>
                 <th class='col_short'>大/小盲注</th>
-                <th class='col_short'>人數</th>
                 <th class='col_short'>攜帶額</th>
+                <th class='col_short'>人數</th>
               </tr>
             </thead>
             <tbody>
@@ -128,10 +132,10 @@
                 <td class='value' id='balance'></td>
               </tr>
             </table>
-            <label id='lab_buyin'>200</label>
-            <label id='lab_min'>10</label>
-            <label id='lab_max'>400</label>
-            <input id='range_buy' max='1' min='0' type='range' value='0'>
+            <label id='lab_buyin'></label>
+            <label id='lab_min'></label>
+            <label id='lab_max'></label>
+            <input id='range_buy' type='range'>
             <a id='cmd_cancel'>返回</a>
             <button id='cmd_buy' type='command'>確定</button>
           </div>

@@ -136,6 +136,11 @@ h3[id^="err"] {
   @include m-font;
 }
 
+div[id^="err"] {
+  @include auto-hide;
+  @include m-font;
+}
+
 .template {
   @include auto-hide;
 }

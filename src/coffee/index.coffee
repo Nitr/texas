@@ -1,3 +1,20 @@
+format = (str, step = 3, splitor = ',') ->
+  arr = []
+  str = str.toString()
+  len = str.length
+
+  if len > step
+    l1 = len % step
+    l2 = parseInt len / step
+    first = str.substr(0, l1)
+
+    arr.push(first) if first != ''
+    arr.push(str.substr(l1 + i*step, step)) for i in [0..11] when (i * step + l1) < len
+
+    str = arr.join(splitor)
+
+  return str
+
 growlUI = (id, opt) ->
   conf = {
     message: $(id).clone(),
@@ -12,16 +29,16 @@ growlUI = (id, opt) ->
   conf = $.extend(conf, opt) if opt?
   $.blockUI conf
 
-blockUI = (o, css, event, deep) ->
-  d = if deep? then deep else false
-  e = if event? then event else false
-  style = if css? then $.extend(BLOCKUI, css) else BLOCKUI
+blockUI = (o, timeout) ->
+  style = BLOCKUI
+  timeout = if timeout? then timeout else 0
 
   if typeof o is 'string'
     $.blockUI {
-      message: $(o).clone(e, d)
+      message: $(o).clone()
       centerX: true
       centerY: true
+      timeout: timeout
       css: style
     }
   else
@@ -29,6 +46,7 @@ blockUI = (o, css, event, deep) ->
       message: $(o)
       centerX: true
       centerY: true
+      timeout: timeout
       css: style
     }
 

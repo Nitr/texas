@@ -161,14 +161,41 @@ $ ->
       return 0
 
   $("#game .empty_seat").bind 'click', ->
+    min = $.game.detail.min
+    max = $.game.detail.max
+    balance = $.player.balance
+
+    if (balance < min)
+      return $('#page').block {
+        message: $("#err_buyin").clone()
+        css: BLOCKUI
+        timeout: 2000
+      }
+
     $('#page').block {
       message: $(".buyin").clone(true, true)
       css: $.extend(BLOCKUI, {width: '300px'})
     }
 
-    $(".buyin #min").text('1000')
-    $(".buyin #max").text('1000')
-    $(".buyin #balance").text('1000')
+    max = if balance < max then balance else max
+    buyin = if balance > max then max else min * 10
+    buyin = if buyin > balance then balance else buyin
+
+    $(".buyin #min").text format $.game.detail.min
+    $(".buyin #max").text format $.game.detail.max
+    $(".buyin #lab_min").text format min
+    $(".buyin #lab_max").text format max
+    $(".buyin #balance").text format balance
+    $(".buyin #lab_buyin").text format buyin
+
+    $('.buyin #range_buy').
+      attr('min', min).
+      attr('max', max).
+      val(buyin)
+
 
   $(".buyin #cmd_cancel").bind 'click', ->
     $('#page').unblock()
+
+  $(".buyin #range_buy").bind 'change', (event) ->
+    $(".buyin #lab_buyin").text format $(@).val()

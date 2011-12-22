@@ -21,6 +21,9 @@
       %h3#msg_joining 進入中...
       %h3#msg_singin  登陸中...
       %h3#err_network 抱歉，網絡連線錯誤，請稍後刷新重試。
+      #err_buyin
+        %h3 抱歉，您的账户餘額不足。
+        %h3 請確保有足够的游戏币方可加入此游戏。
 
       %nav#toolbar
         #title
@@ -63,8 +66,8 @@
               %tr
                 %th.col_longest 房間
                 %th.col_short   大/小盲注
-                %th.col_short   人數
                 %th.col_short   攜帶額
+                %th.col_short   人數
             %tbody
               %tr.autofill
               -# tbody中如果为空，则table只显示表头
@@ -104,10 +107,10 @@
               %tr
                 %td.key 您的餘額:
                 %td.value#balance
-            %label#lab_buyin 200
-            %label#lab_min 10
-            %label#lab_max 400
-            %input#range_buy{:type => 'range', :value => 0, :max => 1, :min => 0}
+            %label#lab_buyin
+            %label#lab_min
+            %label#lab_max
+            %input#range_buy{:type => 'range'}
             %a#cmd_cancel 返回
             %button#cmd_buy{:type => 'command'} 確定
           .template

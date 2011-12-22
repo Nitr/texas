@@ -233,17 +233,38 @@ $(function() {
     }
   };
   $("#game .empty_seat").bind('click', function() {
+    var balance, buyin, max, min;
+    min = $.game.detail.min;
+    max = $.game.detail.max;
+    balance = $.player.balance;
+    if (balance < min) {
+      return $('#page').block({
+        message: $("#err_buyin").clone(),
+        css: BLOCKUI,
+        timeout: 2000
+      });
+    }
     $('#page').block({
       message: $(".buyin").clone(true, true),
       css: $.extend(BLOCKUI, {
         width: '300px'
       })
     });
-    $(".buyin #min").text('1000');
-    $(".buyin #max").text('1000');
-    return $(".buyin #balance").text('1000');
+    max = balance < max ? balance : max;
+    buyin = balance > max ? max : min * 10;
+    buyin = buyin > balance ? balance : buyin;
+    $(".buyin #min").text(format($.game.detail.min));
+    $(".buyin #max").text(format($.game.detail.max));
+    $(".buyin #lab_min").text(format(min));
+    $(".buyin #lab_max").text(format(max));
+    $(".buyin #balance").text(format(balance));
+    $(".buyin #lab_buyin").text(format(buyin));
+    return $('.buyin #range_buy').attr('min', min).attr('max', max).val(buyin);
   });
-  return $(".buyin #cmd_cancel").bind('click', function() {
+  $(".buyin #cmd_cancel").bind('click', function() {
     return $('#page').unblock();
+  });
+  return $(".buyin #range_buy").bind('change', function(event) {
+    return $(".buyin #lab_buyin").text(format($(this).val()));
   });
 });

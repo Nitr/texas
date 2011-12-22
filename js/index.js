@@ -1,4 +1,24 @@
-var blockUI, growlUI, unblockUI;
+var blockUI, format, growlUI, unblockUI;
+
+format = function(str, step, splitor) {
+  var arr, first, i, l1, l2, len;
+  if (step == null) step = 3;
+  if (splitor == null) splitor = ',';
+  arr = [];
+  str = str.toString();
+  len = str.length;
+  if (len > step) {
+    l1 = len % step;
+    l2 = parseInt(len / step);
+    first = str.substr(0, l1);
+    if (first !== '') arr.push(first);
+    for (i = 0; i <= 11; i++) {
+      if ((i * step + l1) < len) arr.push(str.substr(l1 + i * step, step));
+    }
+    str = arr.join(splitor);
+  }
+  return str;
+};
 
 growlUI = function(id, opt) {
   var conf;
@@ -15,16 +35,16 @@ growlUI = function(id, opt) {
   return $.blockUI(conf);
 };
 
-blockUI = function(o, css, event, deep) {
-  var d, e, style;
-  d = deep != null ? deep : false;
-  e = event != null ? event : false;
-  style = css != null ? $.extend(BLOCKUI, css) : BLOCKUI;
+blockUI = function(o, timeout) {
+  var style;
+  style = BLOCKUI;
+  timeout = timeout != null ? timeout : 0;
   if (typeof o === 'string') {
     $.blockUI({
-      message: $(o).clone(e, d),
+      message: $(o).clone(),
       centerX: true,
       centerY: true,
+      timeout: timeout,
       css: style
     });
   } else {
@@ -32,6 +52,7 @@ blockUI = function(o, css, event, deep) {
       message: $(o),
       centerX: true,
       centerY: true,
+      timeout: timeout,
       css: style
     });
   }
