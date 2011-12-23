@@ -11,7 +11,6 @@ class Seat
   set_position: () ->
     @dom.css @get_position()
 
-
 class EmptySeat extends Seat
   constructor: (@detail, @game) ->
     super

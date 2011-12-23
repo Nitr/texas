@@ -159,6 +159,7 @@ $(function() {
   });
   game_dom.bind('start_game', function(event, args) {
     var cmd;
+    $("#game > .actions > *").attr("disabled", true).addClass('disabled');
     game = new Game(args.gid, game_dom);
     cmd = {
       gid: args.gid

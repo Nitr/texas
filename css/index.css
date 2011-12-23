@@ -305,7 +305,7 @@ div.growlUI h1, div.growlUI h2 {
     height: 377px;
     position: absolute;
     background: url(gametable.png) no-repeat; }
-  #game .disable {
+  #game .disabled {
     opacity: 0.4 !important;
     cursor: not-allowed !important;
     color: rgba(255, 255, 255, 0.4) !important; }

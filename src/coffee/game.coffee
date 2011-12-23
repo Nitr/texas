@@ -83,6 +83,8 @@ $ ->
     $(@).hide()
 
   game_dom.bind 'start_game', (event, args) ->
+    $("#game > .actions > *").attr("disabled", true).addClass('disabled')
+
     game = new Game args.gid, game_dom
     cmd = {gid: args.gid}
 
