@@ -259,10 +259,10 @@ $(function() {
     if (args.stage !== GS_PREFLOP) return game.new_stage();
   });
   $.pp.reg("JOIN", function(args) {
-    game.join(args);
+    return game.join(args);
   });
   $.pp.reg("LEAVE", function(args) {
-    game.leave(args);
+    return game.leave(args);
   });
   $.pp.reg("BET_REQ", function(args) {});
   $.pp.reg("SHOW", function(args) {

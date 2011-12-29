@@ -59,7 +59,6 @@
       {start: get(sn).bet_start, end: get(sn).bet_end}
 
     get_empty: (sn) ->
-      console.log sn
       get(sn).empty_seat
 
     get_random: (ps, offset = 20) ->

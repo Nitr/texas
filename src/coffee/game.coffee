@@ -183,11 +183,9 @@ $ ->
 
   $.pp.reg "JOIN", (args) ->
     game.join args
-    return
 
   $.pp.reg "LEAVE", (args) ->
     game.leave args
-    return
 
   $.pp.reg "BET_REQ", (args) ->
     return

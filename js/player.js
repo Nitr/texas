@@ -21,12 +21,11 @@ Player = (function() {
     }));
     if (this.info) this.set_nick(this.info.nick);
     if (this.info) this.set_inplay(this.info.inplay);
-    return;
   }
 
   Player.prototype.update_balance = function() {
     if (this.pid === $.player.pid) {
-      $.ws.send($.pp.write({
+      return $.ws.send($.pp.write({
         cmd: "BALANCE_QUERY"
       }));
     } else {
@@ -37,27 +36,27 @@ Player = (function() {
   Player.prototype.set_nick = function(nick) {
     if (nick == null) nick = this.nick;
     this.nick = nick;
-    $(this.dom).children('.nick').text(this.nick);
+    return $(this.dom).children('.nick').text(this.nick);
   };
 
   Player.prototype.set_inplay = function(inplay) {
     this.inplay = inplay;
-    $(this.dom).children('.inplay').text(this.inplay);
+    return $(this.dom).children('.inplay').text(this.inplay);
   };
 
   Player.prototype.set_balance = function(balance) {
     this.balance = balance;
-    $(this.dom).children('.balance').text(this.balance);
+    return $(this.dom).children('.balance').text(this.balance);
   };
 
   Player.prototype.set_photo = function(photo) {
     this.photo = photo;
-    $(this.dom).children('.photo').attr('src', this.photo);
+    return $(this.dom).children('.photo').attr('src', this.photo);
   };
 
   Player.prototype.set_css = function(css) {
     console.log(css);
-    $(this.dom).css(css);
+    return $(this.dom).css(css);
   };
 
   return Player;
@@ -71,22 +70,22 @@ Player = (function() {
   $.pp.reg("LOGIN", function(player) {
     $.player = new Player(player.id, $('#toolbar > #player'));
     $.player.update_balance();
-    $.player.dom.trigger('singin');
+    return $.player.dom.trigger('singin');
   });
   $.pp.reg("BALANCE_INFO", function(balance) {
-    $.player.set_balance(balance.amount);
+    return $.player.set_balance(balance.amount);
   });
   $.pp.reg('PLAYER_INFO', function(info) {
-    players[info.pid].set_nick(info.nick);
+    return players[info.pid].set_nick(info.nick);
   });
   $.pp.reg('PHOTO_INFO', function(info) {
-    players[info.pid].set_photo($.rl.img[info.photo]);
+    return players[info.pid].set_photo($.rl.img[info.photo]);
   });
   $.cache_player = function(player) {
-    players[player.pid] = player;
+    return players[player.pid] = player;
   };
   $.clear_players = function() {
     players = {};
-    $.cache_player($.player);
+    return $.cache_player($.player);
   };
 })(jQuery);

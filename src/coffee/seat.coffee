@@ -5,6 +5,7 @@ class Seat
 
   init_dom: () ->
     @dom = @get_dom()
+    @dom.data('sn', @sn)
     @set_position()
     @dom.appendTo @game.dom
 
@@ -172,13 +173,18 @@ $ ->
       }
 
     $('#page').block {
-      message: $(".buyin").clone(true, true)
+      message: $(".buyin").clone(true, true).data('sn', $(@).data('sn'))
       css: $.extend(BLOCKUI, {width: '300px'})
     }
 
     max = if balance < max then balance else max
     buyin = if balance > max then max else min * 10
     buyin = if buyin > balance then balance else buyin
+
+    $('.buyin #range_buy').
+      attr('min', min).
+      attr('max', max).
+      val(buyin)
 
     $(".buyin #min").text format $.game.detail.min
     $(".buyin #max").text format $.game.detail.max
@@ -187,10 +193,14 @@ $ ->
     $(".buyin #balance").text format balance
     $(".buyin #lab_buyin").text format buyin
 
-    $('.buyin #range_buy').
-      attr('min', min).
-      attr('max', max).
-      val(buyin)
+  $(".buyin #cmd_buy").bind 'click', ->
+    $(@).attr('disabled', true)
+    sn = $(@).parent().data('sn')
+    buyin = $(@).parent().children('#range_buy').val()
+    cmd = {cmd: "JOIN", gid: $.game.gid, seat: sn, buyin: parseInt(buyin)}
+    console.log cmd
+    $.ws.send $.pp.write cmd
+    $('#page').unblock()
 
   $(".buyin #cmd_cancel").bind 'click', ->
     $('#page').unblock()

@@ -12,6 +12,7 @@ Seat = (function() {
 
   Seat.prototype.init_dom = function() {
     this.dom = this.get_dom();
+    this.dom.data('sn', this.sn);
     this.set_position();
     return this.dom.appendTo(this.game.dom);
   };
@@ -244,7 +245,7 @@ $(function() {
       });
     }
     $('#page').block({
-      message: $(".buyin").clone(true, true),
+      message: $(".buyin").clone(true, true).data('sn', $(this).data('sn')),
       css: $.extend(BLOCKUI, {
         width: '300px'
       })
@@ -252,13 +253,28 @@ $(function() {
     max = balance < max ? balance : max;
     buyin = balance > max ? max : min * 10;
     buyin = buyin > balance ? balance : buyin;
+    $('.buyin #range_buy').attr('min', min).attr('max', max).val(buyin);
     $(".buyin #min").text(format($.game.detail.min));
     $(".buyin #max").text(format($.game.detail.max));
     $(".buyin #lab_min").text(format(min));
     $(".buyin #lab_max").text(format(max));
     $(".buyin #balance").text(format(balance));
-    $(".buyin #lab_buyin").text(format(buyin));
-    return $('.buyin #range_buy').attr('min', min).attr('max', max).val(buyin);
+    return $(".buyin #lab_buyin").text(format(buyin));
+  });
+  $(".buyin #cmd_buy").bind('click', function() {
+    var buyin, cmd, sn;
+    $(this).attr('disabled', true);
+    sn = $(this).parent().data('sn');
+    buyin = $(this).parent().children('#range_buy').val();
+    cmd = {
+      cmd: "JOIN",
+      gid: $.game.gid,
+      seat: sn,
+      buyin: parseInt(buyin)
+    };
+    console.log(cmd);
+    $.ws.send($.pp.write(cmd));
+    return $('#page').unblock();
   });
   $(".buyin #cmd_cancel").bind('click', function() {
     return $('#page').unblock();

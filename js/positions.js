@@ -121,7 +121,6 @@
       };
     },
     get_empty: function(sn) {
-      console.log(sn);
       return get(sn).empty_seat;
     },
     get_random: function(ps, offset) {
