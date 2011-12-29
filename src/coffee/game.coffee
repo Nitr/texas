@@ -18,10 +18,28 @@ class Game
     @seats[seat_detail.sn].remove()
     @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
 
-  leave: (seat_detail) ->
-    return @seats[seat_detail.sn].__proto__.constructor is EmptySeat
-    @seats[seat_detail.sn].clear()
-    @seats[seat_detail.sn] = new EmptySeat seat_detail, @
+    if seat_detail.pid is $.player.pid
+      @hide_empty()
+
+  hide_empty: ->
+    $("#cmd_up").attr('disabled', false).removeClass('disabled')
+    seat.hide() for seat in @seats when seat? and seat.__proto__.constructor is EmptySeat
+
+  show_empty: ->
+    $("#cmd_up").attr('disabled', true).addClass('disabled')
+    seat.show() for seat in @seats when seat? and seat.__proto__.constructor is EmptySeat
+
+  leave: (args) ->
+    seat = @seats[args.sn]
+
+    if seat.__proto__.constructor is EmptySeat
+      return
+
+    @seats[seat.sn].clear()
+    @seats[seat.sn].remove()
+    @seats[seat.sn] = new EmptySeat {sn: args.sn}, @
+
+    @show_empty()
 
   clear: ->
     $.positions.reset_share()
@@ -84,8 +102,10 @@ $ ->
 
   game_dom.bind 'start_game', (event, args) ->
     $("#game > .actions > *").attr("disabled", true).addClass('disabled')
+    $("#cmd_up").attr('disabled', true).addClass('disabled')
 
     game = new Game args.gid, game_dom
+
     cmd = {gid: args.gid}
 
     $.game = game
@@ -185,7 +205,8 @@ $ ->
     game.join args
 
   $.pp.reg "LEAVE", (args) ->
-    game.leave args
+    seat = game.get_seat args
+    game.leave seat
 
   $.pp.reg "BET_REQ", (args) ->
     return

@@ -21,6 +21,10 @@ Seat = (function() {
     return this.dom.css(this.get_position());
   };
 
+  Seat.prototype.remove = function() {
+    return this.dom.remove();
+  };
+
   return Seat;
 
 })();
@@ -43,8 +47,12 @@ EmptySeat = (function() {
     return $.positions.get_empty(this.detail.sn);
   };
 
-  EmptySeat.prototype.remove = function() {
-    return this.dom.remove();
+  EmptySeat.prototype.hide = function() {
+    return this.dom.hide();
+  };
+
+  EmptySeat.prototype.show = function() {
+    return this.dom.show();
   };
 
   return EmptySeat;
@@ -272,14 +280,22 @@ $(function() {
       seat: sn,
       buyin: parseInt(buyin)
     };
-    console.log(cmd);
     $.ws.send($.pp.write(cmd));
     return $('#page').unblock();
   });
   $(".buyin #cmd_cancel").bind('click', function() {
     return $('#page').unblock();
   });
-  return $(".buyin #range_buy").bind('change', function(event) {
+  $(".buyin #range_buy").bind('change', function(event) {
     return $(".buyin #lab_buyin").text(format($(this).val()));
   });
+  $("#cmd_up").bind('click', function() {
+    var cmd;
+    cmd = {
+      cmd: "LEAVE",
+      gid: $.game.gid
+    };
+    return $.ws.send($.pp.write(cmd));
+  });
+  return $("#cmd_exit").bind('click', function() {});
 });

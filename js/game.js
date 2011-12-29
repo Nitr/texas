@@ -36,13 +36,48 @@ Game = (function() {
 
   Game.prototype.join = function(seat_detail) {
     this.seats[seat_detail.sn].remove();
-    return this.seats[seat_detail.sn] = new PlayingSeat(seat_detail, this);
+    this.seats[seat_detail.sn] = new PlayingSeat(seat_detail, this);
+    if (seat_detail.pid === $.player.pid) return this.hide_empty();
   };
 
-  Game.prototype.leave = function(seat_detail) {
-    return this.seats[seat_detail.sn].__proto__.constructor === EmptySeat;
-    this.seats[seat_detail.sn].clear();
-    return this.seats[seat_detail.sn] = new EmptySeat(seat_detail, this);
+  Game.prototype.hide_empty = function() {
+    var seat, _i, _len, _ref, _results;
+    $("#cmd_up").attr('disabled', false).removeClass('disabled');
+    _ref = this.seats;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      seat = _ref[_i];
+      if ((seat != null) && seat.__proto__.constructor === EmptySeat) {
+        _results.push(seat.hide());
+      }
+    }
+    return _results;
+  };
+
+  Game.prototype.show_empty = function() {
+    var seat, _i, _len, _ref, _results;
+    $("#cmd_up").attr('disabled', true).addClass('disabled');
+    _ref = this.seats;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      seat = _ref[_i];
+      if ((seat != null) && seat.__proto__.constructor === EmptySeat) {
+        _results.push(seat.show());
+      }
+    }
+    return _results;
+  };
+
+  Game.prototype.leave = function(args) {
+    var seat;
+    seat = this.seats[args.sn];
+    if (seat.__proto__.constructor === EmptySeat) return;
+    this.seats[seat.sn].clear();
+    this.seats[seat.sn].remove();
+    this.seats[seat.sn] = new EmptySeat({
+      sn: args.sn
+    }, this);
+    return this.show_empty();
   };
 
   Game.prototype.clear = function() {
@@ -160,6 +195,7 @@ $(function() {
   game_dom.bind('start_game', function(event, args) {
     var cmd;
     $("#game > .actions > *").attr("disabled", true).addClass('disabled');
+    $("#cmd_up").attr('disabled', true).addClass('disabled');
     game = new Game(args.gid, game_dom);
     cmd = {
       gid: args.gid
@@ -262,7 +298,9 @@ $(function() {
     return game.join(args);
   });
   $.pp.reg("LEAVE", function(args) {
-    return game.leave(args);
+    var seat;
+    seat = game.get_seat(args);
+    return game.leave(seat);
   });
   $.pp.reg("BET_REQ", function(args) {});
   $.pp.reg("SHOW", function(args) {

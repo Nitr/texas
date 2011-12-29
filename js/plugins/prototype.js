@@ -226,6 +226,10 @@
       {type: "decimal", prop: "amount"},
       {type: "decimal", prop: "cost"},
     ]),
+    notify_seat_state: generate_notify("LEAVE", [45,
+      {type: "integer", prop: "gid"},
+      {type: "integer", prop: "pid"}
+    ]),
     notify_seat_state: generate_notify("JOIN", [44,
       {type: "integer", prop: "gid"},
       {type: "integer", prop: "pid"},

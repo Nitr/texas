@@ -12,6 +12,9 @@ class Seat
   set_position: () ->
     @dom.css @get_position()
 
+  remove: ->
+    @dom.remove()
+
 class EmptySeat extends Seat
   constructor: (@detail, @game) ->
     super
@@ -22,8 +25,11 @@ class EmptySeat extends Seat
   get_position: ->
     $.positions.get_empty @detail.sn
 
-  remove: ->
-    @dom.remove()
+  hide: ->
+    @dom.hide()
+
+  show: ->
+    @dom.show()
 
 class PlayingSeat extends Seat
   constructor: (@detail, @game) ->
@@ -198,7 +204,6 @@ $ ->
     sn = $(@).parent().data('sn')
     buyin = $(@).parent().children('#range_buy').val()
     cmd = {cmd: "JOIN", gid: $.game.gid, seat: sn, buyin: parseInt(buyin)}
-    console.log cmd
     $.ws.send $.pp.write cmd
     $('#page').unblock()
 
@@ -207,3 +212,10 @@ $ ->
 
   $(".buyin #range_buy").bind 'change', (event) ->
     $(".buyin #lab_buyin").text format $(@).val()
+
+  $("#cmd_up").bind 'click', ->
+    cmd = {cmd: "LEAVE", gid: $.game.gid}
+    $.ws.send $.pp.write cmd
+
+  $("#cmd_exit").bind 'click', ->
+    return

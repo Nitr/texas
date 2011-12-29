@@ -336,6 +336,14 @@ div.growlUI h1, div.growlUI h2 {
     border-radius: 4px;
     -webkit-box-shadow: 1px 1px 5px black;
     position: absolute; }
+  #game #cmd_cancel {
+    top: 600px;
+    left: 870px;
+    position: absolute; }
+  #game #cmd_up {
+    top: 550px;
+    left: 870px;
+    position: absolute; }
   #game #raise_range {
     position: absolute;
     left: 520px;
