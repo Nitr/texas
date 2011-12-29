@@ -94,6 +94,7 @@
     };
   };
   $.positions = {
+    size: game_position.length,
     offset: 0,
     get: function(sn) {
       var index;

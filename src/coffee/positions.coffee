@@ -35,6 +35,8 @@
     {top: "#{ps[0]}px", left: "#{ps[1]}px"}
 
   $.positions = {
+    size: game_position.length
+
     offset: 0
 
     get: (sn) ->

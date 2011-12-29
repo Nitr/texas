@@ -15,11 +15,14 @@ class Game
     seat.set_position() for seat in @seats when seat?
 
   join: (seat_detail) ->
+    console.log seat_detail.sn
     @seats[seat_detail.sn].remove()
     @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
 
     if seat_detail.pid is $.player.pid
+      $.positions.offset = $.positions.size - seat_detail.sn + 1
       @hide_empty()
+      @reset_position()
 
   hide_empty: ->
     $("#cmd_up").attr('disabled', false).removeClass('disabled')

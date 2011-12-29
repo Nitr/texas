@@ -35,9 +35,14 @@ Game = (function() {
   };
 
   Game.prototype.join = function(seat_detail) {
+    console.log(seat_detail.sn);
     this.seats[seat_detail.sn].remove();
     this.seats[seat_detail.sn] = new PlayingSeat(seat_detail, this);
-    if (seat_detail.pid === $.player.pid) return this.hide_empty();
+    if (seat_detail.pid === $.player.pid) {
+      $.positions.offset = $.positions.size - seat_detail.sn + 1;
+      this.hide_empty();
+      return this.reset_position();
+    }
   };
 
   Game.prototype.hide_empty = function() {
