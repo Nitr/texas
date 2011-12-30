@@ -280,6 +280,9 @@ $ ->
     seat.set_hand args
     seat.set_rank()
 
+    if game.check_actor()
+      seat.high()
+
   $.pp.reg "WIN", (args) ->
     game.clear_actor()
     seat = game.get_seat args

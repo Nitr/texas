@@ -158,7 +158,9 @@ PlayingSeat = (function() {
   };
 
   PlayingSeat.prototype.set_rank = function() {
-    return this.dom.children(".nick").addClass("high_label").text(RANKS[this.hand.rank]);
+    if (this.hand.rank !== HC_HIGH_CARD) {
+      return this.dom.children(".nick").addClass("high_label").text(RANKS[this.hand.rank]);
+    }
   };
 
   PlayingSeat.prototype.set_hand = function(hand) {

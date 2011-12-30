@@ -394,7 +394,8 @@ $(function() {
     var seat;
     seat = game.get_seat(args);
     seat.set_hand(args);
-    return seat.set_rank();
+    seat.set_rank();
+    if (game.check_actor()) return seat.high();
   });
   $.pp.reg("WIN", function(args) {
     var seat;
