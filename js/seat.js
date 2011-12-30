@@ -68,6 +68,7 @@ PlayingSeat = (function() {
     this.detail = detail;
     this.game = game;
     PlayingSeat.__super__.constructor.apply(this, arguments);
+    this.bet = 0;
     this.player = new Player(this.detail.pid, this.dom, this.detail);
     this.poker = this.dom.children('.card');
     if (this.game.detail.stage !== GS_CANCEL && this.game.detail.stage !== GS_PREFLOP) {
@@ -90,14 +91,24 @@ PlayingSeat = (function() {
     return $.positions.get_playing(this.detail.sn);
   };
 
+  PlayingSeat.prototype.set_position = function() {
+    PlayingSeat.__super__.set_position.apply(this, arguments);
+    this.dom.children(".draw_card").css($.positions.get_draw(this.sn));
+    return this.dom.children(".bet_lab").css($.positions.get_bet_lab(this.sn));
+  };
+
   PlayingSeat.prototype.raise = function(call, raise) {
-    var bet, bets, ps, _i, _len;
+    var bet, bets, ps, _i, _len, _results;
+    this.bet += call + raise;
+    this.dom.children('.bet_lab').text(this.bet).show();
     ps = $.positions.get_bet(this.sn);
     bets = $.compute_bet_count(call + raise, []);
+    _results = [];
     for (_i = 0, _len = bets.length; _i < _len; _i++) {
       bet = bets[_i];
-      this.raise_bet($.rl.img[bet], ps);
+      _results.push(this.raise_bet($.rl.img[bet], ps));
     }
+    return _results;
   };
 
   PlayingSeat.prototype.raise_bet = function(img, ps) {
@@ -157,6 +168,11 @@ PlayingSeat = (function() {
       suit: hand.suit,
       rank: hand.rank
     };
+  };
+
+  PlayingSeat.prototype.reset_bet = function() {
+    this.bet = 0;
+    return this.dom.children('.bet_lab').hide();
   };
 
   PlayingSeat.prototype.high = function() {

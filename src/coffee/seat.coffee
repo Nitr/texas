@@ -35,9 +35,10 @@ class EmptySeat extends Seat
 class PlayingSeat extends Seat
   constructor: (@detail, @game) ->
     super
+    @bet = 0
     @player = new Player @detail.pid, @dom, @detail
     @poker = @dom.children('.card')
-    @draw_card() if @game.detail.stage != GS_CANCEL and @game.detail.stage != GS_PREFLOP 
+    @draw_card() if @game.detail.stage != GS_CANCEL and @game.detail.stage != GS_PREFLOP
 
   clear: ->
     @player.set_nick()
@@ -51,13 +52,18 @@ class PlayingSeat extends Seat
   get_position: ->
     $.positions.get_playing @detail.sn
 
+  set_position: () ->
+    super
+    @dom.children(".draw_card").css($.positions.get_draw(@sn))
+    @dom.children(".bet_lab").css($.positions.get_bet_lab(@sn))
+
   raise: (call, raise) ->
+    @bet += (call + raise)
+    @dom.children('.bet_lab').text(@bet).show()
+
     ps = $.positions.get_bet(@sn)
     bets = $.compute_bet_count(call + raise, [])
-
     @raise_bet $.rl.img[bet], ps for bet in bets
-
-    return
 
   raise_bet: (img, ps) ->
     bet = $("<img class='bet' src='" + img + "' />").css(ps.start).appendTo(@game.dom)
@@ -81,7 +87,6 @@ class PlayingSeat extends Seat
 
   set_actor: ->
     @game.clear_actor()
-
     @dom.addClass('actor_seat')
 
     $('<div class="actor_timer"><div /></div>').appendTo(@dom).oneTime 100, ->
@@ -108,6 +113,10 @@ class PlayingSeat extends Seat
       face: hand.high1, face2: hand.high2,
       suit: hand.suit, rank: hand.rank
     }
+
+  reset_bet: ->
+    @bet = 0
+    @dom.children('.bet_lab').hide()
 
   high: () ->
     game = @game

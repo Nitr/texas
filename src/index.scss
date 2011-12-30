@@ -37,14 +37,6 @@ body {
 }
 
 
-.bet_label, .pot_label {
-  background-color: #77B73E;
-  position: absolute;
-  font-size: 12px;
-  border-radius: 20px;
-  width: 45px;
-}
-
 .pot_label {
   width: 65px;
   text-align: center;
@@ -608,8 +600,18 @@ div.growlUI h1, div.growlUI h2 {
     .draw_card {
       width: 41px;
       height: 41px;
-      @include auto-hide;
       position: absolute;
+      @include auto-hide;
+    }
+
+    .bet_lab {
+      width: 45px;
+      height: 12px;
+      font-size: 12px;
+      position: absolute;
+      border-radius: 20px;
+      background-color: #77B73E;
+      @include auto-hide;
     }
 
     .actor_timer {

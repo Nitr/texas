@@ -74,6 +74,7 @@ class Game
       throw "unknown object #{o} in get_seat()"
 
   new_stage: ->
+    seat.reset_bet() for seat in @seats when seat? and seat.__proto__.constructor is PlayingSeat
     ref = @dom
     @dom.oneTime '0.3s', ->
       $(bet).css($.positions.get_random([240, 680], 20)).removeClass('bet').addClass('pot') for bet in ref.children(".bet")

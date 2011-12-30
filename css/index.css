@@ -29,13 +29,6 @@ body {
 .cmdblue {
   background-position: 276px 0px; }
 
-.bet_label, .pot_label {
-  background-color: #77B73E;
-  position: absolute;
-  font-size: 12px;
-  border-radius: 20px;
-  width: 45px; }
-
 .pot_label {
   width: 65px;
   text-align: center;
@@ -437,8 +430,16 @@ div.growlUI h1, div.growlUI h2 {
     #game > .playing_seat .draw_card {
       width: 41px;
       height: 41px;
-      display: none;
-      position: absolute; }
+      position: absolute;
+      display: none; }
+    #game > .playing_seat .bet_lab {
+      width: 45px;
+      height: 12px;
+      font-size: 12px;
+      position: absolute;
+      border-radius: 20px;
+      background-color: #77B73E;
+      display: none; }
     #game > .playing_seat .actor_timer {
       top: 0px;
       left: -8px;

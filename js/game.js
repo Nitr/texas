@@ -142,14 +142,21 @@ Game = (function() {
   };
 
   Game.prototype.new_stage = function() {
-    var ref;
+    var ref, seat, _i, _len, _ref;
+    _ref = this.seats;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      seat = _ref[_i];
+      if ((seat != null) && seat.__proto__.constructor === PlayingSeat) {
+        seat.reset_bet();
+      }
+    }
     ref = this.dom;
     this.dom.oneTime('0.3s', function() {
-      var bet, _i, _len, _ref, _results;
-      _ref = ref.children(".bet");
+      var bet, _j, _len2, _ref2, _results;
+      _ref2 = ref.children(".bet");
       _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        bet = _ref[_i];
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        bet = _ref2[_j];
         _results.push($(bet).css($.positions.get_random([240, 680], 20)).removeClass('bet').addClass('pot'));
       }
       return _results;
