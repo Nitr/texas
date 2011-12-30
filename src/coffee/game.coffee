@@ -30,6 +30,8 @@ class Game
       @hide_empty()
       @reset_position(seat_detail.sn)
 
+    @seats[seat_detail.sn].disable()
+
   hide_empty: ->
     $("#cmd_up").attr('disabled', false).removeClass('disabled')
     seat.hide() for seat in @seats when seat? and seat.__proto__.constructor is EmptySeat
@@ -244,6 +246,9 @@ $ ->
 
   $.pp.reg "ACTOR", (args) ->
     game.set_actor(args)
+
+    unless game.check_actor()
+      game.disable_actions()
 
   $.pp.reg "STAGE", (args) ->
     game.new_stage() if args.stage != GS_PREFLOP

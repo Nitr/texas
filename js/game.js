@@ -47,8 +47,9 @@ Game = (function() {
     this.seats[seat_detail.sn] = new PlayingSeat(seat_detail, this);
     if (seat_detail.pid === $.player.pid) {
       this.hide_empty();
-      return this.reset_position(seat_detail.sn);
+      this.reset_position(seat_detail.sn);
     }
+    return this.seats[seat_detail.sn].disable();
   };
 
   Game.prototype.hide_empty = function() {
@@ -356,7 +357,8 @@ $(function() {
     if (private_card_sn === 2) private_card_sn = 0;
   });
   $.pp.reg("ACTOR", function(args) {
-    return game.set_actor(args);
+    game.set_actor(args);
+    if (!game.check_actor()) return game.disable_actions();
   });
   $.pp.reg("STAGE", function(args) {
     if (args.stage !== GS_PREFLOP) return game.new_stage();

@@ -42,6 +42,7 @@ class PlayingSeat extends Seat
     @player.set_nick()
     @dom.children(".card").remove()
     @dom.children(".high_label").removeClass("high_label")
+    @dom.removeClass('disabled')
 
   get_dom: ->
     $("#game > .template > .playing_seat").clone true
@@ -62,6 +63,10 @@ class PlayingSeat extends Seat
 
     $(@dom).oneTime 100, ->
       bet.css($.positions.get_random(ps.end, 5))
+
+  disable: ->
+    @dom.addClass('disabled')
+    @dom.children(".draw_card").hide()
 
   check: ->
     return

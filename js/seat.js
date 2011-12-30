@@ -77,7 +77,8 @@ PlayingSeat = (function() {
   PlayingSeat.prototype.clear = function() {
     this.player.set_nick();
     this.dom.children(".card").remove();
-    return this.dom.children(".high_label").removeClass("high_label");
+    this.dom.children(".high_label").removeClass("high_label");
+    return this.dom.removeClass('disabled');
   };
 
   PlayingSeat.prototype.get_dom = function() {
@@ -104,6 +105,11 @@ PlayingSeat = (function() {
     return $(this.dom).oneTime(100, function() {
       return bet.css($.positions.get_random(ps.end, 5));
     });
+  };
+
+  PlayingSeat.prototype.disable = function() {
+    this.dom.addClass('disabled');
+    return this.dom.children(".draw_card").hide();
   };
 
   PlayingSeat.prototype.check = function() {};
