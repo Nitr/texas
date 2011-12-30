@@ -23,6 +23,13 @@ Game = (function() {
     }
   };
 
+  Game.prototype.update_seat = function(seat_detail) {
+    var seat;
+    if (seat_detail.state === PS_EMPTY) return;
+    seat = this.get_seat(seat_detail);
+    return seat.player.set_inplay(seat_detail.inplay);
+  };
+
   Game.prototype.reset_position = function(sn) {
     var seat, _i, _len, _ref, _results;
     $.positions.offset = $.positions.size - sn + 1;
@@ -126,6 +133,8 @@ Game = (function() {
     if ('pid' in o) {
       return this.get_seat_by_pid(o);
     } else if ('seat' in o) {
+      return this.get_seat_by_sn(o);
+    } else if ('sn' in o) {
       return this.get_seat_by_sn(o);
     } else {
       throw "unknown object " + o + " in get_seat()";
@@ -294,7 +303,8 @@ $(function() {
     return game.init_seat(detail);
   });
   $.pp.reg("SEAT_STATE", function(detail) {
-    if (!game) {}
+    if (!game) return;
+    return game.update_seat(detail);
   });
   $.pp.reg("CANCEL", function(args) {
     return growlUI("#tips_empty");

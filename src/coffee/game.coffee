@@ -11,6 +11,13 @@ class Game
       when PS_EMPTY then @seats[seat_detail.sn] = new EmptySeat seat_detail, @
       else @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
 
+  update_seat: (seat_detail) ->
+    if seat_detail.state is PS_EMPTY
+      return
+
+    seat = @get_seat seat_detail
+    seat.player.set_inplay seat_detail.inplay
+
   reset_position: (sn)->
     $.positions.offset = $.positions.size - sn + 1
     seat.set_position() for seat in @seats when seat?
@@ -59,6 +66,8 @@ class Game
     if 'pid' of o
       return @get_seat_by_pid(o)
     else if 'seat' of o
+      return @get_seat_by_sn(o)
+    else if 'sn' of o
       return @get_seat_by_sn(o)
     else
       throw "unknown object #{o} in get_seat()"
@@ -179,6 +188,7 @@ $ ->
 
   $.pp.reg "SEAT_STATE", (detail) ->
     return unless game
+    game.update_seat detail
 
   $.pp.reg "CANCEL", (args) ->
     growlUI "#tips_empty"
