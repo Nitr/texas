@@ -11,7 +11,8 @@ class Game
       when PS_EMPTY then @seats[seat_detail.sn] = new EmptySeat seat_detail, @
       else @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
 
-  reset_position: ->
+  reset_position: (sn)->
+    $.positions.offset = $.positions.size - sn + 1
     seat.set_position() for seat in @seats when seat?
 
   join: (seat_detail) ->
@@ -20,9 +21,8 @@ class Game
     @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
 
     if seat_detail.pid is $.player.pid
-      $.positions.offset = $.positions.size - seat_detail.sn + 1
       @hide_empty()
-      @reset_position()
+      @reset_position(seat_detail.sn)
 
   hide_empty: ->
     $("#cmd_up").attr('disabled', false).removeClass('disabled')
@@ -93,6 +93,31 @@ class Game
     $('.actor_timer').remove()
     $('.actor_seat').removeClass('actor_seat')
 
+  disable_actions: (key)->
+    unless key?
+      $("#game > .actions > *").attr("disabled", true).addClass('disabled')
+    else
+      $("#game > .actions").children("#cmd_#{key}").attr("disabled", true).addClass('disabled')
+
+  enable_actions: ->
+    $("#game > .actions > *").attr("disabled", false).removeClass('disabled')
+
+  set_actor: (args)->
+    @actor = @get_seat args
+    @actor.set_actor()
+
+  check_actor: ->
+    if @actor? and @actor.player.pid is $.player.pid
+      return true
+
+    return false
+
+  check: ->
+    $.ws.send $.pp.write {cmd: "RAISE", amount: 0, gid: @gid}
+
+  fold: ->
+    $.ws.send $.pp.write {cmd: "FOLD", gid: @gid}
+
 $ ->
   game = null
   game_dom = $('#game')
@@ -104,10 +129,10 @@ $ ->
     $(@).hide()
 
   game_dom.bind 'start_game', (event, args) ->
-    $("#game > .actions > *").attr("disabled", true).addClass('disabled')
     $("#cmd_up").attr('disabled', true).addClass('disabled')
 
     game = new Game args.gid, game_dom
+    game.disable_actions()
 
     cmd = {gid: args.gid}
 
@@ -198,8 +223,7 @@ $ ->
     return
 
   $.pp.reg "ACTOR", (args) ->
-    seat = game.get_seat args
-    seat.set_actor()
+    game.set_actor(args)
 
   $.pp.reg "STAGE", (args) ->
     game.new_stage() if args.stage != GS_PREFLOP
@@ -212,7 +236,8 @@ $ ->
     game.leave seat
 
   $.pp.reg "BET_REQ", (args) ->
-    return
+    game.enable_actions()
+    game.disable_actions if args.call is 0 then 'call' else 'check'
 
   $.pp.reg "SHOW", (args) ->
     game.new_stage()
@@ -231,5 +256,32 @@ $ ->
     game.win seat
     seat.high()
   # }}}
+
+  $("#game > .actions > [id^=cmd_fold]").bind 'click', ->
+    unless game.check_actor()
+      return
+
+    game.fold()
+
+  $("#game > .actions > [id^=cmd_check]").bind 'click', ->
+    unless game.check_actor()
+      return
+
+    game.check()
+
+  $("#game > .actions > [id^=cmd_call]").bind 'click', ->
+    unless game.check_actor()
+      return
+
+    return
+
+  $("#game > .actions > [id^=cmd_raise]").bind 'click', ->
+    unless game.check_actor()
+      return
+
+    return
+
+  $("#game > .actions > [id^=cmd]").bind 'click', ->
+    game.disable_actions()
 
   return

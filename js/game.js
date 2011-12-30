@@ -23,8 +23,9 @@ Game = (function() {
     }
   };
 
-  Game.prototype.reset_position = function() {
+  Game.prototype.reset_position = function(sn) {
     var seat, _i, _len, _ref, _results;
+    $.positions.offset = $.positions.size - sn + 1;
     _ref = this.seats;
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -39,9 +40,8 @@ Game = (function() {
     this.seats[seat_detail.sn].remove();
     this.seats[seat_detail.sn] = new PlayingSeat(seat_detail, this);
     if (seat_detail.pid === $.player.pid) {
-      $.positions.offset = $.positions.size - seat_detail.sn + 1;
       this.hide_empty();
-      return this.reset_position();
+      return this.reset_position(seat_detail.sn);
     }
   };
 
@@ -183,6 +183,45 @@ Game = (function() {
     return $('.actor_seat').removeClass('actor_seat');
   };
 
+  Game.prototype.disable_actions = function(key) {
+    if (key == null) {
+      return $("#game > .actions > *").attr("disabled", true).addClass('disabled');
+    } else {
+      return $("#game > .actions").children("#cmd_" + key).attr("disabled", true).addClass('disabled');
+    }
+  };
+
+  Game.prototype.enable_actions = function() {
+    return $("#game > .actions > *").attr("disabled", false).removeClass('disabled');
+  };
+
+  Game.prototype.set_actor = function(args) {
+    this.actor = this.get_seat(args);
+    return this.actor.set_actor();
+  };
+
+  Game.prototype.check_actor = function() {
+    if ((this.actor != null) && this.actor.player.pid === $.player.pid) {
+      return true;
+    }
+    return false;
+  };
+
+  Game.prototype.check = function() {
+    return $.ws.send($.pp.write({
+      cmd: "RAISE",
+      amount: 0,
+      gid: this.gid
+    }));
+  };
+
+  Game.prototype.fold = function() {
+    return $.ws.send($.pp.write({
+      cmd: "FOLD",
+      gid: this.gid
+    }));
+  };
+
   return Game;
 
 })();
@@ -199,9 +238,9 @@ $(function() {
   });
   game_dom.bind('start_game', function(event, args) {
     var cmd;
-    $("#game > .actions > *").attr("disabled", true).addClass('disabled');
     $("#cmd_up").attr('disabled', true).addClass('disabled');
     game = new Game(args.gid, game_dom);
+    game.disable_actions();
     cmd = {
       gid: args.gid
     };
@@ -292,9 +331,7 @@ $(function() {
   });
   $.pp.reg("PRIVATE", function(args) {});
   $.pp.reg("ACTOR", function(args) {
-    var seat;
-    seat = game.get_seat(args);
-    return seat.set_actor();
+    return game.set_actor(args);
   });
   $.pp.reg("STAGE", function(args) {
     if (args.stage !== GS_PREFLOP) return game.new_stage();
@@ -307,7 +344,10 @@ $(function() {
     seat = game.get_seat(args);
     return game.leave(seat);
   });
-  $.pp.reg("BET_REQ", function(args) {});
+  $.pp.reg("BET_REQ", function(args) {
+    game.enable_actions();
+    return game.disable_actions(args.call === 0 ? 'call' : 'check');
+  });
   $.pp.reg("SHOW", function(args) {
     var seat;
     game.new_stage();
@@ -327,5 +367,22 @@ $(function() {
     seat = game.get_seat(args);
     game.win(seat);
     return seat.high();
+  });
+  $("#game > .actions > [id^=cmd_fold]").bind('click', function() {
+    if (!game.check_actor()) return;
+    return game.fold();
+  });
+  $("#game > .actions > [id^=cmd_check]").bind('click', function() {
+    if (!game.check_actor()) return;
+    return game.check();
+  });
+  $("#game > .actions > [id^=cmd_call]").bind('click', function() {
+    if (!game.check_actor()) return;
+  });
+  $("#game > .actions > [id^=cmd_raise]").bind('click', function() {
+    if (!game.check_actor()) return;
+  });
+  $("#game > .actions > [id^=cmd]").bind('click', function() {
+    return game.disable_actions();
   });
 });
