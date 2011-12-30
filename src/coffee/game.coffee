@@ -133,6 +133,7 @@ $ ->
   game = null
   game_dom = $('#game')
   hall_dom = $('#hall')
+  private_card_sn = 0
 
   game_dom.bind 'cancel_game', (event, args) ->
     game.clear()
@@ -232,6 +233,13 @@ $ ->
     game.share_card(args.face, args.suit)
 
   $.pp.reg "PRIVATE", (args) ->
+    private_card_sn += 1
+
+    seat = game.get_seat args
+    seat.private_card(args.face, args.suit, private_card_sn)
+
+    if private_card_sn == 2
+      private_card_sn = 0
     return
 
   $.pp.reg "ACTOR", (args) ->

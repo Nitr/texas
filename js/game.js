@@ -244,10 +244,11 @@ Game = (function() {
 })();
 
 $(function() {
-  var game, game_dom, hall_dom;
+  var game, game_dom, hall_dom, private_card_sn;
   game = null;
   game_dom = $('#game');
   hall_dom = $('#hall');
+  private_card_sn = 0;
   game_dom.bind('cancel_game', function(event, args) {
     game.clear();
     game = null;
@@ -347,7 +348,13 @@ $(function() {
   $.pp.reg("SHARE", function(args) {
     return game.share_card(args.face, args.suit);
   });
-  $.pp.reg("PRIVATE", function(args) {});
+  $.pp.reg("PRIVATE", function(args) {
+    var seat;
+    private_card_sn += 1;
+    seat = game.get_seat(args);
+    seat.private_card(args.face, args.suit, private_card_sn);
+    if (private_card_sn === 2) private_card_sn = 0;
+  });
   $.pp.reg("ACTOR", function(args) {
     return game.set_actor(args);
   });
