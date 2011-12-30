@@ -43,7 +43,6 @@ Game = (function() {
   };
 
   Game.prototype.join = function(seat_detail) {
-    console.log(seat_detail.sn);
     this.seats[seat_detail.sn].remove();
     this.seats[seat_detail.sn] = new PlayingSeat(seat_detail, this);
     if (seat_detail.pid === $.player.pid) {
@@ -231,6 +230,15 @@ Game = (function() {
     }));
   };
 
+  Game.prototype.call = function(amount) {
+    if (amount == null) amount = 0;
+    return $.ws.send($.pp.write({
+      cmd: "RAISE",
+      amount: amount,
+      gid: this.gid
+    }));
+  };
+
   return Game;
 
 })();
@@ -356,7 +364,8 @@ $(function() {
   });
   $.pp.reg("BET_REQ", function(args) {
     game.enable_actions();
-    return game.disable_actions(args.call === 0 ? 'call' : 'check');
+    game.disable_actions(args.call === 0 ? 'call' : 'check');
+    return $('#raise_range, #raise_number').val(args.min).attr('min', args.min).attr('max', args.max);
   });
   $.pp.reg("SHOW", function(args) {
     var seat;
@@ -388,11 +397,30 @@ $(function() {
   });
   $("#game > .actions > [id^=cmd_call]").bind('click', function() {
     if (!game.check_actor()) return;
+    return game.call();
   });
   $("#game > .actions > [id^=cmd_raise]").bind('click', function() {
+    var amount;
     if (!game.check_actor()) return;
+    $('#raise_range').trigger('change');
+    amount = parseInt($('#raise_range').val());
+    game.call(amount);
+    return $.ws.send($.pp.write({
+      cmd: "RAISE",
+      gid: $.game.gid,
+      amount: amount
+    }));
   });
   $("#game > .actions > [id^=cmd]").bind('click', function() {
     return game.disable_actions();
+  });
+  $('#raise_range, #raise_number').bind('change', function(event) {
+    var max, min, v;
+    v = parseInt($(this).val());
+    min = parseInt($(this).attr("min"));
+    max = parseInt($(this).attr("max"));
+    if (v < min) v = min;
+    if (v > max) v = max;
+    return $('#raise_range, #raise_number').val(v.toString());
   });
 });

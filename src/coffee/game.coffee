@@ -23,7 +23,6 @@ class Game
     seat.set_position() for seat in @seats when seat?
 
   join: (seat_detail) ->
-    console.log seat_detail.sn
     @seats[seat_detail.sn].remove()
     @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
 
@@ -126,6 +125,9 @@ class Game
 
   fold: ->
     $.ws.send $.pp.write {cmd: "FOLD", gid: @gid}
+
+  call: (amount = 0)->
+    $.ws.send $.pp.write {cmd: "RAISE", amount: amount, gid: @gid}
 
 $ ->
   game = null
@@ -249,6 +251,10 @@ $ ->
     game.enable_actions()
     game.disable_actions if args.call is 0 then 'call' else 'check'
 
+    $('#raise_range, #raise_number').val(args.min).
+      attr('min', args.min).
+      attr('max', args.max)
+
   $.pp.reg "SHOW", (args) ->
     game.new_stage()
     seat = game.get_seat args
@@ -283,15 +289,31 @@ $ ->
     unless game.check_actor()
       return
 
-    return
+    game.call()
 
   $("#game > .actions > [id^=cmd_raise]").bind 'click', ->
     unless game.check_actor()
       return
 
-    return
+    $('#raise_range').trigger 'change'
+    amount = parseInt $('#raise_range').val()
+    game.call(amount)
+    $.ws.send $.pp.write {cmd: "RAISE", gid: $.game.gid, amount: amount}
 
   $("#game > .actions > [id^=cmd]").bind 'click', ->
     game.disable_actions()
+
+  $('#raise_range, #raise_number').bind 'change', (event) ->
+    v = parseInt($(this).val())
+    min = parseInt($(this).attr("min"))
+    max = parseInt($(this).attr("max"))
+
+    if (v < min)
+      v = min
+
+    if (v > max)
+      v = max
+
+    $('#raise_range, #raise_number').val(v.toString())
 
   return
