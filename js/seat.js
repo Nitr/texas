@@ -18,7 +18,8 @@ Seat = (function() {
   };
 
   Seat.prototype.set_position = function() {
-    return this.dom.css(this.get_position());
+    this.dom.css(this.get_position());
+    return this.dom.children(".draw_card").css($.positions.get_draw(this.sn));
   };
 
   Seat.prototype.remove = function() {

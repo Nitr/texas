@@ -11,6 +11,7 @@ class Seat
 
   set_position: () ->
     @dom.css @get_position()
+    @dom.children(".draw_card").css($.positions.get_draw(@sn))
 
   remove: ->
     @dom.remove()
