@@ -17,17 +17,16 @@ format = (str, step = 3, splitor = ',') ->
 
 growlUI = (id, opt) ->
   conf = {
-    message: $(id).clone(),
+    message: $(id).clone()
     fadeIn: 700
     fadeOut: 700
     timeout: 6000
     showOverlay: false
-    centerY: false
     css: GROWLUI
   }
 
   conf = $.extend(conf, opt) if opt?
-  $.blockUI conf
+  $('#page').block conf
 
 blockUI = (o, timeout) ->
   style = BLOCKUI

@@ -79,8 +79,6 @@ BLOCKUI = {
 
 GROWLUI = {
   width: '350px'
-  top: '10px'
-  left: ''
   right: '10px'
   border: 'none'
   padding: '5px'
@@ -89,4 +87,6 @@ GROWLUI = {
   '-moz-border-radius': '10px'
   opacity: .6
   color: '#fff'
+  top: '630px'
+  left: '500px'
 }

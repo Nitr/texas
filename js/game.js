@@ -252,11 +252,14 @@ Game = (function() {
 })();
 
 $(function() {
-  var game, game_dom, hall_dom, private_card_sn;
+  var game, game_dom, hall_dom, log, private_card_sn;
   game = null;
   game_dom = $('#game');
   hall_dom = $('#hall');
   private_card_sn = 0;
+  log = function(msg) {
+    return $('#logs').append("" + msg + "\r\n").scrollTop($('#logs')[0].scrollHeight);
+  };
   game_dom.bind('cancel_game', function(event, args) {
     game.clear();
     game = null;
@@ -329,6 +332,7 @@ $(function() {
   $.pp.reg("START", function(args) {
     if ($(".blockUI > .buyin").size() === 0) unblockUI();
     game.clear();
+    return log("新的牌局開始......");
   });
   $.pp.reg("END", function(args) {});
   $.pp.reg("DEALER", function(args) {
@@ -343,9 +347,15 @@ $(function() {
     sum = args.call + args.raise;
     seat = game.get_seat(args);
     if (sum === 0) {
-      return seat.check();
+      seat.check();
+      return log("" + seat.player.nick + " 看牌");
     } else {
-      return seat.raise(args.call, args.raise);
+      seat.raise(args.call, args.raise);
+      if (args.raise === 0) {
+        return log("" + seat.player.nick + " 跟注 " + args.call);
+      } else {
+        return log("" + seat.player.nick + " 加注 " + args.raise);
+      }
     }
   });
   $.pp.reg("DRAW", function(args) {
@@ -371,7 +381,8 @@ $(function() {
     if (args.stage !== GS_PREFLOP) return game.new_stage();
   });
   $.pp.reg("JOIN", function(args) {
-    return game.join(args);
+    game.join(args);
+    return log("" + args.nick + " 加入游戏");
   });
   $.pp.reg("LEAVE", function(args) {
     var seat;
@@ -402,7 +413,9 @@ $(function() {
     game.clear_actor();
     seat = game.get_seat(args);
     game.win(seat);
-    return seat.high();
+    seat.high();
+    growlUI("<div>" + seat.player.nick + " 開牌 " + seat.rank + " 贏得了 " + (args.amount - args.cost) + "</div>");
+    return log("" + seat.player.nick + " 開牌 " + seat.rank + " 贏得了 " + (args.amount - args.cost));
   });
   $("#game > .actions > [id^=cmd_fold]").bind('click', function() {
     if (!game.check_actor()) return;

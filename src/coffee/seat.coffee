@@ -106,8 +106,9 @@ class PlayingSeat extends Seat
     @pokers = @dom.children('.card')
 
   set_rank: () ->
+    @rank = RANKS[@hand.rank]
     unless @hand.rank is HC_HIGH_CARD
-      @dom.children(".nick").addClass("high_label").text(RANKS[@hand.rank])
+      @dom.children(".nick").addClass("high_label").text(@rank)
 
   set_hand: (hand) ->
     @hand = {

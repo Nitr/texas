@@ -88,6 +88,7 @@
           .tips
             %label#wait_next 請等待參與下局游戏。
             %label#wait_player 請等待其他玩家參與。
+          %textarea#logs{:readonly => "readonly", :rows => "2", :cols => "20"}
           .actions
             %a#cmd_fold.action 蓋牌
             %a#cmd_check.action 過牌

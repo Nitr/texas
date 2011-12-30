@@ -304,10 +304,44 @@ div.growlUI h1, div.growlUI h2 {
     color: rgba(255, 255, 255, 0.4) !important; }
   #game .tips {
     display: none; }
+  #game #logs {
+    position: absolute;
+    top: 543px;
+    left: 155px;
+    width: 385px;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    height: 70px;
+    resize: none;
+    border: 3px solid #cccccc;
+    padding: 5px;
+    -webkit-border-radius: 7px;
+    background-color: rgba(25, 25, 25, 0.7); }
   #game .actions {
-    top: 550px;
-    left: 125px;
+    top: 540px;
+    left: 570px;
     position: absolute; }
+    #game .actions #cmd_check {
+      top: 50px;
+      left: 0px;
+      position: absolute; }
+    #game .actions #cmd_raise {
+      top: 50px;
+      left: 127px;
+      position: absolute; }
+    #game .actions #raise_range {
+      top: 65px;
+      left: 260px;
+      position: absolute; }
+    #game .actions #raise_number {
+      top: 20px;
+      left: 265px;
+      width: 118px;
+      height: 22px;
+      font-size: 15px;
+      position: absolute; }
   #game .action {
     font-size: 0.8em;
     width: 70px;
@@ -330,23 +364,12 @@ div.growlUI h1, div.growlUI h2 {
     -webkit-box-shadow: 1px 1px 5px black;
     position: absolute; }
   #game #cmd_cancel {
-    top: 600px;
-    left: 870px;
+    top: 590px;
+    left: 20px;
     position: absolute; }
   #game #cmd_up {
-    top: 550px;
-    left: 870px;
-    position: absolute; }
-  #game #raise_range {
-    position: absolute;
-    left: 520px;
-    top: 32px; }
-  #game #raise_number {
-    top: 5px;
-    left: 525px;
-    width: 118px;
-    height: 22px;
-    font-size: 15px;
+    top: 540px;
+    left: 20px;
     position: absolute; }
   #game .dealer {
     top: 70px;

@@ -138,6 +138,11 @@ $ ->
   hall_dom = $('#hall')
   private_card_sn = 0
 
+  log = (msg) ->
+    $('#logs').
+      append("#{msg}\r\n").
+      scrollTop($('#logs')[0].scrollHeight)
+
   game_dom.bind 'cancel_game', (event, args) ->
     game.clear()
     game = null
@@ -204,7 +209,8 @@ $ ->
       unblockUI()
 
     game.clear()
-    return
+
+    log "新的牌局開始......"
 
   $.pp.reg "END", (args) ->
     return
@@ -225,9 +231,14 @@ $ ->
 
     if sum is 0
       seat.check()
+      log "#{seat.player.nick} 看牌"
     else
       seat.raise(args.call, args.raise)
-
+      if args.raise is 0
+        log "#{seat.player.nick} 跟注 #{args.call}"
+      else
+        log "#{seat.player.nick} 加注 #{args.raise}"
+        
   $.pp.reg "DRAW", (args) ->
     seat = game.get_seat args
     seat.draw_card()
@@ -256,6 +267,7 @@ $ ->
 
   $.pp.reg "JOIN", (args) ->
     game.join args
+    log "#{args.nick} 加入游戏"
 
   $.pp.reg "LEAVE", (args) ->
     seat = game.get_seat args
@@ -272,8 +284,8 @@ $ ->
   $.pp.reg "SHOW", (args) ->
     game.new_stage()
     seat = game.get_seat args
-    seat.private_card(args.face1, args.suit1, 1)
-    seat.private_card(args.face2, args.suit2, 2)
+    seat.private_card args.face1, args.suit1, 1
+    seat.private_card args.face2, args.suit2, 2
 
   $.pp.reg "HAND", (args) ->
     seat = game.get_seat args
@@ -288,6 +300,10 @@ $ ->
     seat = game.get_seat args
     game.win seat
     seat.high()
+
+    growlUI "<div>#{seat.player.nick} 開牌 #{seat.rank} 贏得了 #{args.amount - args.cost}</div>"
+    log "#{seat.player.nick} 開牌 #{seat.rank} 贏得了 #{args.amount - args.cost}"
+
   # }}}
 
   $("#game > .actions > [id^=cmd_fold]").bind 'click', ->
@@ -321,9 +337,9 @@ $ ->
     game.disable_actions()
 
   $('#raise_range, #raise_number').bind 'change', (event) ->
-    v = parseInt($(this).val())
-    min = parseInt($(this).attr("min"))
-    max = parseInt($(this).attr("max"))
+    v = parseInt $(this).val()
+    min = parseInt $(this).attr("min")
+    max = parseInt $(this).attr("max")
 
     if (v < min)
       v = min

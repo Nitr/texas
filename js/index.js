@@ -28,11 +28,10 @@ growlUI = function(id, opt) {
     fadeOut: 700,
     timeout: 6000,
     showOverlay: false,
-    centerY: false,
     css: GROWLUI
   };
   if (opt != null) conf = $.extend(conf, opt);
-  return $.blockUI(conf);
+  return $('#page').block(conf);
 };
 
 blockUI = function(o, timeout) {
