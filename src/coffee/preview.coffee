@@ -1,4 +1,5 @@
 GAME_PREVIEW_REF_MAX = 5
+
 class GamePreview
   constructor: (@gid, @dom) ->
     @seats = []

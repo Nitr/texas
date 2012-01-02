@@ -301,7 +301,9 @@ $ ->
     game.win seat
     seat.high()
 
-    growlUI "<div>#{seat.player.nick} 開牌 #{seat.rank} 贏得了 #{args.amount - args.cost}</div>"
+    if $(".blockUI > .buyin").size() is 0
+      growlUI "<div>#{seat.player.nick} 開牌 #{seat.rank} 贏得了 #{args.amount - args.cost}</div>"
+
     log "#{seat.player.nick} 開牌 #{seat.rank} 贏得了 #{args.amount - args.cost}"
 
   # }}}

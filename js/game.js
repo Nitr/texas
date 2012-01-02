@@ -414,7 +414,9 @@ $(function() {
     seat = game.get_seat(args);
     game.win(seat);
     seat.high();
-    growlUI("<div>" + seat.player.nick + " 開牌 " + seat.rank + " 贏得了 " + (args.amount - args.cost) + "</div>");
+    if ($(".blockUI > .buyin").size() === 0) {
+      growlUI("<div>" + seat.player.nick + " 開牌 " + seat.rank + " 贏得了 " + (args.amount - args.cost) + "</div>");
+    }
     return log("" + seat.player.nick + " 開牌 " + seat.rank + " 贏得了 " + (args.amount - args.cost));
   });
   $("#game > .actions > [id^=cmd_fold]").bind('click', function() {

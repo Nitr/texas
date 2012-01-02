@@ -107,7 +107,7 @@ BLOCKUI = {
   'color': "#ffffff",
   'border-radius': "8px",
   'border': "3px solid #174f75",
-  'background-color': "#0f263d",
+  'background-color': "rgba(15, 38, 61, 0.8)",
   'text-shadow': "1px 1px 1px #929da7",
   '-webkit-box-shadow': "2px 2px 2px black",
   'top': '200px'
