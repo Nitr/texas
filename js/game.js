@@ -364,6 +364,7 @@ $(function() {
     }
   });
   $.pp.reg("CANCEL", function(args) {
+    game.clear();
     log("");
     return log("===== " + (action('請等待其他玩家的加入')) + " =====");
   });
@@ -465,20 +466,24 @@ $(function() {
     }
   });
   $("#game > .actions > [id^=cmd_fold]").bind('click', function() {
+    if ($(this).hasClass('disabled')) return;
     if (!game.check_actor()) return;
     return game.fold();
   });
   $("#game > .actions > [id^=cmd_check]").bind('click', function() {
+    if ($(this).hasClass('disabled')) return;
     if (!game.check_actor()) return;
     return game.check();
   });
   $("#game > .actions > [id^=cmd_call]").bind('click', function() {
+    if ($(this).hasClass('disabled')) return;
     if (!game.check_actor()) return;
     return game.call();
   });
   $("#game > .actions > [id^=cmd_raise]").bind('click', function() {
     var amount;
-    if (!game.check_actor()) return;
+    if ($(this).hasClass('disabled')) return;
+    return game.check_actor();
     $('#raise_range').trigger('change');
     amount = parseInt($('#raise_range').val());
     game.call(amount);

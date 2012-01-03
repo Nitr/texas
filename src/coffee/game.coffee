@@ -243,6 +243,7 @@ $ ->
         log "#{nick detail} #{action 'OUT'}"
 
   $.pp.reg "CANCEL", (args) ->
+    game.clear()
     log ""
     log "===== #{action '請等待其他玩家的加入'} ====="
 
@@ -359,26 +360,26 @@ $ ->
   # }}}
 
   $("#game > .actions > [id^=cmd_fold]").bind 'click', ->
-    unless game.check_actor()
-      return
+    return if $(@).hasClass('disabled')
+    return unless game.check_actor()
 
     game.fold()
 
   $("#game > .actions > [id^=cmd_check]").bind 'click', ->
-    unless game.check_actor()
-      return
+    return if $(@).hasClass('disabled')
+    return unless game.check_actor()
 
     game.check()
 
   $("#game > .actions > [id^=cmd_call]").bind 'click', ->
-    unless game.check_actor()
-      return
+    return if $(@).hasClass('disabled')
+    return unless game.check_actor()
 
     game.call()
 
   $("#game > .actions > [id^=cmd_raise]").bind 'click', ->
-    unless game.check_actor()
-      return
+    return if $(@).hasClass('disabled')
+    return game.check_actor()
 
     $('#raise_range').trigger 'change'
     amount = parseInt $('#raise_range').val()
