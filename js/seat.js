@@ -69,6 +69,7 @@ PlayingSeat = (function() {
     this.game = game;
     PlayingSeat.__super__.constructor.apply(this, arguments);
     this.bet = 0;
+    this.state = PS_PLAY;
     this.player = new Player(this.detail.pid, this.dom, this.detail);
     this.poker = this.dom.children('.card');
     if (this.game.detail.stage !== GS_CANCEL && this.game.detail.stage !== GS_PREFLOP) {
@@ -81,6 +82,13 @@ PlayingSeat = (function() {
     this.dom.children(".card").remove();
     this.dom.children(".high_label").removeClass("high_label");
     return this.dom.removeClass('disabled');
+  };
+
+  PlayingSeat.prototype.update = function(detail) {
+    this.player.set_inplay(detail.inplay);
+    if (detail.state === this.state) return false;
+    this.state = detail.state;
+    return true;
   };
 
   PlayingSeat.prototype.get_dom = function() {

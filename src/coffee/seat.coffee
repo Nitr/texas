@@ -36,6 +36,7 @@ class PlayingSeat extends Seat
   constructor: (@detail, @game) ->
     super
     @bet = 0
+    @state = PS_PLAY
     @player = new Player @detail.pid, @dom, @detail
     @poker = @dom.children('.card')
     @draw_card() if @game.detail.stage != GS_CANCEL and @game.detail.stage != GS_PREFLOP
@@ -45,6 +46,12 @@ class PlayingSeat extends Seat
     @dom.children(".card").remove()
     @dom.children(".high_label").removeClass("high_label")
     @dom.removeClass('disabled')
+
+  update: (detail)->
+    @player.set_inplay detail.inplay
+    return false if detail.state is @state
+    @state = detail.state
+    return true
 
   get_dom: ->
     $("#game > .template > .playing_seat").clone true

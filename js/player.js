@@ -41,7 +41,7 @@ Player = (function() {
 
   Player.prototype.set_inplay = function(inplay) {
     this.inplay = inplay;
-    return $(this.dom).children('.inplay').text(this.inplay);
+    return $(this.dom).children('.inplay').text("$" + this.inplay);
   };
 
   Player.prototype.set_balance = function(balance) {

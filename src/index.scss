@@ -224,6 +224,24 @@ div.growlUI h1, div.growlUI h2 {
   }
 }
 
+strong.nick {
+  color: gray;
+}
+
+strong.amount {
+  color: gold;
+  text-shadow: 1px 1px 2px #000000;
+}
+
+strong.action {
+  color: red;
+  text-shadow: 1px 1px 2px #000000;
+}
+
+strong.rank {
+  color: gray;
+  text-shadow: 1px 1px 2px #000000;
+}
 
 // TOOLBAR {{{
 #toolbar {
@@ -439,6 +457,7 @@ div.growlUI h1, div.growlUI h2 {
   }
 
   #logs {
+    @include s-font;
     position: absolute;
     top: 543px;
     left: 155px;
@@ -453,6 +472,7 @@ div.growlUI h1, div.growlUI h2 {
     padding: 5px;
     -webkit-border-radius: 7px;
     background-color: rgba(25,25,25,0.7);
+    overflow: auto;
   }
 
   .actions {
@@ -488,7 +508,7 @@ div.growlUI h1, div.growlUI h2 {
     }
   }
 
-  .action {
+  a.action {
     @include s-font;
     width: 70px;
     height: 30px;
@@ -526,7 +546,6 @@ div.growlUI h1, div.growlUI h2 {
     left: 20px;
     position: absolute;
   }
-
 
   .dealer {
     top: 70px;

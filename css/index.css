@@ -152,6 +152,21 @@ div.growlUI h1, div.growlUI h2 {
   width: 225px;
   margin-bottom: 60px; }
 
+strong.nick {
+  color: gray; }
+
+strong.amount {
+  color: gold;
+  text-shadow: 1px 1px 2px #000000; }
+
+strong.action {
+  color: red;
+  text-shadow: 1px 1px 2px #000000; }
+
+strong.rank {
+  color: gray;
+  text-shadow: 1px 1px 2px #000000; }
+
 #toolbar {
   width: 930px;
   height: 78px;
@@ -305,6 +320,7 @@ div.growlUI h1, div.growlUI h2 {
   #game .tips {
     display: none; }
   #game #logs {
+    font-size: 0.8em;
     position: absolute;
     top: 543px;
     left: 155px;
@@ -318,7 +334,8 @@ div.growlUI h1, div.growlUI h2 {
     border: 3px solid #cccccc;
     padding: 5px;
     -webkit-border-radius: 7px;
-    background-color: rgba(25, 25, 25, 0.7); }
+    background-color: rgba(25, 25, 25, 0.7);
+    overflow: auto; }
   #game .actions {
     top: 540px;
     left: 570px;
@@ -342,7 +359,7 @@ div.growlUI h1, div.growlUI h2 {
       height: 22px;
       font-size: 15px;
       position: absolute; }
-  #game .action {
+  #game a.action {
     font-size: 0.8em;
     width: 70px;
     height: 30px;

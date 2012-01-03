@@ -3,6 +3,7 @@ class Game
     return
 
   init: (@detail) ->
+    @stage = GS_PREFLOP
     @seats = []
     @dom.trigger 'inited'
 
@@ -14,9 +15,6 @@ class Game
   update_seat: (seat_detail) ->
     if seat_detail.state is PS_EMPTY
       return
-
-    seat = @get_seat seat_detail
-    seat.player.set_inplay seat_detail.inplay
 
   reset_position: (sn)->
     $.positions.offset = $.positions.size - sn + 1
@@ -53,6 +51,7 @@ class Game
     @show_empty()
 
   clear: ->
+    @stage = GS_PREFLOP
     $.positions.reset_share()
     $(".bet, .pot, .card").remove()
     seat.clear() for seat in @seats when seat? and seat.__proto__.constructor is PlayingSeat
@@ -73,7 +72,8 @@ class Game
     else
       throw "unknown object #{o} in get_seat()"
 
-  new_stage: ->
+  new_stage: (stage)->
+    @stage = stage
     seat.reset_bet() for seat in @seats when seat? and seat.__proto__.constructor is PlayingSeat
     ref = @dom
     @dom.oneTime '0.3s', ->
@@ -110,8 +110,18 @@ class Game
     else
       $("#game > .actions").children("#cmd_#{key}").attr("disabled", true).addClass('disabled')
 
-  enable_actions: ->
+  enable_actions: (args)->
     $("#game > .actions > *").attr("disabled", false).removeClass('disabled')
+    @disable_actions if args.call is 0 then 'call' else 'check'
+
+    if (args.call >= args.max)
+      $("#game > .actions > #cmd_raise").hide()
+      $("#game > .actions > #cmd_call").hide()
+      $("#game > .actions > #cmd_allin").show()
+    else
+      $("#game > .actions > #cmd_raise").show()
+      $("#game > .actions > #cmd_call").show()
+      $("#game > .actions > #cmd_allin").hide()
 
   set_actor: (args)->
     @actor = @get_seat args
@@ -140,8 +150,21 @@ $ ->
 
   log = (msg) ->
     $('#logs').
-      append("#{msg}\r\n").
+      append("#{msg}<br />").
       scrollTop($('#logs')[0].scrollHeight)
+
+  nick = (o) ->
+    return "<strong class='nick'>#{o.nick}</strong>" if o.nick
+    "<strong class='nick'>#{o.player.nick}</strong>"
+
+  amount = (n) ->
+    "<strong class='amount'>$#{n}</strong>"
+
+  action = (a) ->
+    "<strong class='action'>#{a}</strong>"
+
+  rank = (r) ->
+    "<strong class='rank'>#{r}</strong>"
 
   game_dom.bind 'cancel_game', (event, args) ->
     game.clear()
@@ -199,7 +222,17 @@ $ ->
 
   $.pp.reg "SEAT_STATE", (detail) ->
     return unless game
-    game.update_seat detail
+    return if detail.state is PS_EMPTY
+
+    seat = game.get_seat detail
+
+    if seat.update detail
+      if detail.state is PS_ALL_IN
+        log "#{nick detail} #{action 'ALL-IN'}"
+      else if detail.state is PS_FOLD
+        log "#{nick detail} #{action '棄牌'}"
+      else if detail.state is PS_OUT
+        log "#{nick detail} #{action 'OUT'}"
 
   $.pp.reg "CANCEL", (args) ->
     growlUI "#tips_empty"
@@ -210,7 +243,8 @@ $ ->
 
     game.clear()
 
-    log "新的牌局開始......"
+    log ''
+    log "===== #{action '新的牌局開始'} ====="
 
   $.pp.reg "END", (args) ->
     return
@@ -225,20 +259,25 @@ $ ->
   $.pp.reg "BBLIND", (args) ->
     return
 
+  $.pp.reg "BLIND", (args) ->
+    seat = game.get_seat args
+    seat.raise(args.blind, 0)
+    log "#{nick seat} #{action '下盲注'} #{amount args.blind}"
+
   $.pp.reg "RAISE", (args) ->
     sum = args.call + args.raise
     seat = game.get_seat args
 
     if sum is 0
       seat.check()
-      log "#{seat.player.nick} 看牌"
+      log "#{nick seat} #{action '看牌'}"
     else
       seat.raise(args.call, args.raise)
       if args.raise is 0
-        log "#{seat.player.nick} 跟注 #{args.call}"
+        log "#{nick seat} #{action '跟注'} #{amount args.call}"
       else
-        log "#{seat.player.nick} 加注 #{args.raise}"
-        
+        log "#{nick seat} #{action '加注'} #{amount args.raise}"
+
   $.pp.reg "DRAW", (args) ->
     seat = game.get_seat args
     seat.draw_card()
@@ -263,19 +302,18 @@ $ ->
       game.disable_actions()
 
   $.pp.reg "STAGE", (args) ->
-    game.new_stage() if args.stage != GS_PREFLOP
+    game.new_stage(args.stage) if args.stage != GS_PREFLOP
 
   $.pp.reg "JOIN", (args) ->
     game.join args
-    log "#{args.nick} 加入游戏"
+    log "#{nick args} #{action '加入'}"
 
   $.pp.reg "LEAVE", (args) ->
     seat = game.get_seat args
     game.leave seat
 
   $.pp.reg "BET_REQ", (args) ->
-    game.enable_actions()
-    game.disable_actions if args.call is 0 then 'call' else 'check'
+    game.enable_actions(args)
 
     $('#raise_range, #raise_number').val(args.min).
       attr('min', args.min).
@@ -301,10 +339,12 @@ $ ->
     game.win seat
     seat.high()
 
-    if $(".blockUI > .buyin").size() is 0
-      growlUI "<div>#{seat.player.nick} 開牌 #{seat.rank} 贏得了 #{args.amount - args.cost}</div>"
+    msg = "#{nick seat} #{rank seat.rank} #{action '贏得'} #{amount (args.amount - args.cost)}"
 
-    log "#{seat.player.nick} 開牌 #{seat.rank} 贏得了 #{args.amount - args.cost}"
+    log msg
+
+    if $(".blockUI > .buyin").size() is 0
+      growlUI "<div>#{msg}</div>"
 
   # }}}
 

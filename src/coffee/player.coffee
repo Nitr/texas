@@ -23,7 +23,7 @@ class Player
 
   set_inplay: (inplay) ->
     @inplay = inplay
-    $(@dom).children('.inplay').text @inplay
+    $(@dom).children('.inplay').text "$#{@inplay}"
 
   set_balance: (balance) ->
     @balance = balance

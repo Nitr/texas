@@ -203,6 +203,11 @@
       {type: "decimal", prop: "raise"},
       {type: "decimal", prop: "call"}
     ]),
+    notify_seat_state: generate_notify("BLIND", [85,
+      {type: "integer", prop: "gid"},
+      {type: "integer", prop: "pid"},
+      {type: "decimal", prop: "blind"}
+    ]),
     notify_seat_state: generate_notify("SHOW", [40,
       {type: "integer", prop: "gid"},
       {type: "integer", prop: "pid"},

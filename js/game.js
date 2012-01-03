@@ -10,6 +10,7 @@ Game = (function() {
 
   Game.prototype.init = function(detail) {
     this.detail = detail;
+    this.stage = GS_PREFLOP;
     this.seats = [];
     return this.dom.trigger('inited');
   };
@@ -24,10 +25,7 @@ Game = (function() {
   };
 
   Game.prototype.update_seat = function(seat_detail) {
-    var seat;
-    if (seat_detail.state === PS_EMPTY) return;
-    seat = this.get_seat(seat_detail);
-    return seat.player.set_inplay(seat_detail.inplay);
+    if (seat_detail.state === PS_EMPTY) {}
   };
 
   Game.prototype.reset_position = function(sn) {
@@ -94,6 +92,7 @@ Game = (function() {
 
   Game.prototype.clear = function() {
     var seat, _i, _len, _ref, _results;
+    this.stage = GS_PREFLOP;
     $.positions.reset_share();
     $(".bet, .pot, .card").remove();
     _ref = this.seats;
@@ -141,8 +140,9 @@ Game = (function() {
     }
   };
 
-  Game.prototype.new_stage = function() {
+  Game.prototype.new_stage = function(stage) {
     var ref, seat, _i, _len, _ref;
+    this.stage = stage;
     _ref = this.seats;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       seat = _ref[_i];
@@ -207,8 +207,18 @@ Game = (function() {
     }
   };
 
-  Game.prototype.enable_actions = function() {
-    return $("#game > .actions > *").attr("disabled", false).removeClass('disabled');
+  Game.prototype.enable_actions = function(args) {
+    $("#game > .actions > *").attr("disabled", false).removeClass('disabled');
+    this.disable_actions(args.call === 0 ? 'call' : 'check');
+    if (args.call >= args.max) {
+      $("#game > .actions > #cmd_raise").hide();
+      $("#game > .actions > #cmd_call").hide();
+      return $("#game > .actions > #cmd_allin").show();
+    } else {
+      $("#game > .actions > #cmd_raise").show();
+      $("#game > .actions > #cmd_call").show();
+      return $("#game > .actions > #cmd_allin").hide();
+    }
   };
 
   Game.prototype.set_actor = function(args) {
@@ -252,13 +262,26 @@ Game = (function() {
 })();
 
 $(function() {
-  var game, game_dom, hall_dom, log, private_card_sn;
+  var action, amount, game, game_dom, hall_dom, log, nick, private_card_sn, rank;
   game = null;
   game_dom = $('#game');
   hall_dom = $('#hall');
   private_card_sn = 0;
   log = function(msg) {
-    return $('#logs').append("" + msg + "\r\n").scrollTop($('#logs')[0].scrollHeight);
+    return $('#logs').append("" + msg + "<br />").scrollTop($('#logs')[0].scrollHeight);
+  };
+  nick = function(o) {
+    if (o.nick) return "<strong class='nick'>" + o.nick + "</strong>";
+    return "<strong class='nick'>" + o.player.nick + "</strong>";
+  };
+  amount = function(n) {
+    return "<strong class='amount'>$" + n + "</strong>";
+  };
+  action = function(a) {
+    return "<strong class='action'>" + a + "</strong>";
+  };
+  rank = function(r) {
+    return "<strong class='rank'>" + r + "</strong>";
   };
   game_dom.bind('cancel_game', function(event, args) {
     game.clear();
@@ -323,8 +346,19 @@ $(function() {
     return game.init_seat(detail);
   });
   $.pp.reg("SEAT_STATE", function(detail) {
+    var seat;
     if (!game) return;
-    return game.update_seat(detail);
+    if (detail.state === PS_EMPTY) return;
+    seat = game.get_seat(detail);
+    if (seat.update(detail)) {
+      if (detail.state === PS_ALL_IN) {
+        return log("" + (nick(detail)) + " " + (action('ALL-IN')));
+      } else if (detail.state === PS_FOLD) {
+        return log("" + (nick(detail)) + " " + (action('棄牌')));
+      } else if (detail.state === PS_OUT) {
+        return log("" + (nick(detail)) + " " + (action('OUT')));
+      }
+    }
   });
   $.pp.reg("CANCEL", function(args) {
     return growlUI("#tips_empty");
@@ -332,7 +366,8 @@ $(function() {
   $.pp.reg("START", function(args) {
     if ($(".blockUI > .buyin").size() === 0) unblockUI();
     game.clear();
-    return log("新的牌局開始......");
+    log('');
+    return log("===== " + (action('新的牌局開始')) + " =====");
   });
   $.pp.reg("END", function(args) {});
   $.pp.reg("DEALER", function(args) {
@@ -342,19 +377,25 @@ $(function() {
   });
   $.pp.reg("SBLIND", function(args) {});
   $.pp.reg("BBLIND", function(args) {});
+  $.pp.reg("BLIND", function(args) {
+    var seat;
+    seat = game.get_seat(args);
+    seat.raise(args.blind, 0);
+    return log("" + (nick(seat)) + " " + (action('下盲注')) + " " + (amount(args.blind)));
+  });
   $.pp.reg("RAISE", function(args) {
     var seat, sum;
     sum = args.call + args.raise;
     seat = game.get_seat(args);
     if (sum === 0) {
       seat.check();
-      return log("" + seat.player.nick + " 看牌");
+      return log("" + (nick(seat)) + " " + (action('看牌')));
     } else {
       seat.raise(args.call, args.raise);
       if (args.raise === 0) {
-        return log("" + seat.player.nick + " 跟注 " + args.call);
+        return log("" + (nick(seat)) + " " + (action('跟注')) + " " + (amount(args.call)));
       } else {
-        return log("" + seat.player.nick + " 加注 " + args.raise);
+        return log("" + (nick(seat)) + " " + (action('加注')) + " " + (amount(args.raise)));
       }
     }
   });
@@ -378,11 +419,11 @@ $(function() {
     if (!game.check_actor()) return game.disable_actions();
   });
   $.pp.reg("STAGE", function(args) {
-    if (args.stage !== GS_PREFLOP) return game.new_stage();
+    if (args.stage !== GS_PREFLOP) return game.new_stage(args.stage);
   });
   $.pp.reg("JOIN", function(args) {
     game.join(args);
-    return log("" + args.nick + " 加入游戏");
+    return log("" + (nick(args)) + " " + (action('加入')));
   });
   $.pp.reg("LEAVE", function(args) {
     var seat;
@@ -390,8 +431,7 @@ $(function() {
     return game.leave(seat);
   });
   $.pp.reg("BET_REQ", function(args) {
-    game.enable_actions();
-    game.disable_actions(args.call === 0 ? 'call' : 'check');
+    game.enable_actions(args);
     return $('#raise_range, #raise_number').val(args.min).attr('min', args.min).attr('max', args.max);
   });
   $.pp.reg("SHOW", function(args) {
@@ -409,15 +449,16 @@ $(function() {
     if (game.check_actor()) return seat.high();
   });
   $.pp.reg("WIN", function(args) {
-    var seat;
+    var msg, seat;
     game.clear_actor();
     seat = game.get_seat(args);
     game.win(seat);
     seat.high();
+    msg = "" + (nick(seat)) + " " + (rank(seat.rank)) + " " + (action('贏得')) + " " + (amount(args.amount - args.cost));
+    log(msg);
     if ($(".blockUI > .buyin").size() === 0) {
-      growlUI("<div>" + seat.player.nick + " 開牌 " + seat.rank + " 贏得了 " + (args.amount - args.cost) + "</div>");
+      return growlUI("<div>" + msg + "</div>");
     }
-    return log("" + seat.player.nick + " 開牌 " + seat.rank + " 贏得了 " + (args.amount - args.cost));
   });
   $("#game > .actions > [id^=cmd_fold]").bind('click', function() {
     if (!game.check_actor()) return;
@@ -432,7 +473,6 @@ $(function() {
     return game.call();
   });
   $("#game > .actions > [id^=cmd_raise]").bind('click', function() {
-    var amount;
     if (!game.check_actor()) return;
     $('#raise_range').trigger('change');
     amount = parseInt($('#raise_range').val());
