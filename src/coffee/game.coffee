@@ -106,22 +106,31 @@ class Game
 
   disable_actions: (key)->
     unless key?
+      $("#cmd_call").text '跟注'
+      $("#cmd_raise").text '加注'
+
       $("#game > .actions > *").attr("disabled", true).addClass('disabled')
     else
-      $("#game > .actions").children("#cmd_#{key}").attr("disabled", true).addClass('disabled')
+      if key is '#cmd_call'
+        $("#cmd_call").text '跟注'
+      if key is '#cmd_raise'
+        $("#cmd_raise").text '加注'
+
+      $("#game > .actions").children(key).attr("disabled", true).addClass('disabled')
 
   enable_actions: (args)->
     $("#game > .actions > *").attr("disabled", false).removeClass('disabled')
-    @disable_actions if args.call is 0 then 'call' else 'check'
 
-    if (args.call >= args.max)
-      $("#game > .actions > #cmd_raise").hide()
-      $("#game > .actions > #cmd_call").hide()
-      $("#game > .actions > #cmd_allin").show()
+    if args.call >= args.max
+      $("#cmd_call").text "跟注 $#{args.max}"
+      @disable_actions '#cmd_raise'
+      @disable_actions '#cmd_check'
+      @disable_actions '#raise_range'
+      @disable_actions '#raise_number'
     else
-      $("#game > .actions > #cmd_raise").show()
-      $("#game > .actions > #cmd_call").show()
-      $("#game > .actions > #cmd_allin").hide()
+      $("#cmd_call").text "跟注 $#{args.call}"
+
+    @disable_actions if args.call is 0 then '#cmd_call' else '#cmd_check'
 
   set_actor: (args)->
     @actor = @get_seat args
@@ -157,7 +166,7 @@ $ ->
     return "<strong class='nick'>#{o.nick}</strong>" if o.nick
     "<strong class='nick'>#{o.player.nick}</strong>"
 
-  amount = (n) ->
+  money = (n) ->
     "<strong class='amount'>$#{n}</strong>"
 
   action = (a) ->
@@ -189,7 +198,6 @@ $ ->
     $.ws.send $.pp.write cmd
 
     $(@).show()
-    blockUI '#msg_joining'
 
     $(@).oneTime '3s', ->
       # 3s timeout show network error
@@ -235,7 +243,9 @@ $ ->
         log "#{nick detail} #{action 'OUT'}"
 
   $.pp.reg "CANCEL", (args) ->
-    growlUI "#tips_empty"
+    log ""
+    log "===== #{action '請等待其他玩家的加入'} ====="
+
 
   $.pp.reg "START", (args) ->
     if $(".blockUI > .buyin").size() is 0
@@ -262,7 +272,7 @@ $ ->
   $.pp.reg "BLIND", (args) ->
     seat = game.get_seat args
     seat.raise(args.blind, 0)
-    log "#{nick seat} #{action '下盲注'} #{amount args.blind}"
+    log "#{nick seat} #{action '下盲注'} #{money args.blind}"
 
   $.pp.reg "RAISE", (args) ->
     sum = args.call + args.raise
@@ -274,9 +284,9 @@ $ ->
     else
       seat.raise(args.call, args.raise)
       if args.raise is 0
-        log "#{nick seat} #{action '跟注'} #{amount args.call}"
+        log "#{nick seat} #{action '跟注'} #{money args.call}"
       else
-        log "#{nick seat} #{action '加注'} #{amount args.raise}"
+        log "#{nick seat} #{action '加注'} #{money args.raise}"
 
   $.pp.reg "DRAW", (args) ->
     seat = game.get_seat args
@@ -339,7 +349,7 @@ $ ->
     game.win seat
     seat.high()
 
-    msg = "#{nick seat} #{rank seat.rank} #{action '贏得'} #{amount (args.amount - args.cost)}"
+    msg = "#{nick seat} #{rank seat.rank} #{action '贏得'} #{money (args.amount - args.cost)}"
 
     log msg
 

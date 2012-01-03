@@ -201,24 +201,28 @@ Game = (function() {
 
   Game.prototype.disable_actions = function(key) {
     if (key == null) {
+      $("#cmd_call").text('跟注');
+      $("#cmd_raise").text('加注');
       return $("#game > .actions > *").attr("disabled", true).addClass('disabled');
     } else {
-      return $("#game > .actions").children("#cmd_" + key).attr("disabled", true).addClass('disabled');
+      if (key === '#cmd_call') $("#cmd_call").text('跟注');
+      if (key === '#cmd_raise') $("#cmd_raise").text('加注');
+      return $("#game > .actions").children(key).attr("disabled", true).addClass('disabled');
     }
   };
 
   Game.prototype.enable_actions = function(args) {
     $("#game > .actions > *").attr("disabled", false).removeClass('disabled');
-    this.disable_actions(args.call === 0 ? 'call' : 'check');
     if (args.call >= args.max) {
-      $("#game > .actions > #cmd_raise").hide();
-      $("#game > .actions > #cmd_call").hide();
-      return $("#game > .actions > #cmd_allin").show();
+      $("#cmd_call").text("跟注 $" + args.max);
+      this.disable_actions('#cmd_raise');
+      this.disable_actions('#cmd_check');
+      this.disable_actions('#raise_range');
+      this.disable_actions('#raise_number');
     } else {
-      $("#game > .actions > #cmd_raise").show();
-      $("#game > .actions > #cmd_call").show();
-      return $("#game > .actions > #cmd_allin").hide();
+      $("#cmd_call").text("跟注 $" + args.call);
     }
+    return this.disable_actions(args.call === 0 ? '#cmd_call' : '#cmd_check');
   };
 
   Game.prototype.set_actor = function(args) {
@@ -262,7 +266,7 @@ Game = (function() {
 })();
 
 $(function() {
-  var action, amount, game, game_dom, hall_dom, log, nick, private_card_sn, rank;
+  var action, game, game_dom, hall_dom, log, money, nick, private_card_sn, rank;
   game = null;
   game_dom = $('#game');
   hall_dom = $('#hall');
@@ -274,7 +278,7 @@ $(function() {
     if (o.nick) return "<strong class='nick'>" + o.nick + "</strong>";
     return "<strong class='nick'>" + o.player.nick + "</strong>";
   };
-  amount = function(n) {
+  money = function(n) {
     return "<strong class='amount'>$" + n + "</strong>";
   };
   action = function(a) {
@@ -315,7 +319,6 @@ $(function() {
     }
     $.ws.send($.pp.write(cmd));
     $(this).show();
-    blockUI('#msg_joining');
     return $(this).oneTime('3s', function() {
       blockUI('#err_network');
     });
@@ -361,7 +364,8 @@ $(function() {
     }
   });
   $.pp.reg("CANCEL", function(args) {
-    return growlUI("#tips_empty");
+    log("");
+    return log("===== " + (action('請等待其他玩家的加入')) + " =====");
   });
   $.pp.reg("START", function(args) {
     if ($(".blockUI > .buyin").size() === 0) unblockUI();
@@ -381,7 +385,7 @@ $(function() {
     var seat;
     seat = game.get_seat(args);
     seat.raise(args.blind, 0);
-    return log("" + (nick(seat)) + " " + (action('下盲注')) + " " + (amount(args.blind)));
+    return log("" + (nick(seat)) + " " + (action('下盲注')) + " " + (money(args.blind)));
   });
   $.pp.reg("RAISE", function(args) {
     var seat, sum;
@@ -393,9 +397,9 @@ $(function() {
     } else {
       seat.raise(args.call, args.raise);
       if (args.raise === 0) {
-        return log("" + (nick(seat)) + " " + (action('跟注')) + " " + (amount(args.call)));
+        return log("" + (nick(seat)) + " " + (action('跟注')) + " " + (money(args.call)));
       } else {
-        return log("" + (nick(seat)) + " " + (action('加注')) + " " + (amount(args.raise)));
+        return log("" + (nick(seat)) + " " + (action('加注')) + " " + (money(args.raise)));
       }
     }
   });
@@ -454,7 +458,7 @@ $(function() {
     seat = game.get_seat(args);
     game.win(seat);
     seat.high();
-    msg = "" + (nick(seat)) + " " + (rank(seat.rank)) + " " + (action('贏得')) + " " + (amount(args.amount - args.cost));
+    msg = "" + (nick(seat)) + " " + (rank(seat.rank)) + " " + (action('贏得')) + " " + (money(args.amount - args.cost));
     log(msg);
     if ($(".blockUI > .buyin").size() === 0) {
       return growlUI("<div>" + msg + "</div>");
@@ -473,6 +477,7 @@ $(function() {
     return game.call();
   });
   $("#game > .actions > [id^=cmd_raise]").bind('click', function() {
+    var amount;
     if (!game.check_actor()) return;
     $('#raise_range').trigger('change');
     amount = parseInt($('#raise_range').val());
