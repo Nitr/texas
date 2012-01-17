@@ -11,14 +11,14 @@ $(function() {
     var gid;
     gid = game_list.children().first().data('gid');
     hall.trigger('start_game');
-    game.trigger('start_game', {
+    return game.trigger('start_game', {
       action: 'watch',
       gid: gid
     });
   });
   hall.bind('setup', function() {
     $(this).show();
-    $(this).trigger('reload');
+    return $(this).trigger('reload');
   });
   hall.bind('reload', function() {
     var autofill;
@@ -26,22 +26,23 @@ $(function() {
     game_counter = 0;
     autofill = game_list.children().last().clone();
     game_list.empty().append(autofill);
-    game_query([1, 0, 0, 0, 0, 0, 0]);
+    return game_query([1, 0, 0, 0, 0, 0, 0]);
   });
   hall.bind('loaded', function() {
     unblockUI();
     game_list.children().first().click();
     if ($.url.get('auto_watch') === 'true') {
-      $(this).oneTime('2s', function() {
+      return $(this).oneTime('2s', function() {
         $("#cmd_watch").trigger('click');
       });
     }
   });
   hall.bind('start_game', function() {
-    $(this).hide();
+    return $(this).hide();
   });
   hall.bind('cancel_game', function() {
     $(this).show();
+    return $(this).trigger('reload');
   });
   $.pp.reg("GAME_INFO", function(game_info) {
     game_counter++;

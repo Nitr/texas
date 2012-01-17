@@ -208,6 +208,9 @@
       {type: "integer", prop: "pid"},
       {type: "decimal", prop: "blind"}
     ]),
+    notify_seat_state: generate_notify("UNWATCH", [86,
+      {type: "integer", prop: "gid"}
+    ]),
     notify_seat_state: generate_notify("SHOW", [40,
       {type: "integer", prop: "gid"},
       {type: "integer", prop: "pid"},

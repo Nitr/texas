@@ -56,6 +56,8 @@ EmptySeat = (function() {
     return this.dom.show();
   };
 
+  EmptySeat.prototype.clear = function() {};
+
   return EmptySeat;
 
 })();

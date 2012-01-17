@@ -10,12 +10,10 @@ $ ->
     gid = game_list.children().first().data('gid')
     hall.trigger 'start_game'
     game.trigger 'start_game', {action: 'watch', gid: gid}
-    return
 
   hall.bind 'setup', ->
     $(@).show()
     $(@).trigger('reload')
-    return
 
   hall.bind 'reload', ->
     blockUI '#msg_loading'
@@ -24,7 +22,6 @@ $ ->
     autofill = game_list.children().last().clone()
     game_list.empty().append(autofill)
     game_query [1, 0, 0, 0, 0, 0, 0]
-    return
 
   hall.bind 'loaded', ->
     unblockUI()
@@ -34,16 +31,13 @@ $ ->
       $(@).oneTime '2s', ->
         $("#cmd_watch").trigger 'click'
         return
-
-      return
     
   hall.bind 'start_game', ->
     $(@).hide()
-    return
 
   hall.bind 'cancel_game', ->
     $(@).show()
-    return
+    $(@).trigger('reload')
 
   $.pp.reg "GAME_INFO", (game_info) ->
     game_counter++

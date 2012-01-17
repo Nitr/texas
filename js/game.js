@@ -52,7 +52,7 @@ Game = (function() {
 
   Game.prototype.hide_empty = function() {
     var seat, _i, _len, _ref, _results;
-    $("#cmd_up").attr('disabled', false).removeClass('disabled');
+    $("#cmd_leave").attr('disabled', false).removeClass('disabled');
     _ref = this.seats;
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -66,7 +66,7 @@ Game = (function() {
 
   Game.prototype.show_empty = function() {
     var seat, _i, _len, _ref, _results;
-    $("#cmd_up").attr('disabled', true).addClass('disabled');
+    $("#cmd_leave").attr('disabled', true).addClass('disabled');
     _ref = this.seats;
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -99,9 +99,7 @@ Game = (function() {
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       seat = _ref[_i];
-      if ((seat != null) && seat.__proto__.constructor === PlayingSeat) {
-        _results.push(seat.clear());
-      }
+      if (seat != null) _results.push(seat.clear());
     }
     return _results;
   };
@@ -151,7 +149,7 @@ Game = (function() {
       }
     }
     ref = this.dom;
-    this.dom.oneTime('0.3s', function() {
+    return this.dom.oneTime('0.3s', function() {
       var bet, _j, _len2, _ref2, _results;
       _ref2 = ref.children(".bet");
       _results = [];
@@ -170,7 +168,7 @@ Game = (function() {
   Game.prototype.win = function(seat) {
     var ref;
     ref = this.dom;
-    ref.oneTime('1s', function() {
+    return ref.oneTime('1s', function() {
       var bet, _i, _len, _ref, _results;
       _ref = ref.children(".bet, .pot");
       _results = [];
@@ -214,7 +212,7 @@ Game = (function() {
   Game.prototype.enable_actions = function(args) {
     $("#game > .actions > *").attr("disabled", false).removeClass('disabled');
     if (args.call >= args.max) {
-      $("#cmd_call").text("跟注 $" + args.max);
+      $("#cmd_call").text("ALL-IN $" + args.max);
       this.disable_actions('#cmd_raise');
       this.disable_actions('#cmd_check');
       this.disable_actions('#raise_range');
@@ -266,13 +264,16 @@ Game = (function() {
 })();
 
 $(function() {
-  var action, game, game_dom, hall_dom, log, money, nick, private_card_sn, rank;
+  var action, game, game_dom, hall_dom, log, log_empty, money, nick, private_card_sn, rank;
   game = null;
   game_dom = $('#game');
   hall_dom = $('#hall');
   private_card_sn = 0;
   log = function(msg) {
     return $('#logs').append("" + msg + "<br />").scrollTop($('#logs')[0].scrollHeight);
+  };
+  log_empty = function() {
+    return $('#logs').empty();
   };
   nick = function(o) {
     if (o.nick) return "<strong class='nick'>" + o.nick + "</strong>";
@@ -288,13 +289,16 @@ $(function() {
     return "<strong class='rank'>" + r + "</strong>";
   };
   game_dom.bind('cancel_game', function(event, args) {
+    log_empty();
     game.clear();
     game = null;
+    $("#game > .playing_seat").remove();
+    $("#game > .empty_seat").remove();
     return $(this).hide();
   });
   game_dom.bind('start_game', function(event, args) {
     var cmd;
-    $("#cmd_up").attr('disabled', true).addClass('disabled');
+    $("#cmd_leave").attr('disabled', true).addClass('disabled');
     game = new Game(args.gid, game_dom);
     game.disable_actions();
     cmd = {
@@ -435,6 +439,10 @@ $(function() {
     seat = game.get_seat(args);
     return game.leave(seat);
   });
+  $.pp.reg("UNWATCH", function(args) {
+    game_dom.trigger('cancel_game');
+    return hall_dom.trigger('cancel_game');
+  });
   $.pp.reg("BET_REQ", function(args) {
     game.enable_actions(args);
     return $('#raise_range, #raise_number').val(args.min).attr('min', args.min).attr('max', args.max);
@@ -504,5 +512,17 @@ $(function() {
     if (v < min) v = min;
     if (v > max) v = max;
     return $('#raise_range, #raise_number').val(v.toString());
+  });
+  $('#cmd_cancel').bind('click', function(event) {
+    return $.ws.send($.pp.write({
+      cmd: "UNWATCH",
+      gid: $.game.gid
+    }));
+  });
+  $('#cmd_leave').bind('click', function(event) {
+    return $.ws.send($.pp.write({
+      cmd: "LEAVE",
+      gid: $.game.gid
+    }));
   });
 });

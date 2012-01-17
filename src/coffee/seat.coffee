@@ -32,6 +32,9 @@ class EmptySeat extends Seat
   show: ->
     @dom.show()
 
+  clear: ->
+    return
+
 class PlayingSeat extends Seat
   constructor: (@detail, @game) ->
     super

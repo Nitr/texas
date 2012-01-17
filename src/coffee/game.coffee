@@ -31,11 +31,11 @@ class Game
     @seats[seat_detail.sn].disable()
 
   hide_empty: ->
-    $("#cmd_up").attr('disabled', false).removeClass('disabled')
+    $("#cmd_leave").attr('disabled', false).removeClass('disabled')
     seat.hide() for seat in @seats when seat? and seat.__proto__.constructor is EmptySeat
 
   show_empty: ->
-    $("#cmd_up").attr('disabled', true).addClass('disabled')
+    $("#cmd_leave").attr('disabled', true).addClass('disabled')
     seat.show() for seat in @seats when seat? and seat.__proto__.constructor is EmptySeat
 
   leave: (args) ->
@@ -54,7 +54,7 @@ class Game
     @stage = GS_PREFLOP
     $.positions.reset_share()
     $(".bet, .pot, .card").remove()
-    seat.clear() for seat in @seats when seat? and seat.__proto__.constructor is PlayingSeat
+    seat.clear() for seat in @seats when seat?
 
   get_seat_by_pid: (o) ->
     return seat for seat in @seats when seat? and seat.__proto__.constructor is PlayingSeat and seat.player.pid is o.pid
@@ -78,7 +78,6 @@ class Game
     ref = @dom
     @dom.oneTime '0.3s', ->
       $(bet).css($.positions.get_random([240, 680], 20)).removeClass('bet').addClass('pot') for bet in ref.children(".bet")
-    return
 
   share_card: (face, suit) ->
     $.get_poker(face, suit).
@@ -89,7 +88,6 @@ class Game
     ref = @dom
     ref.oneTime '1s', ->
       $(bet).css($.positions.get_bet(seat.sn).start) for bet in ref.children(".bet, .pot")
-    return
 
   high: (face, suit, filter, seat_pokers) ->
     pokers = $.merge(@dom.children('.card'), seat_pokers)
@@ -122,7 +120,7 @@ class Game
     $("#game > .actions > *").attr("disabled", false).removeClass('disabled')
 
     if args.call >= args.max
-      $("#cmd_call").text "跟注 $#{args.max}"
+      $("#cmd_call").text "ALL-IN $#{args.max}"
       @disable_actions '#cmd_raise'
       @disable_actions '#cmd_check'
       @disable_actions '#raise_range'
@@ -162,6 +160,9 @@ $ ->
       append("#{msg}<br />").
       scrollTop($('#logs')[0].scrollHeight)
 
+  log_empty = () ->
+    $('#logs').empty()
+
   nick = (o) ->
     return "<strong class='nick'>#{o.nick}</strong>" if o.nick
     "<strong class='nick'>#{o.player.nick}</strong>"
@@ -176,12 +177,15 @@ $ ->
     "<strong class='rank'>#{r}</strong>"
 
   game_dom.bind 'cancel_game', (event, args) ->
+    log_empty()
     game.clear()
     game = null
+    $("#game > .playing_seat").remove()
+    $("#game > .empty_seat").remove()
     $(@).hide()
 
   game_dom.bind 'start_game', (event, args) ->
-    $("#cmd_up").attr('disabled', true).addClass('disabled')
+    $("#cmd_leave").attr('disabled', true).addClass('disabled')
 
     game = new Game args.gid, game_dom
     game.disable_actions()
@@ -323,6 +327,10 @@ $ ->
     seat = game.get_seat args
     game.leave seat
 
+  $.pp.reg "UNWATCH", (args) ->
+    game_dom.trigger 'cancel_game'
+    hall_dom.trigger 'cancel_game'
+
   $.pp.reg "BET_REQ", (args) ->
     game.enable_actions(args)
 
@@ -401,5 +409,11 @@ $ ->
       v = max
 
     $('#raise_range, #raise_number').val(v.toString())
+
+  $('#cmd_cancel').bind 'click', (event) ->
+    $.ws.send $.pp.write {cmd: "UNWATCH", gid: $.game.gid}
+
+  $('#cmd_leave').bind 'click', (event) ->
+    $.ws.send $.pp.write {cmd: "LEAVE", gid: $.game.gid}
 
   return
