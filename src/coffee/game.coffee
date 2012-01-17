@@ -25,6 +25,7 @@ class Game
     @seats[seat_detail.sn] = new PlayingSeat seat_detail, @
 
     if seat_detail.pid is $.player.pid
+      @player = $.player
       @hide_empty()
       @reset_position(seat_detail.sn)
 
@@ -44,11 +45,17 @@ class Game
     if seat.__proto__.constructor is EmptySeat
       return
 
+    if args.player.pid is $.player.pid
+      @player = null
+
     @seats[seat.sn].clear()
     @seats[seat.sn].remove()
     @seats[seat.sn] = new EmptySeat {sn: args.sn}, @
 
-    @show_empty()
+    if @player
+      @hide_empty()
+    else
+      @show_empty()
 
   clear: ->
     @stage = GS_PREFLOP
@@ -387,12 +394,11 @@ $ ->
 
   $("#game > .actions > [id^=cmd_raise]").bind 'click', ->
     return if $(@).hasClass('disabled')
-    return game.check_actor()
+    return unless game.check_actor()
 
     $('#raise_range').trigger 'change'
     amount = parseInt $('#raise_range').val()
     game.call(amount)
-    $.ws.send $.pp.write {cmd: "RAISE", gid: $.game.gid, amount: amount}
 
   $("#game > .actions > [id^=cmd]").bind 'click', ->
     game.disable_actions()

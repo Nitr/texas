@@ -44,6 +44,7 @@ Game = (function() {
     this.seats[seat_detail.sn].remove();
     this.seats[seat_detail.sn] = new PlayingSeat(seat_detail, this);
     if (seat_detail.pid === $.player.pid) {
+      this.player = $.player;
       this.hide_empty();
       this.reset_position(seat_detail.sn);
     }
@@ -82,12 +83,17 @@ Game = (function() {
     var seat;
     seat = this.seats[args.sn];
     if (seat.__proto__.constructor === EmptySeat) return;
+    if (args.player.pid === $.player.pid) this.player = null;
     this.seats[seat.sn].clear();
     this.seats[seat.sn].remove();
     this.seats[seat.sn] = new EmptySeat({
       sn: args.sn
     }, this);
-    return this.show_empty();
+    if (this.player) {
+      return this.hide_empty();
+    } else {
+      return this.show_empty();
+    }
   };
 
   Game.prototype.clear = function() {
@@ -491,15 +497,10 @@ $(function() {
   $("#game > .actions > [id^=cmd_raise]").bind('click', function() {
     var amount;
     if ($(this).hasClass('disabled')) return;
-    return game.check_actor();
+    if (!game.check_actor()) return;
     $('#raise_range').trigger('change');
     amount = parseInt($('#raise_range').val());
-    game.call(amount);
-    return $.ws.send($.pp.write({
-      cmd: "RAISE",
-      gid: $.game.gid,
-      amount: amount
-    }));
+    return game.call(amount);
   });
   $("#game > .actions > [id^=cmd]").bind('click', function() {
     return game.disable_actions();
