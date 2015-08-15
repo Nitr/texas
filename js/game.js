@@ -347,7 +347,7 @@ $(function() {
     if (suit != null) return pokers.filter("[suit=" + suit + "]");
     return $(".card");
   };
-  $.pp.reg("GAME_DETAIL", function(detail) {
+  $.pp.reg("SEAT_DETAIL", function(detail) {
     game.init(detail);
     if (detail.players < 2) {
       return growlUI("#tips_empty");
@@ -355,7 +355,7 @@ $(function() {
       return unblockUI();
     }
   });
-  $.pp.reg("SEAT_DETAIL", function(detail) {
+  $.pp.reg("SEAT_STATE", function(detail) {
     return game.init_seat(detail);
   });
   $.pp.reg("SEAT_STATE", function(detail) {

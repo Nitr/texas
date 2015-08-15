@@ -40,9 +40,9 @@
                         fun(obj);
                     });
                 else
-                    console.log(['undefined event', obj.notify, obj]);
+                    console.log('undefined event', obj.notify, obj);
             } else {
-                console.log(evt);
+                console.log('read event err', bin, evt);
             }
         },
         // }}}
@@ -50,203 +50,6 @@
         err: function (command, code) {
             return commands_by_id[command].cmd;
         },
-
-        //cmd_login: generate_cmd("LOGIN",
-        //    [10, {type: "string", prop: "usr"},
-        //        {type: "string", prop: "pass"}]),
-        //cmd_logout: generate_cmd("LOGOUT", [2]),
-        //cmd_player_query: generate_cmd("PLAYER_QUERY",
-        //    [15, {type: "integer", prop: "id"}]),
-        //cmd_player_query: generate_cmd("BALANCE_QUERY", [16]),
-        //cmd_player_query: generate_cmd("PHOTO_QUERY",
-        //    [102, {type: "integer", prop: "id"}]),
-        //cmd_game_query: generate_cmd("GAME_QUERY",
-        //    [13, {type: "byte", prop: "game_type"},
-        //        {type: "byte", prop: "limit_type"},
-        //        {type: "byte", prop: "seats_op"},
-        //        {type: "byte", prop: "seats"},
-        //        {type: "byte", prop: "joined_op"},
-        //        {type: "byte", prop: "joined"},
-        //        {type: "byte", prop: "waiting_op"},
-        //        {type: "byte", prop: "waiting"}]),
-        //cmd_ping: generate_cmd("PING",
-        //    [253, {type: "timestamp", prop: "send"}]),
-        //cmd_seat_query: generate_cmd("SEAT_QUERY",
-        //    [14, {type: "integer", prop: "gid"}]),
-        //cmd_join: generate_cmd("JOIN",
-        //    [8, {type: "integer", prop: "gid"},
-        //        {type: "byte", prop: "seat"},
-        //        {type: "decimal", prop: "buyin"},
-        //        {type: "string", prop: "nick"}]),
-        //cmd_watch: generate_cmd("WATCH",
-        //    [3, {type: "integer", prop: "gid"}]),
-        //cmd_watch: generate_cmd("UNWATCH",
-        //    [4, {type: "integer", prop: "gid"}]),
-        //cmd_watch: generate_cmd("LEAVE",
-        //    [9, {type: "integer", prop: "gid"}]),
-        //cmd_watch: generate_cmd("FOLD",
-        //    [7, {type: "integer", prop: "gid"}]),
-        //cmd_watch: generate_cmd("RAISE",
-        //    [6, {type: "integer", prop: "gid"},
-        //        {type: "decimal", prop: "amount"}]),
-        //notify_pong: generate_notify("PONG",
-        //    [254, {type: "timestamp", prop: "orign_send"},
-        //        {type: "timestamp", prop: "send"}]),
-        //notify_login: generate_notify("LOGIN", [31,
-        //    {type: "integer", prop: "id"}]),
-        //notify_player_info: generate_notify("PLAYER_INFO", [19,
-        //    {type: "integer", prop: "pid"},
-        //    {type: "integer", prop: "inplay"},
-        //    {type: "string", prop: "nick", base64: true},
-        //    {type: "image", prop: "photo"}]),
-        //notify_player_info: generate_notify("BALANCE_INFO", [33,
-        //    {type: "decimal", prop: "amount"},
-        //    {type: "decimal", prop: "inplay"}]),
-        //notify_player_info: generate_notify("PHOTO_INFO", [101,
-        //    {type: "integer", prop: "pid"},
-        //    {type: "image", prop: "photo"}]),
-        //notify_game_info: generate_notify("GAME_INFO", [18,
-        //    {type: "integer", prop: "id"},
-        //    {type: "string", prop: "name", base64: true},
-        //    {type: "byte", prop: "type"},
-        //    {type: "byte", prop: "limit_type"},
-        //    {type: "decimal", prop: "low"},
-        //    {type: "decimal", prop: "high"},
-        //    {type: "decimal", prop: "min"},
-        //    {type: "decimal", prop: "max"},
-        //    {type: "integer", prop: "seats"},
-        //    {type: "integer", prop: "required"},
-        //    {type: "integer", prop: "joined"},
-        //    {type: "integer", prop: "waiting"},
-        //    {type: "integer", prop: "count"}]),
-        //notify_error: generate_notify("ERROR", [255,
-        //    {type: "byte", prop: "command"},
-        //    {type: "byte", prop: "code"}]),
-        //notify_seat_state: generate_notify("SEAT_STATE", [30,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "byte", prop: "sn"},
-        //    {type: "integer", prop: "state"},
-        //    {type: "integer", prop: "pid"},
-        //    {type: "decimal", prop: "inplay"},
-        //    {type: "string", prop: "nick", base64: true}]),
-        //notify_seat_state: generate_notify("SEAT_DETAIL", [83,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "byte", prop: "sn"},
-        //    {type: "integer", prop: "state"},
-        //    {type: "integer", prop: "pid"},
-        //    {type: "decimal", prop: "inplay"},
-        //    {type: "string", prop: "nick", base64: true}]),
-        //notify_seat_state: generate_notify("GAME_DETAIL", [81,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "decimal", prop: "pot"},
-        //    {type: "byte", prop: "players"},
-        //    {type: "byte", prop: "seats"},
-        //    {type: "byte", prop: "stage"},
-        //    {type: "decimal", prop: "min"},
-        //    {type: "decimal", prop: "max"},
-        //    {type: "decimal", prop: "low"},
-        //    {type: "decimal", prop: "high"}
-        //]),
-        //notify_seat_state: generate_notify("END", [24,
-        //    {type: "integer", prop: "gid"}
-        //]),
-        //notify_seat_state: generate_notify("START", [23,
-        //    {type: "integer", prop: "gid"}
-        //]),
-        //notify_seat_state: generate_notify("CANCEL", [25,
-        //    {type: "integer", prop: "gid"}
-        //]),
-        //notify_seat_state: generate_notify("STAGE", [29,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "byte", prop: "stage"}
-        //]),
-        //notify_seat_state: generate_notify("PRIVATE", [82,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "integer", prop: "pid"},
-        //    {type: "byte", prop: "face"},
-        //    {type: "byte", prop: "suit"}
-        //]),
-        //notify_seat_state: generate_notify("SHARE", [22,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "byte", prop: "face"},
-        //    {type: "byte", prop: "suit"}
-        //]),
-        //notify_seat_state: generate_notify("DRAW", [21,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "integer", prop: "pid"},
-        //    {type: "byte", prop: "face"},
-        //    {type: "byte", prop: "suit"}
-        //]),
-        //notify_seat_state: generate_notify("DEALER", [35,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "byte", prop: "seat"}
-        //]),
-        //notify_seat_state: generate_notify("SBLIND", [36,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "byte", prop: "seat"}
-        //]),
-        //notify_seat_state: generate_notify("BBLIND", [37,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "byte", prop: "seat"}
-        //]),
-        //notify_seat_state: generate_notify("BET_REQ", [20,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "decimal", prop: "call"},
-        //    {type: "decimal", prop: "min"},
-        //    {type: "decimal", prop: "max"}
-        //]),
-        //notify_seat_state: generate_notify("ACTOR", [84,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "byte", prop: "seat"}
-        //]),
-        //notify_seat_state: generate_notify("RAISE", [42,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "integer", prop: "pid"},
-        //    {type: "decimal", prop: "raise"},
-        //    {type: "decimal", prop: "call"}
-        //]),
-        //notify_seat_state: generate_notify("BLIND", [85,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "integer", prop: "pid"},
-        //    {type: "decimal", prop: "blind"}
-        //]),
-        //notify_seat_state: generate_notify("UNWATCH", [86,
-        //    {type: "integer", prop: "gid"}
-        //]),
-        //notify_seat_state: generate_notify("SHOW", [40,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "integer", prop: "pid"},
-        //    {type: "byte", prop: "size"},
-        //    {type: "byte", prop: "face1"},
-        //    {type: "byte", prop: "suit1"},
-        //    {type: "byte", prop: "face2"},
-        //    {type: "byte", prop: "suit2"}
-        //]),
-        //notify_seat_state: generate_notify("HAND", [27,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "integer", prop: "pid"},
-        //    {type: "byte", prop: "rank"},
-        //    {type: "byte", prop: "high1"},
-        //    {type: "byte", prop: "high2"},
-        //    {type: "byte", prop: "suit"}
-        //]),
-        //notify_seat_state: generate_notify("WIN", [26,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "integer", prop: "pid"},
-        //    {type: "decimal", prop: "amount"},
-        //    {type: "decimal", prop: "cost"},
-        //]),
-        //notify_seat_state: generate_notify("LEAVE", [45,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "integer", prop: "pid"}
-        //]),
-        //notify_seat_state: generate_notify("JOIN", [44,
-        //    {type: "integer", prop: "gid"},
-        //    {type: "integer", prop: "pid"},
-        //    {type: "byte", prop: "sn"},
-        //    {type: "decimal", prop: "inplay"},
-        //    {type: "string", prop: "nick", base64: true}
-        //])
 
         cmd_login: generate_cmd("LOGIN",
             [10, {type: "string", prop: "usr"},
@@ -291,7 +94,7 @@
             {type: "decimal", prop: "inplay"}]),
         notify_game_info: generate_notify("GAME_INFO", [101,
             {type: "integer", prop: "id"},
-            {type: "string", prop: "name", base64: true},
+            {type: "string", prop: "name"},
 
             {type: "integer", prop: "type"},
             // {type: "integer",    prop: "limit_type"},
@@ -315,7 +118,7 @@
             {type: "integer", prop: "inplay"},
             {type: "string", prop: "nick", base64: true},
             {type: "string", prop: "photo"}]),
-        notify_seat_state: generate_notify("GAME_DETAIL", [102,
+        notify_seat_state: generate_notify("SEAT_DETAIL", [102,
             {type: "integer", prop: "gid"},
             {type: "decimal", prop: "pot"},
             {type: "byte", prop: "players"},
@@ -349,59 +152,62 @@
             {type: "integer", prop: "pid"},
             {type: "decimal", prop: "inplay"},
             {type: "string", prop: "nick", base64: true}]),
-        notify_seat_state: generate_notify("END", [24,
+        notify_seat_state: generate_notify("END", [104,
             {type: "integer", prop: "gid"}
         ]),
-        notify_seat_state: generate_notify("START", [23,
+        notify_seat_state: generate_notify("START", [103,
             {type: "integer", prop: "gid"}
         ]),
-        notify_seat_state: generate_notify("CANCEL", [25,
+        notify_seat_state: generate_notify("CANCEL", [105,
             {type: "integer", prop: "gid"}
         ]),
-        notify_seat_state: generate_notify("STAGE", [29,
+        notify_seat_state: generate_notify("STAGE", [106,
             {type: "integer", prop: "gid"},
             {type: "byte", prop: "stage"}
         ]),
-        notify_seat_state: generate_notify("PRIVATE", [82,
+        notify_seat_state: generate_notify("PRIVATE", [119,
             {type: "integer", prop: "gid"},
             {type: "integer", prop: "pid"},
             {type: "byte", prop: "face"},
             {type: "byte", prop: "suit"}
         ]),
-        notify_seat_state: generate_notify("SHARE", [22,
+        notify_seat_state: generate_notify("SHARE", [120,
             {type: "integer", prop: "gid"},
             {type: "byte", prop: "face"},
             {type: "byte", prop: "suit"}
         ]),
-        notify_seat_state: generate_notify("DRAW", [21,
+        notify_seat_state: generate_notify("DRAW", [118,
             {type: "integer", prop: "gid"},
             {type: "integer", prop: "pid"},
             {type: "byte", prop: "face"},
             {type: "byte", prop: "suit"}
         ]),
-        notify_seat_state: generate_notify("DEALER", [35,
+        notify_seat_state: generate_notify("DEALER", [110, //todo
             {type: "integer", prop: "gid"},
             {type: "byte", prop: "seat"}
         ]),
-        notify_seat_state: generate_notify("SBLIND", [36,
+        notify_seat_state: generate_notify("SBLIND", [111,
             {type: "integer", prop: "gid"},
             {type: "byte", prop: "seat"}
         ]),
-        notify_seat_state: generate_notify("BBLIND", [37,
+        notify_seat_state: generate_notify("BBLIND", [112,
             {type: "integer", prop: "gid"},
             {type: "byte", prop: "seat"}
         ]),
-        notify_seat_state: generate_notify("BET_REQ", [20,
+        notify_seat_state: generate_notify("BET_REQ", [117,
             {type: "integer", prop: "gid"},
+            {type: "integer", prop: "pid"},
+            {type: "byte", prop: "sn"},
             {type: "decimal", prop: "call"},
             {type: "decimal", prop: "min"},
             {type: "decimal", prop: "max"}
         ]),
-        notify_seat_state: generate_notify("ACTOR", [84,
+        notify_seat_state: generate_notify("ACTOR", [116,
             {type: "integer", prop: "gid"},
-            {type: "byte", prop: "seat"}
+            {type: "integer", prop: "pid"},
+            {type: "byte", prop: "sn"}
         ]),
-        notify_seat_state: generate_notify("RAISE", [42,
+        notify_seat_state: generate_notify("RAISE", [114,
             {type: "integer", prop: "gid"},
             {type: "integer", prop: "pid"},
             {type: "decimal", prop: "raise"},
@@ -412,8 +218,12 @@
             {type: "integer", prop: "pid"},
             {type: "decimal", prop: "blind"}
         ]),
-        notify_seat_state: generate_notify("UNWATCH", [86,
+        notify_seat_state: generate_notify("UNWATCH", [130,
             {type: "integer", prop: "gid"}
+        ]),
+        notify_seat_state: generate_notify("WATCH", [129,
+            {type: "integer", prop: "gid"},
+            {type: "integer", prop: "pid"}
         ]),
         notify_seat_state: generate_notify("SHOW", [40,
             {type: "integer", prop: "gid"},
@@ -424,7 +234,7 @@
             {type: "byte", prop: "face2"},
             {type: "byte", prop: "suit2"}
         ]),
-        notify_seat_state: generate_notify("HAND", [27,
+        notify_seat_state: generate_notify("HAND", [121,
             {type: "integer", prop: "gid"},
             {type: "integer", prop: "pid"},
             {type: "byte", prop: "rank"},
@@ -432,17 +242,18 @@
             {type: "byte", prop: "high2"},
             {type: "byte", prop: "suit"}
         ]),
-        notify_seat_state: generate_notify("WIN", [26,
+        notify_seat_state: generate_notify("WIN", [123,
             {type: "integer", prop: "gid"},
             {type: "integer", prop: "pid"},
+            {type: "byte", prop: "sn"},
             {type: "decimal", prop: "amount"},
-            {type: "decimal", prop: "cost"},
         ]),
-        notify_seat_state: generate_notify("LEAVE", [45,
+        notify_seat_state: generate_notify("LEAVE", [109,
             {type: "integer", prop: "gid"},
+            {type: "byte", prop: "sn"},
             {type: "integer", prop: "pid"}
         ]),
-        notify_seat_state: generate_notify("JOIN", [44,
+        notify_seat_state: generate_notify("JOIN", [108,
             {type: "integer", prop: "gid"},
             {type: "integer", prop: "pid"},
             {type: "byte", prop: "sn"},
@@ -536,7 +347,6 @@
         var obj = {
             notify: notify,
             read: function (bin) {
-                console.log("notify:" + notify + " bin:" + bin, status);
                 var obj = new Object();
                 obj["notify"] = notify;
 
@@ -546,6 +356,7 @@
 
                 $.each(status, function (index, val) {
                     if (index == 0) {
+                        console.log("notify:" + notify + " val:" + val + " bin:" + bin, status);
                         //= notifys["NOTIFY_" + dv.getUint8(offset)];
                         offset += 1;
                         return;
